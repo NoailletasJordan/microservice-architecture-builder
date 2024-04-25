@@ -8,12 +8,20 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
 } from 'react-router-dom'
+import { ReactFlowProvider } from 'reactflow'
 import BoardPage from './pages/BoardPage'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
-      <Route path="/board/:id" element={<BoardPage />} />
+      <Route
+        path="/board/:id"
+        element={
+          <ReactFlowProvider>
+            <BoardPage />
+          </ReactFlowProvider>
+        }
+      />
     </Route>,
   ),
 )

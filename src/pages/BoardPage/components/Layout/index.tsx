@@ -4,9 +4,10 @@ import { ReactNode } from 'react'
 
 interface Props {
   children: ReactNode
+  dashboard: ReactNode
 }
 
-export default function Layout({ children }: Props) {
+export default function Layout({ children, dashboard }: Props) {
   const [opened, { toggle }] = useDisclosure()
 
   return (
@@ -24,7 +25,7 @@ export default function Layout({ children }: Props) {
         <div>Logo</div>
       </AppShell.Header>
 
-      <AppShell.Navbar p="md">Navbar</AppShell.Navbar>
+      <AppShell.Navbar p="md">{dashboard}</AppShell.Navbar>
 
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>

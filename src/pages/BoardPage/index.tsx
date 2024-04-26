@@ -1,4 +1,5 @@
-import { useCallback } from 'react'
+import { useWindowEvent } from '@mantine/hooks'
+import { useCallback, useState } from 'react'
 import ReactFlow, {
   Connection,
   ConnectionMode,
@@ -14,7 +15,7 @@ import 'reactflow/dist/style.css'
 import { v4 as uuidv4 } from 'uuid'
 import { ServiceIdType, serviceConfig } from '../../utils'
 import ConnexionLine from './components/ConnectionLine'
-import CustomEdge from './components/CustomEdge'
+import CustomEdgeWrapper from './components/CustomEdge'
 import CustomNode, { TCustomNode } from './components/CustomNode/index'
 import Dashboard from './components/DashBoard'
 import FitToView from './components/FitToView/index'
@@ -37,10 +38,6 @@ const initialNodes: TCustomNode[] = [
 
 const nodeTypes: NodeTypes = {
   service: CustomNode,
-}
-
-const edgeTypes: EdgeTypes = {
-  custom: CustomEdge,
 }
 
 const initialEdges: Edge[] = [
@@ -69,6 +66,20 @@ export default function BoardPage() {
   const edgesState = useEdgesState(initialEdges)
   const [nodes, setNodes, onNodesChange] = nodesState
   const [edges, setEdges, onEdgesChange] = edgesState
+  const [targetedEdge, setTargetedEdge] = useState<string | null>(null)
+  const edgeTypes: EdgeTypes = {
+    custom: CustomEdgeWrapper({ targetedEdge }),
+  }
+
+  useWindowEvent('click', () => setTargetedEdge(null))
+  const onEdgeClick = (event: any, { id }: Edge) => {
+    event.stopPropagation()
+    if (targetedEdge === id) {
+      setTargetedEdge(null)
+      return
+    }
+    setTargetedEdge(id)
+  }
 
   const onConnect = useCallback(
     ({ source, sourceHandle, target, targetHandle }: Connection) => {
@@ -80,9 +91,17 @@ export default function BoardPage() {
         targetHandle,
         type: 'custom',
       }
+
+      const edgeAlleadyExist = !!edges.filter(
+        (compEdge) =>
+          (compEdge.source === source || compEdge.source === target) &&
+          (compEdge.target === source || compEdge.target === target),
+      ).length
+      if (edgeAlleadyExist) return
+
       setEdges((oldEdges) => addEdge(newEdge, oldEdges))
     },
-    [setEdges],
+    [setEdges, edges],
   )
 
   const addNewNode = (serviceIdType: ServiceIdType) => () => {
@@ -109,6 +128,7 @@ export default function BoardPage() {
           connectionMode={ConnectionMode.Loose}
           edgeTypes={edgeTypes}
           connectionLineComponent={ConnexionLine}
+          onEdgeClick={onEdgeClick}
         >
           <FitToView />
         </ReactFlow>

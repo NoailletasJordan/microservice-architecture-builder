@@ -30,7 +30,7 @@ const initialNodes: TCustomNode[] = [
   },
   {
     id: '2',
-    position: { x: 100, y: 50 },
+    position: { x: 300, y: 50 },
     data: { imageUrl: '/board/a-auth.svg', serviceIdType: 'database' },
     type: 'service',
   },
@@ -118,6 +118,9 @@ export default function BoardPage() {
         }}
       >
         <ReactFlow
+          // TODO - allow wider zooms
+          minZoom={1}
+          maxZoom={1}
           fitView
           onConnect={onConnect}
           nodes={nodes}

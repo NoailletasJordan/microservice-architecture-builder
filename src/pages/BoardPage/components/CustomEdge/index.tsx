@@ -49,7 +49,7 @@ export default function CustomEdgeWrapper({
       targetY,
     })
 
-    const handleDeleteNode = () => {
+    const handleDeleteEdge = () => {
       setEdges((edges) => edges.filter((edge) => edge.id !== id))
     }
     const showToolTip = targetedEdge === id
@@ -74,7 +74,7 @@ export default function CustomEdgeWrapper({
         />
         {showToolTip && (
           <EdgeActions
-            handleDeleteNode={handleDeleteNode}
+            handleDeleteEdge={handleDeleteEdge}
             labelX={labelX}
             labelY={labelY}
           />

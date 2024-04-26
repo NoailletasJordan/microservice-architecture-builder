@@ -6,7 +6,7 @@ import { iconStyle } from '../../../../../../../utils'
 interface Props {
   labelX: number
   labelY: number
-  handleDeleteNode: () => void
+  handleDeleteEdge: () => void
 }
 
 const itemStyle = {
@@ -20,7 +20,7 @@ const itemStyle = {
 export default function EdgeActions({
   labelX,
   labelY,
-  handleDeleteNode,
+  handleDeleteEdge,
 }: Props) {
   const { zoom } = useViewport()
 
@@ -41,7 +41,7 @@ export default function EdgeActions({
         >
           <div style={itemStyle}>
             <ActionIcon
-              onClick={handleDeleteNode}
+              onClick={handleDeleteEdge}
               variant="filled"
               color="pink"
               aria-label="Settings"

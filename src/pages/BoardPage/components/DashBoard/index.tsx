@@ -1,17 +1,17 @@
 import { SimpleGrid } from '@mantine/core'
+import { useReactFlow } from 'reactflow'
 import { ServiceIdType, serviceConfig } from '../../../../utils'
+import { addNewNode } from '../Board/helpers'
 import Node from './components/Item/index'
 
-interface Props {
-  addNewNode: (serviceIdType: ServiceIdType) => () => void
-}
+export default function Dashboard() {
+  const flow = useReactFlow()
 
-export default function Dashboard({ addNewNode }: Props) {
   const items = Object.entries(serviceConfig).map(
     ([id, { imageUrl, label }]) => (
       <Node
         key={id}
-        handleClick={addNewNode(id as ServiceIdType)}
+        handleClick={() => addNewNode(id as ServiceIdType, flow.setNodes)}
         imageUrl={imageUrl}
         label={label}
       />

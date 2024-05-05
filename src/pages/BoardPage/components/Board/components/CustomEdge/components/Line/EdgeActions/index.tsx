@@ -1,7 +1,7 @@
 import { ActionIcon, Center, Paper } from '@mantine/core'
 import { IconTrash } from '@tabler/icons-react'
 import { EdgeLabelRenderer, useViewport } from 'reactflow'
-import { iconStyle } from '../../../../../../../utils'
+import { iconStyle } from '../../../../../../../../../utils'
 
 interface Props {
   labelX: number

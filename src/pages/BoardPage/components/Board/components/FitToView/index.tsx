@@ -1,8 +1,8 @@
 import { ActionIcon } from '@mantine/core'
 import { IconFocusCentered } from '@tabler/icons-react'
 import { Panel, useReactFlow } from 'reactflow'
-import TooltipWrapper from '../../../../components/TooltipWrapper/index'
-import { iconStyle } from '../../../../utils'
+import TooltipWrapper from '../../../../../../components/TooltipWrapper'
+import { iconStyle } from '../../../../../../utils'
 
 export default function FitToView() {
   const { fitView } = useReactFlow()

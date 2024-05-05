@@ -11,7 +11,7 @@ import {
 import { IconTrash } from '@tabler/icons-react'
 import { useCallback } from 'react'
 import { Handle, Node, NodeProps, Position, useReactFlow } from 'reactflow'
-import { ServiceIdType, serviceConfig } from '../../../../utils'
+import { ServiceIdType, serviceConfig } from '../../../../../../utils'
 
 interface Datatype {
   imageUrl: string

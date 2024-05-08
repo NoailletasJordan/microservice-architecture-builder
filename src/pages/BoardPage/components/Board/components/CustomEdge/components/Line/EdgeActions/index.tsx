@@ -1,7 +1,6 @@
 import { ActionIcon, Center, Paper } from '@mantine/core'
 import { IconTrash } from '@tabler/icons-react'
 import { EdgeLabelRenderer, useViewport } from 'reactflow'
-import { iconStyle } from '../../../../../../../../../utils'
 
 interface Props {
   labelX: number
@@ -47,7 +46,11 @@ export default function EdgeActions({
               aria-label="Settings"
               size="sm"
             >
-              <IconTrash size="md" style={iconStyle} stroke={1.5} />
+              <IconTrash
+                size="md"
+                style={{ width: '90%', height: '90%' }}
+                stroke={1.5}
+              />
             </ActionIcon>
             <Center>Remove connection</Center>
           </div>

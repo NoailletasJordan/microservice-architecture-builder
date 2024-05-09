@@ -1,4 +1,3 @@
-import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { useWindowEvent } from '@mantine/hooks'
 import { useCallback, useEffect, useState } from 'react'
 import ReactFlow, {
@@ -21,12 +20,11 @@ import CustomNode from './components/CustomNode/index'
 import DraggableGhost from './components/DraggableGhost/index'
 import DroppableArea from './components/DroppableArea/index'
 import FitToView from './components/FitToView/index'
-import { DroppableType, TCustomNode } from './constants'
+import { TCustomNode } from './constants'
 import {
   deepCopy,
   getInitialBoardData,
   handleDeleteNode,
-  onDragEndConfig,
   storeInLocal,
 } from './helpers'
 
@@ -132,49 +130,37 @@ export default function Board({ boardId }: Props) {
   )
 
   return (
-    <DndContext
-      onDragEnd={(e: DragEndEvent) => {
-        if (!e.over) return
-
-        const type = e.over.data.current?.type as DroppableType | undefined
-        if (type) {
-          onDragEndConfig[type](e, flowInstance)
-          return
-        }
-      }}
-    >
-      <DroppableArea id="board" data={{ type: 'board' }}>
-        <div
-          style={{
-            width: '100%',
-            height: 'calc(100vh - 100px)',
-            border: 'red solid 1px',
-          }}
+    <DroppableArea id="board" data={{ droppableType: 'board' }}>
+      <div
+        style={{
+          width: '100%',
+          height: 'calc(100vh - 100px)',
+          border: 'red solid 1px',
+        }}
+      >
+        <ReactFlow
+          // TODO - allow wider zooms
+          minZoom={1}
+          maxZoom={1}
+          fitView
+          onConnect={onConnect}
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          nodeTypes={nodeTypes}
+          connectionMode={ConnectionMode.Loose}
+          edgeTypes={edgeTypes}
+          connectionLineComponent={ConnexionLine}
+          onEdgeClick={onEdgeClick}
+          onNodeDragStop={onNodeDragEnd}
+          noDragClassName="noDragReactflow"
         >
-          <ReactFlow
-            // TODO - allow wider zooms
-            minZoom={1}
-            maxZoom={1}
-            fitView
-            onConnect={onConnect}
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            nodeTypes={nodeTypes}
-            connectionMode={ConnectionMode.Loose}
-            edgeTypes={edgeTypes}
-            connectionLineComponent={ConnexionLine}
-            onEdgeClick={onEdgeClick}
-            onNodeDragStop={onNodeDragEnd}
-            noDragClassName="noDragReactflow"
-          >
-            <FitToView />
-          </ReactFlow>
+          <FitToView />
+        </ReactFlow>
 
-          <DraggableGhost />
-        </div>
-      </DroppableArea>
-    </DndContext>
+        <DraggableGhost />
+      </div>
+    </DroppableArea>
   )
 }

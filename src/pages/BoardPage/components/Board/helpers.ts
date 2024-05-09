@@ -1,45 +1,45 @@
 import { DragEndEvent } from '@dnd-kit/core'
 import { ReactFlowInstance, XYPosition } from 'reactflow'
-import { v4 as uuidv4 } from 'uuid'
-import { Datatype } from './constants'
+import { v4 as uuidv4, v4 } from 'uuid'
+import { Datatype, DraggableData, ServiceIdType } from './constants'
 
 import {
   CARD_WIDTH,
   DroppableType,
   ILocalStorage,
-  ServiceIdType,
   SubService,
   TCustomNode,
   defaultEdges,
   defaultNodes,
-  serviceConfig,
 } from './constants'
 
+export const getNewNode = ({
+  serviceIdType,
+  position,
+}: {
+  serviceIdType: ServiceIdType
+  position: XYPosition
+}): TCustomNode => {
+  const nodeID = uuidv4()
+  return {
+    id: nodeID,
+    type: 'service',
+    position,
+    data: {
+      id: nodeID,
+      serviceIdType,
+      subServices: [],
+    },
+  }
+}
 export const addNewNode = (
   serviceIdType: ServiceIdType,
   flowInstance: ReactFlowInstance,
-  position?: XYPosition,
+  position: XYPosition,
 ) => {
-  const getNewNode = (serviceIdType: ServiceIdType): TCustomNode => {
-    const nodeID = uuidv4()
-    const newNode: TCustomNode = {
-      id: nodeID,
-      type: 'service',
-      position: position || { x: 10, y: 10 },
-      data: {
-        id: nodeID,
-        imageUrl: serviceConfig[serviceIdType].imageUrl,
-        serviceIdType,
-        subServices: [],
-      },
-    }
-
-    return newNode
-  }
-
   flowInstance.setNodes((oldNodes: TCustomNode[]) => [
     ...oldNodes,
-    getNewNode(serviceIdType),
+    getNewNode({ serviceIdType, position }),
   ])
 }
 
@@ -88,9 +88,12 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
       y: centerY,
     })
 
-    const draggedNode = event.active.data.current as SubService
+    const { draggableType, node: draggedNode } = event.active.data
+      .current as DraggableData
 
-    handleDeleteSubservice(draggedNode.id, flowInstance)
+    if (draggableType === 'subService') {
+      handleDeleteSubservice(draggedNode.id, flowInstance)
+    }
     // shameful timeout to chain with previous setNode
     setTimeout(() => {
       addNewNode(draggedNode.serviceIdType, flowInstance, position)
@@ -98,29 +101,53 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
   },
   node: (event, flowInstance) => {
     const targetId = event.over!.id as string
-    const draggedNode = event.active.data.current as SubService
-
-    const droppedInOriginalNode = draggedNode.parentId === targetId
-    if (droppedInOriginalNode) return
-
+    const { draggableType, node: draggedNode } = event.active.data
+      .current as DraggableData
     const targetNode: TCustomNode = flowInstance.getNode(targetId)!
-    targetNode.data.subServices = [
-      ...targetNode.data.subServices,
-      { ...draggedNode, parentId: targetNode.id },
-    ]
 
-    handleDeleteSubservice(draggedNode.id, flowInstance)
-    setTimeout(() => {
+    if (draggableType === 'subService') {
+      const droppedInOriginalNode =
+        (draggedNode as SubService).parentId === targetId
+      if (droppedInOriginalNode) return
+
+      targetNode.data.subServices = [
+        ...targetNode.data.subServices,
+        { ...draggedNode, parentId: targetNode.id },
+      ]
+
+      handleDeleteSubservice(draggedNode.id, flowInstance)
+      setTimeout(() => {
+        flowInstance.setNodes((oldNodes) =>
+          oldNodes.map((compNode) => {
+            return compNode.id === targetNode.id ? targetNode : compNode
+          }),
+        )
+      }, 0)
+    }
+
+    if (draggableType === 'dashboard-item') {
+      const newSubService: SubService = {
+        id: v4(),
+        parentId: targetId,
+        serviceIdType: draggedNode.serviceIdType,
+      }
+      targetNode.data.subServices = [
+        ...targetNode.data.subServices,
+        newSubService,
+      ]
+
       flowInstance.setNodes((oldNodes) =>
-        oldNodes.map((compNode) => {
-          return compNode.id === targetNode.id ? targetNode : compNode
-        }),
+        oldNodes.map((compNode) =>
+          compNode.id === targetNode.id ? deepCopy(targetNode) : compNode,
+        ),
       )
-    }, 0)
+    }
   },
   delete: (event, flowInstance) => {
-    const { id: draggedId } = event.active.data.current as SubService
-    handleDeleteSubservice(draggedId, flowInstance)
+    const { draggableType, node } = event.active.data.current as DraggableData
+    if (draggableType === 'subService') {
+      handleDeleteSubservice(node.id, flowInstance)
+    }
   },
 }
 

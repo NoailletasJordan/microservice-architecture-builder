@@ -20,7 +20,7 @@ export default function CustomNode(props: NodeProps<Datatype>) {
     <DroppableArea
       id={props.id}
       data={{
-        type: 'node',
+        droppableType: 'node',
       }}
     >
       <Card
@@ -42,7 +42,7 @@ export default function CustomNode(props: NodeProps<Datatype>) {
               id={`${props.id}-delete`}
               data={{
                 parentId: props.id,
-                type: 'delete',
+                droppableType: 'delete',
               }}
             >
               {({ isOver }) => (
@@ -61,7 +61,11 @@ export default function CustomNode(props: NodeProps<Datatype>) {
           style={{ cursor: 'default' }}
         >
           <Group align="flex-end" gap="xs">
-            <Image h={70} src={props.data.imageUrl} alt={props.data.imageUrl} />
+            <Image
+              h={70}
+              src={serviceConfig[props.data.serviceIdType].imageUrl}
+              alt={props.data.serviceIdType}
+            />
 
             <SimpleGrid cols={3} verticalSpacing="xs" spacing="xs">
               {props.data.subServices.map((subService: SubService) => (

@@ -1,23 +1,30 @@
 import { DragOverlay, useDndContext } from '@dnd-kit/core'
-import { Box, Image } from '@mantine/core'
-import { SubService, serviceConfig } from '../../constants'
+import { ItemNode } from '../../../DashBoard/components/Item'
+import { DraggableData, serviceConfig } from '../../constants'
+import { SubServiceIcon } from '../CustomNode/components/InnerService'
 
 export default function DraggableGhost() {
   const { active } = useDndContext()
 
-  const current = active?.data.current as SubService | undefined
-  const imageLink = current ? serviceConfig[current.serviceIdType].imageUrl : ''
+  const current = active?.data.current as DraggableData | undefined
+  if (!current) return null
 
-  return (
-    <DragOverlay>
-      <Box style={{ border: '1px solid red' }}>
-        <Image
-          h="1.8rem"
-          w="1.8rem"
-          src={imageLink}
-          alt="props.data.imageUrl"
-        />
-      </Box>
-    </DragOverlay>
-  )
+  const imageLink = current
+    ? serviceConfig[current.node.serviceIdType].imageUrl
+    : ''
+
+  let component = null
+  if (current.draggableType === 'subService')
+    component = <SubServiceIcon imageLink={imageLink} />
+
+  if (current.draggableType === 'dashboard-item')
+    component = (
+      <ItemNode
+        isActive={true}
+        imageUrl={imageLink}
+        label={serviceConfig[current.node.serviceIdType].label}
+      />
+    )
+
+  return <DragOverlay>{component}</DragOverlay>
 }

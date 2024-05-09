@@ -2,7 +2,6 @@ import { Edge, Node } from 'reactflow'
 
 export interface Datatype {
   id: string
-  imageUrl: string
   serviceIdType: ServiceIdType
   subServices: SubService[]
 }
@@ -14,6 +13,13 @@ export type SubService = Omit<Datatype, 'subServices'> & {
 export type TCustomNode = Node<Datatype>
 
 export type DroppableType = 'delete' | 'board' | 'node'
+
+export type DraggableType = 'subService' | 'dashboard-item'
+
+export type DraggableData<T = Datatype | SubService> = {
+  draggableType: DraggableType
+  node: T
+}
 
 export interface ILocalStorage {
   nodes: TCustomNode[]
@@ -68,14 +74,12 @@ export const defaultNodes: TCustomNode[] = [
     type: 'service',
     data: {
       id: '1',
-      imageUrl: '/board/a-auth.svg',
       serviceIdType: 'authentification',
       subServices: [
         {
           id: '3',
           parentId: '1',
           serviceIdType: 'service-email',
-          imageUrl: serviceConfig['service-email'].imageUrl,
         },
       ],
     },
@@ -85,7 +89,6 @@ export const defaultNodes: TCustomNode[] = [
     position: { x: 300, y: 50 },
     data: {
       id: '2',
-      imageUrl: '/board/a-auth.svg',
       serviceIdType: 'database',
       subServices: [],
     },

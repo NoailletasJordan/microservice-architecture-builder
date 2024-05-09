@@ -5,7 +5,7 @@ import { DroppableType } from '../../constants'
 interface Props {
   id: string
   // This will be passed in handler's event (ie. onDragEnd etc)
-  data: { parentId?: string; type: DroppableType }
+  data: { parentId?: string; droppableType: DroppableType }
   // children can alternatively be a function if we need the elements provided by useDroppable
   children:
     | ReactNode

@@ -20,7 +20,7 @@ import CustomNode from './components/CustomNode/index'
 import DraggableGhost from './components/DraggableGhost/index'
 import DroppableArea from './components/DroppableArea/index'
 import FitToView from './components/FitToView/index'
-import { TCustomNode } from './constants'
+import { NO_DRAG_REACTFLOW_CLASS, TCustomNode } from './constants'
 import {
   deepCopy,
   getInitialBoardData,
@@ -154,7 +154,7 @@ export default function Board({ boardId }: Props) {
           connectionLineComponent={ConnexionLine}
           onEdgeClick={onEdgeClick}
           onNodeDragStop={onNodeDragEnd}
-          noDragClassName="noDragReactflow"
+          noDragClassName={NO_DRAG_REACTFLOW_CLASS}
         >
           <FitToView />
         </ReactFlow>

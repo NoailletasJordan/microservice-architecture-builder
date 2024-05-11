@@ -25,6 +25,7 @@ export default function Item({ serviceIdType, imageUrl, label }: Props) {
         imageUrl,
         serviceIdType: serviceIdType,
         subServices: [],
+        modules: [],
       },
     } as DraggableData<Datatype>,
   })

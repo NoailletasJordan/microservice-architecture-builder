@@ -1,17 +1,34 @@
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
-import { AppShell, Burger } from '@mantine/core'
+import { AppShell } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useReactFlow } from 'reactflow'
+import selectedNodeContext, {
+  ISelectedNodeContext,
+} from '../../selectedNodeContext'
 import Dashboard from '../BoardPage/components/DashBoard'
+import AsideModule from './components/AsideModule/index'
 import Board from './components/Board'
 import { DroppableType } from './components/Board/constants'
 import { onDragEndConfig } from './components/Board/helpers'
 
 export default function BoardPage() {
-  const [opened, { toggle }] = useDisclosure()
   const { id: boardId } = useParams()
   const flowInstance = useReactFlow()
+  const [
+    asideIsOpened,
+    { open: openSelectedNodeSection, toggle: toggleAsideIsOpened },
+  ] = useDisclosure(false)
+
+  const [nodeAsideContext, setNodeAsideContext] =
+    useState<ISelectedNodeContext>({
+      node: null,
+      setNode: (newId) => {
+        setNodeAsideContext({ ...nodeAsideContext, node: newId })
+      },
+      openSelectedNodeSection,
+    })
 
   // TODO loader
   if (!boardId) return <div />
@@ -23,34 +40,40 @@ export default function BoardPage() {
         navbar={{
           width: 300,
           breakpoint: 'sm',
-          collapsed: { mobile: !opened },
         }}
         padding="md"
       >
-        <AppShell.Header>
-          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-          <div>Logo</div>
-        </AppShell.Header>
-        <DndContext
-          onDragEnd={(e: DragEndEvent) => {
-            if (!e.over) return
+        <selectedNodeContext.Provider value={nodeAsideContext}>
+          <AppShell.Header>
+            <div>Logo</div>
+          </AppShell.Header>
+          <DndContext
+            onDragEnd={(e: DragEndEvent) => {
+              if (!e.over) return
 
-            const type = e.over.data.current?.droppableType as
-              | DroppableType
-              | undefined
-            if (!type) return
+              const type = e.over.data.current?.droppableType as
+                | DroppableType
+                | undefined
+              if (!type) return
 
-            onDragEndConfig[type](e, flowInstance)
-          }}
-        >
-          <AppShell.Navbar p="md">
-            <Dashboard />
-          </AppShell.Navbar>
+              onDragEndConfig[type](e, flowInstance)
+            }}
+          >
+            <AppShell.Navbar p="md">
+              <Dashboard />
+            </AppShell.Navbar>
 
-          <AppShell.Main>
-            <Board boardId={boardId} />
-          </AppShell.Main>
-        </DndContext>
+            <AppShell.Main>
+              <Board boardId={boardId} />
+            </AppShell.Main>
+          </DndContext>
+          <AppShell.Aside>
+            <AsideModule
+              asideIsOpened={asideIsOpened}
+              toggleAsideIsOpened={toggleAsideIsOpened}
+            />
+          </AppShell.Aside>
+        </selectedNodeContext.Provider>
       </AppShell>
     </>
   )

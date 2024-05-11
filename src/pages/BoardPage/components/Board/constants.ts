@@ -1,12 +1,20 @@
 import { Edge, Node } from 'reactflow'
+import { moduleConfig } from './components/CustomNode/components/AddModuleMenu/moduleConstants'
 
 export interface Datatype {
   id: string
   serviceIdType: ServiceIdType
   subServices: SubService[]
+  modules: Module[]
 }
 
-export type SubService = Omit<Datatype, 'subServices'> & {
+export interface Module {
+  id: string
+  moduleType: keyof typeof moduleConfig
+  data: any
+}
+
+export type SubService = Omit<Datatype, 'subServices' | 'modules'> & {
   parentId: string
 }
 
@@ -82,6 +90,7 @@ export const defaultNodes: TCustomNode[] = [
           serviceIdType: 'service-email',
         },
       ],
+      modules: [],
     },
   },
   {
@@ -91,9 +100,11 @@ export const defaultNodes: TCustomNode[] = [
       id: '2',
       serviceIdType: 'database',
       subServices: [],
+      modules: [],
     },
     type: 'service',
   },
 ]
 
 export const CARD_WIDTH = 230
+export const NO_DRAG_REACTFLOW_CLASS = 'noDragReactflow'

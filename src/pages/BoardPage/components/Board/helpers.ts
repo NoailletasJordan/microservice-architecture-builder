@@ -29,6 +29,7 @@ export const getNewNode = ({
       id: nodeID,
       serviceIdType,
       subServices: [],
+      modules: [],
     },
   }
 }

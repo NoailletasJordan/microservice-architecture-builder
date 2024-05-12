@@ -1,8 +1,8 @@
 import { ActionIcon, Menu, ThemeIcon } from '@mantine/core'
 import { IconCubePlus } from '@tabler/icons-react'
 import { useReactFlow } from 'reactflow'
+import { deepCopy } from '../../../../../../helpers'
 import { NO_DRAG_REACTFLOW_CLASS, TCustomNode } from '../../../../constants'
-import { deepCopy } from '../../../../helpers'
 import { ModuleType, moduleConfig } from './moduleConstants'
 
 interface Props {

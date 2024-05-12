@@ -1,13 +1,14 @@
 import { SimpleGrid } from '@mantine/core'
-import { serviceConfig } from '../Board/constants'
-import Node from './components/Item/index'
+import { ServiceIdType, serviceConfig } from '../Board/constants'
+import DashboardCard from './components/DashboardCard/index'
 
 export default function Dashboard() {
-  const items = Object.entries(serviceConfig).map(
-    ([id, { imageUrl, label }]) => (
-      <Node key={id} serviceIdType={id} imageUrl={imageUrl} label={label} />
-    ),
-  )
+  const items = Object.entries(serviceConfig).map(([serviceIdType]) => (
+    <DashboardCard
+      key={serviceIdType}
+      serviceIdType={serviceIdType as ServiceIdType}
+    />
+  ))
 
   return (
     <>

@@ -6,28 +6,26 @@ import {
   SimpleGrid,
   Stack,
   Text,
-  ThemeIcon,
 } from '@mantine/core'
 import { Handle, NodeProps, Position, useReactFlow } from 'reactflow'
 import { v4 } from 'uuid'
 
+import { handleDeleteNode } from '@/pages/BoardPage/helpers'
 import { useContext } from 'react'
+import DroppableArea from '../../../../../../components/DroppableArea/index'
 import selectedNodeContext from '../../../../../../selectedNodeContext'
 import {
   CARD_WIDTH,
   Datatype,
-  Module,
   NO_DRAG_REACTFLOW_CLASS,
   SubService,
   TCustomNode,
   serviceConfig,
 } from '../../constants'
-import { handleDeleteNode } from '../../helpers'
-import DroppableArea from '../DroppableArea/index'
+import { DraggableModuleComponent } from '../ModuleComponent'
 import AddModuleMenu from './components/AddModuleMenu/index'
-import { moduleConfig } from './components/AddModuleMenu/moduleConstants'
 import DeleteButton from './components/DeleteButton'
-import InnerService from './components/InnerService'
+import SubServiceComponent from './components/SubServiceComponent'
 
 const MAX_MODULES_PER_SERVICE = 6
 
@@ -95,7 +93,7 @@ export default function CustomNode(props: NodeProps<Datatype>) {
 
             <SimpleGrid cols={3} verticalSpacing="xs" spacing="xs">
               {props.data.subServices.map((subService: SubService) => (
-                <InnerService key={v4()} {...subService} />
+                <SubServiceComponent key={v4()} subService={subService} />
               ))}
             </SimpleGrid>
           </Group>
@@ -108,8 +106,18 @@ export default function CustomNode(props: NodeProps<Datatype>) {
             <Badge color="red">Status</Badge>
           </Group>
 
-          <Handle type="source" position={Position.Left} id="l" />
-          <Handle type="source" position={Position.Right} id="r" />
+          <Handle
+            style={{ width: 20, height: 20 }}
+            type="source"
+            position={Position.Left}
+            id="l"
+          />
+          <Handle
+            style={{ width: 20, height: 20 }}
+            type="source"
+            position={Position.Right}
+            id="r"
+          />
 
           <Stack align="flex-start">
             <Text
@@ -123,7 +131,7 @@ export default function CustomNode(props: NodeProps<Datatype>) {
 
             <SimpleGrid cols={6}>
               {props.data.modules.map((module) => (
-                <ModuleIcon key={module.id} module={module} />
+                <DraggableModuleComponent key={module.id} module={module} />
               ))}
               {props.data.modules.length < MAX_MODULES_PER_SERVICE && (
                 <AddModuleMenu serviceId={props.id} />
@@ -133,15 +141,5 @@ export default function CustomNode(props: NodeProps<Datatype>) {
         </Card.Section>
       </Card>
     </DroppableArea>
-  )
-}
-
-function ModuleIcon({ module }: { module: Module }) {
-  const icon = moduleConfig[module.moduleType].icon
-
-  return (
-    <ThemeIcon variant="filled" aria-label="Settings" size="sm" color="violet">
-      {icon}
-    </ThemeIcon>
   )
 }

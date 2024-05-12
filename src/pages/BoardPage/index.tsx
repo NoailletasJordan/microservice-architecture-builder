@@ -11,7 +11,7 @@ import Dashboard from '../BoardPage/components/DashBoard'
 import AsideModule from './components/AsideModule/index'
 import Board from './components/Board'
 import { DroppableType } from './components/Board/constants'
-import { onDragEndConfig } from './components/Board/helpers'
+import { onDragEndConfig } from './dragHandlers'
 
 export default function BoardPage() {
   const { id: boardId } = useParams()

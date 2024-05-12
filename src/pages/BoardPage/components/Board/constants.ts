@@ -22,12 +22,25 @@ export type TCustomNode = Node<Datatype>
 
 export type DroppableType = 'delete' | 'board' | 'node'
 
-export type DraggableType = 'subService' | 'dashboard-item'
+type SUBSERVICE_KEY = 'subService'
+// todo camelcase
+type DASHBOARD_ITEM_KEY = 'dashboard-item'
+type MODULE_KEY = 'module'
+export type DraggableType = SUBSERVICE_KEY | DASHBOARD_ITEM_KEY | MODULE_KEY
 
-export type DraggableData<T = Datatype | SubService> = {
-  draggableType: DraggableType
-  node: T
-}
+export type DroppableData =
+  | {
+      draggableType: SUBSERVICE_KEY
+      node: SubService
+    }
+  | {
+      draggableType: DASHBOARD_ITEM_KEY
+      node: Datatype
+    }
+  | {
+      draggableType: MODULE_KEY
+      node: Module
+    }
 
 export interface ILocalStorage {
   nodes: TCustomNode[]
@@ -35,9 +48,20 @@ export interface ILocalStorage {
   timestamp: Date
 }
 
-export type ServiceIdType = keyof typeof serviceConfig
+export type ServiceIdType =
+  | 'authentification'
+  | 'frontend'
+  | 'service-payment'
+  | 'database'
+  | 'server'
+  | 'service-email'
 
-export const serviceConfig = {
+type ServiceConfigValue = {
+  imageUrl: string
+  label: string
+}
+
+export const serviceConfig: Record<ServiceIdType, ServiceConfigValue> = {
   frontend: {
     imageUrl: '/board/a-frontend.svg',
     label: 'Frontend',

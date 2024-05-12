@@ -14,19 +14,19 @@ import ReactFlow, {
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { v4 as uuidv4 } from 'uuid'
-import ConnexionLine from './components/ConnectionLine'
-import CustomEdgeWrapper from './components/CustomEdge'
-import CustomNode from './components/CustomNode/index'
-import DraggableGhost from './components/DraggableGhost/index'
-import DroppableArea from './components/DroppableArea/index'
-import FitToView from './components/FitToView/index'
-import { NO_DRAG_REACTFLOW_CLASS, TCustomNode } from './constants'
+import DroppableArea from '../../../../components/DroppableArea/index'
 import {
   deepCopy,
   getInitialBoardData,
   handleDeleteNode,
   storeInLocal,
-} from './helpers'
+} from '../../helpers'
+import ConnexionLine from './components/ConnectionLine'
+import CustomEdgeWrapper from './components/CustomEdge'
+import CustomNode from './components/CustomNode/index'
+import DraggableGhost from './components/DraggableGhost/index'
+import FitToView from './components/FitToView/index'
+import { NO_DRAG_REACTFLOW_CLASS, TCustomNode } from './constants'
 
 interface Props {
   boardId: string

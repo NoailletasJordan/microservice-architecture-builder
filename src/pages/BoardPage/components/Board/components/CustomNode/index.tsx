@@ -22,9 +22,9 @@ import {
   TCustomNode,
   serviceConfig,
 } from '../../constants'
-import { DraggableModuleComponent } from '../ModuleComponent'
 import AddModuleMenu from './components/AddModuleMenu/index'
 import DeleteButton from './components/DeleteButton'
+import { DraggableModuleComponent } from './components/ModuleComponent'
 import SubServiceComponent from './components/SubServiceComponent'
 
 const MAX_MODULES_PER_SERVICE = 6
@@ -130,12 +130,12 @@ export default function CustomNode(props: NodeProps<Datatype>) {
             </Text>
 
             <SimpleGrid cols={6}>
-              {props.data.modules.map((module) => (
-                <DraggableModuleComponent key={module.id} module={module} />
-              ))}
               {props.data.modules.length < MAX_MODULES_PER_SERVICE && (
                 <AddModuleMenu serviceId={props.id} />
               )}
+              {props.data.modules.map((module) => (
+                <DraggableModuleComponent key={module.id} module={module} />
+              ))}
             </SimpleGrid>
           </Stack>
         </Card.Section>

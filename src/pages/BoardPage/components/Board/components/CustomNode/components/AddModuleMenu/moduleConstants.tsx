@@ -6,17 +6,18 @@ export type ModuleType = 'markdown'
 export type ModuleConfigData = {
   label: string
   icon: JSX.Element
-  getNew: () => Module
+  getNew: (parentId: Module['id']) => Module
 }
 export const moduleConfig: Record<ModuleType, ModuleConfigData> = {
   markdown: {
     label: 'Markdown',
     icon: <IconMarkdown size="md" stroke={1.5} />,
-    getNew: () => {
+    getNew: (parentId) => {
       return {
         id: v4(),
         data: {},
         moduleType: 'markdown',
+        parentId,
       }
     },
   },

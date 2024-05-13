@@ -1,7 +1,7 @@
 import { Box, Image, Paper, Stack, Title } from '@mantine/core'
 import DraggableArea from '../../../../../../components/DraggableArea'
 import {
-  DroppableData,
+  DraggableData,
   ServiceIdType,
   serviceConfig,
 } from '../../../Board/constants'
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default function DraggableDashboardCard({ serviceIdType }: Props) {
-  const draggableProps: DroppableData = {
+  const draggableProps: DraggableData = {
     draggableType: 'dashboard-item',
     node: {
       id: serviceIdType,

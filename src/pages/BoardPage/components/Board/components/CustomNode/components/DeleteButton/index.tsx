@@ -1,7 +1,8 @@
 import { useDndContext } from '@dnd-kit/core'
 import { ActionIcon } from '@mantine/core'
 import { IconTrash } from '@tabler/icons-react'
-import { SubService } from '../../../../constants'
+import { CSSProperties } from 'react'
+import { DraggableData } from '../../../../constants'
 
 interface Props {
   onClick: () => void
@@ -19,21 +20,23 @@ const TRANSFORM_STYLE = {
 export default function DeleteButton({
   onClick,
   parentId,
-  isOver: subserviceIsOver,
+  isOver: elementIsOverDeleteButton,
 }: Props) {
   const { active } = useDndContext()
 
-  const current = active?.data.current as SubService | undefined
-  const siblingSubServiceIsDragged = current?.parentId === parentId
-  const style = {
-    transform: `${
-      subserviceIsOver
-        ? TRANSFORM_STYLE.isDraggedOver
-        : siblingSubServiceIsDragged
-        ? TRANSFORM_STYLE.isDragged
-        : ''
-    }
-`,
+  const current = active?.data.current as DraggableData | undefined
+
+  const someElementIsDragged = !!current
+
+  const style: CSSProperties = {}
+  if (someElementIsDragged) {
+    const elementIsFromSameService =
+      'parentId' in current.node && current.node.parentId === parentId
+    style.transform = elementIsOverDeleteButton
+      ? TRANSFORM_STYLE.isDraggedOver
+      : elementIsFromSameService
+      ? TRANSFORM_STYLE.isDragged
+      : ''
   }
 
   return (

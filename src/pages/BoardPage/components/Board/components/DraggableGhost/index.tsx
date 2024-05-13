@@ -1,13 +1,13 @@
 import { DragOverlay, useDndContext } from '@dnd-kit/core'
 import DashboardCard from '../../../DashBoard/components/DashboardCard'
-import { DroppableData } from '../../constants'
+import { DraggableData } from '../../constants'
+import { ModuleComponent } from '../CustomNode/components/ModuleComponent'
 import SubServiceComponent from '../CustomNode/components/SubServiceComponent'
-import { ModuleComponent } from '../ModuleComponent'
 
 export default function DraggableGhost() {
   const { active } = useDndContext()
 
-  const current = active?.data.current as DroppableData | undefined
+  const current = active?.data.current as DraggableData | undefined
   if (!current) return null
 
   let component = null

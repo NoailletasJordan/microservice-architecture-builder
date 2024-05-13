@@ -1,4 +1,4 @@
-import { ActionIcon, Menu, ThemeIcon } from '@mantine/core'
+import { ActionIcon, Box, Menu, ThemeIcon } from '@mantine/core'
 import { IconCubePlus } from '@tabler/icons-react'
 import { useReactFlow } from 'reactflow'
 import { deepCopy } from '../../../../../../helpers'
@@ -14,7 +14,7 @@ export default function AddModuleMenu({ serviceId }: Props) {
   const targettedService = flowInstance.getNode(serviceId) as TCustomNode
 
   const handleAddModule = (moduleType: ModuleType) => () => {
-    const newModule = moduleConfig[moduleType].getNew()
+    const newModule = moduleConfig[moduleType].getNew(serviceId)
     const targettedServiceCopy = deepCopy(targettedService)
     targettedServiceCopy.data.modules.push(newModule)
     flowInstance.setNodes((nodes) =>
@@ -27,14 +27,16 @@ export default function AddModuleMenu({ serviceId }: Props) {
   return (
     <Menu shadow="md" width={200}>
       <Menu.Target>
-        <ActionIcon
-          variant="filled"
-          aria-label="Settings"
-          size="sm"
-          className={NO_DRAG_REACTFLOW_CLASS}
-        >
-          <IconCubePlus size="md" stroke={1.5} />
-        </ActionIcon>
+        <Box>
+          <ActionIcon
+            variant="filled"
+            aria-label="Settings"
+            size="sm"
+            className={NO_DRAG_REACTFLOW_CLASS}
+          >
+            <IconCubePlus size="md" stroke={1.5} />
+          </ActionIcon>
+        </Box>
       </Menu.Target>
 
       <Menu.Dropdown>

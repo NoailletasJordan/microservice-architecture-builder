@@ -12,10 +12,11 @@ export interface Module {
   id: string
   moduleType: keyof typeof moduleConfig
   data: any
+  parentId: Datatype['id']
 }
 
 export type SubService = Omit<Datatype, 'subServices' | 'modules'> & {
-  parentId: string
+  parentId: Datatype['id']
 }
 
 export type TCustomNode = Node<Datatype>
@@ -28,7 +29,7 @@ type DASHBOARD_ITEM_KEY = 'dashboard-item'
 type MODULE_KEY = 'module'
 export type DraggableType = SUBSERVICE_KEY | DASHBOARD_ITEM_KEY | MODULE_KEY
 
-export type DroppableData =
+export type DraggableData =
   | {
       draggableType: SUBSERVICE_KEY
       node: SubService

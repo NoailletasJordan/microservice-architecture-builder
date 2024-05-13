@@ -1,12 +1,12 @@
 import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import { ReactNode } from 'react'
-import { DroppableData } from '../../pages/BoardPage/components/Board/constants'
+import { DraggableData } from '../../pages/BoardPage/components/Board/constants'
 
 interface Props {
   id: string
   // This will be passed in handler's event (ie. onDragEnd etc)
-  data: DroppableData
+  data: DraggableData
 
   children:
     | ReactNode

@@ -1,13 +1,13 @@
 import { Box, Image } from '@mantine/core'
 import DraggableArea from '../../../../../../../../components/DraggableArea'
-import { DroppableData, SubService, serviceConfig } from '../../../../constants'
+import { DraggableData, SubService, serviceConfig } from '../../../../constants'
 
 interface Props {
   subService: SubService
 }
 
 export default function SubServiceComponent({ subService }: Props) {
-  const draggableProps: DroppableData = {
+  const draggableProps: DraggableData = {
     draggableType: 'subService',
     node: subService,
   }

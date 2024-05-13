@@ -1,18 +1,11 @@
-import {
-  Box,
-  Center,
-  Flex,
-  Image,
-  ScrollArea,
-  Stack,
-  Title,
-} from '@mantine/core'
+import { Box, Center, Flex, Image, Stack, Title } from '@mantine/core'
 import { useViewportSize } from '@mantine/hooks'
 import { IconChevronsLeft, IconChevronsRight } from '@tabler/icons-react'
 import { useContext, useEffect, useRef } from 'react'
 import { useNodes } from 'reactflow'
 import selectedNodeContext from '../../../../selectedNodeContext'
-import { TCustomNode, serviceConfig } from '../Board/constants'
+import { Datatype, TCustomNode, serviceConfig } from '../Board/constants'
+import Modules from './components/Modules/index'
 import NoServiceSelected from './components/NoServiceSelected'
 
 const MODULE_SECTION_WIDTH_PX = 300
@@ -26,25 +19,23 @@ export default function AsideModules({
   asideIsOpened,
   toggleAsideIsOpened,
 }: Props) {
-  const nodes = useNodes<TCustomNode>()
-  const { node: selectedNode, setNode: setSelectedNode } =
+  const nodes = useNodes<Datatype>()
+  const { serviceId: selectedServiceId, setServiceId: setSelectedServiceId } =
     useContext(selectedNodeContext)
+  let selectedNode: TCustomNode | undefined
+  if (selectedServiceId)
+    selectedNode = nodes.find(({ id }) => id === selectedServiceId)
 
   // remove SelectedNode if node got removed
   useEffect(() => {
-    if (!selectedNode) return
+    if (!selectedServiceId) return
     const focusedServiceGotRemoved = !nodes.find(
-      ({ id }) => id === selectedNode.data.id,
+      ({ id }) => id === selectedServiceId,
     )
-    if (focusedServiceGotRemoved) setSelectedNode(null)
-  }, [nodes, selectedNode, setSelectedNode])
+    if (focusedServiceGotRemoved) setSelectedServiceId(null)
+  }, [nodes, selectedServiceId, setSelectedServiceId])
 
   const { height: viewportHeight } = useViewportSize()
-
-  const scrollerRef = useRef<HTMLDivElement | null>(null)
-  const { top: scrollableYposition } =
-    scrollerRef?.current?.getBoundingClientRect?.() || {}
-  const scrollableHeight = viewportHeight - Number(scrollableYposition)
 
   const asideRef = useRef<HTMLDivElement | null>(null)
   const { top: asideYposition } =
@@ -87,23 +78,10 @@ export default function AsideModules({
                 </Title>
               </Box>
 
-              <div ref={scrollerRef}>
-                <ScrollArea h={scrollableHeight}>
-                  <Stack>
-                    {selectedNode.data.modules.map((module) => (
-                      <Center
-                        key={module.id}
-                        style={{
-                          border: '1px solid red',
-                        }}
-                        p="lg"
-                      >
-                        <Box>Module </Box>
-                      </Center>
-                    ))}
-                  </Stack>
-                </ScrollArea>
-              </div>
+              <Modules
+                serviceId={selectedNode.id}
+                modules={selectedNode.data.modules}
+              />
             </Stack>
           )}
         </Box>

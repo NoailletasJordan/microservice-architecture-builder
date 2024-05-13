@@ -31,12 +31,12 @@ const MAX_MODULES_PER_SERVICE = 6
 
 export default function CustomNode(props: NodeProps<Datatype>) {
   const flowInstance = useReactFlow()
-  const { setNode: setSelectedNode, openSelectedNodeSection } =
+  const { setServiceId: setSelectedServiceId, openSelectedNodeSection } =
     useContext(selectedNodeContext)
 
   const addNodeToContext = () => {
     const selectedNode = flowInstance.getNode(props.data.id) as TCustomNode
-    setSelectedNode(selectedNode)
+    setSelectedServiceId(selectedNode.id)
     openSelectedNodeSection()
   }
 

@@ -10,7 +10,7 @@ interface Props {
   serviceIdType: ServiceIdType
 }
 
-export default function DraggableDashboardCard({ serviceIdType }: Props) {
+export function DraggableDashboardCard({ serviceIdType }: Props) {
   const draggableProps: DraggableData = {
     draggableType: 'dashboard-item',
     node: {
@@ -23,25 +23,25 @@ export default function DraggableDashboardCard({ serviceIdType }: Props) {
 
   return (
     <DraggableArea id={serviceIdType} data={draggableProps}>
-      {(dragData) => (
-        <Paper
-          withBorder
-          p="md"
-          style={{ cursor: dragData.isDragging ? 'grabbing' : 'grab' }}
-        >
-          <Stack align="center" gap="xs">
-            <Box pos="relative">
-              <Image w="4rem" src={serviceConfig[serviceIdType].imageUrl} />
-              <Box pos="absolute" right="-.3rem" bottom="-1.0rem">
-                <Image w="1.3rem" src="/board/plus-circle.svg" />
-              </Box>
-            </Box>
-            <Title variant="fill" order={5}>
-              {serviceConfig[serviceIdType].label}
-            </Title>
-          </Stack>
-        </Paper>
-      )}
+      <DashboardCard serviceIdType={serviceIdType} />
     </DraggableArea>
+  )
+}
+
+export function DashboardCard({ serviceIdType }: Props) {
+  return (
+    <Paper withBorder p="md">
+      <Stack align="center" gap="xs">
+        <Box pos="relative">
+          <Image w="4rem" src={serviceConfig[serviceIdType].imageUrl} />
+          <Box pos="absolute" right="-.3rem" bottom="-1.0rem">
+            <Image w="1.3rem" src="/board/plus-circle.svg" />
+          </Box>
+        </Box>
+        <Title variant="fill" order={5}>
+          {serviceConfig[serviceIdType].label}
+        </Title>
+      </Stack>
+    </Paper>
   )
 }

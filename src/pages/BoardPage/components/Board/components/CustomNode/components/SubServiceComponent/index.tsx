@@ -6,7 +6,7 @@ interface Props {
   subService: SubService
 }
 
-export default function SubServiceComponent({ subService }: Props) {
+export function DraggableSubServiceComponent({ subService }: Props) {
   const draggableProps: DraggableData = {
     draggableType: 'subService',
     node: subService,
@@ -14,14 +14,20 @@ export default function SubServiceComponent({ subService }: Props) {
 
   return (
     <DraggableArea id={subService.id} data={draggableProps}>
-      <Box style={{ border: '1px solid red' }}>
-        <Image
-          h="1.8rem"
-          w="1.8rem"
-          src={serviceConfig[subService.serviceIdType]?.imageUrl}
-          alt="props.data.imageUrl"
-        />
-      </Box>
+      <SubServiceComponent subService={subService} />
     </DraggableArea>
+  )
+}
+
+export function SubServiceComponent({ subService }: Props) {
+  return (
+    <Box style={{ border: '1px solid red' }}>
+      <Image
+        h="1.8rem"
+        w="1.8rem"
+        src={serviceConfig[subService.serviceIdType]?.imageUrl}
+        alt="props.data.imageUrl"
+      />
+    </Box>
   )
 }

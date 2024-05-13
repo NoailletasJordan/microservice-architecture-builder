@@ -75,15 +75,16 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
         break
       }
       case 'subService': {
-        const droppedInOriginalNode = draggedData.parentId === targetId
+        const draggedSubService = draggedData
+        const droppedInOriginalNode = draggedSubService.parentId === targetId
         if (droppedInOriginalNode) break
 
         targetNode.data.subServices = [
           ...targetNode.data.subServices,
-          { ...draggedData, parentId: targetNode.id },
+          { ...draggedSubService, parentId: targetNode.id },
         ]
 
-        handleDeleteSubservice(draggedData.id, flowInstance)
+        handleDeleteSubservice(draggedSubService.id, flowInstance)
         setTimeout(() => {
           flowInstance.setNodes((oldNodes) =>
             oldNodes.map((compNode) => {
@@ -96,7 +97,10 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
       case 'module': {
         const draggedModule = draggedData
         const droppedInOriginalNode = draggedModule.parentId === targetId
-        if (droppedInOriginalNode) break
+        const moduleAlreadyPresentInTarget = !!targetNode.data.modules.find(
+          (m) => m.moduleType === draggedModule.moduleType,
+        )
+        if (droppedInOriginalNode || moduleAlreadyPresentInTarget) break
 
         targetNode.data.modules = [
           ...targetNode.data.modules,

@@ -23,9 +23,9 @@ export default function BoardPage() {
 
   const [nodeAsideContext, setNodeAsideContext] =
     useState<ISelectedNodeContext>({
-      node: null,
-      setNode: (newId) => {
-        setNodeAsideContext({ ...nodeAsideContext, node: newId })
+      serviceId: null,
+      setServiceId: (newId) => {
+        setNodeAsideContext((context) => ({ ...context, serviceId: newId }))
       },
       openSelectedNodeSection,
     })

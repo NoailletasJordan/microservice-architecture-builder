@@ -1,16 +1,16 @@
 import { createContext } from 'react'
-import { TCustomNode } from './pages/BoardPage/components/Board/constants'
+import { Datatype } from './pages/BoardPage/components/Board/constants'
 
 export type ID = string | null
 export interface ISelectedNodeContext {
-  node: TCustomNode | null
-  setNode: (node: TCustomNode | null) => void
+  serviceId: Datatype['id'] | null
+  setServiceId: (node: Datatype['id'] | null) => void
   openSelectedNodeSection: () => void
 }
 
 const selectedNodeContext = createContext<ISelectedNodeContext>({
-  node: null,
-  setNode: () => null,
+  serviceId: null,
+  setServiceId: () => null,
   openSelectedNodeSection: () => null,
 })
 

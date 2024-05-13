@@ -1,8 +1,9 @@
 import { DragOverlay, useDndContext } from '@dnd-kit/core'
-import DashboardCard from '../../../DashBoard/components/DashboardCard'
+import { Box } from '@mantine/core'
+import { DashboardCard } from '../../../DashBoard/components/DashboardCard'
 import { DraggableData } from '../../constants'
 import { ModuleComponent } from '../CustomNode/components/ModuleComponent'
-import SubServiceComponent from '../CustomNode/components/SubServiceComponent'
+import { SubServiceComponent } from '../CustomNode/components/SubServiceComponent'
 
 export default function DraggableGhost() {
   const { active } = useDndContext()
@@ -23,5 +24,9 @@ export default function DraggableGhost() {
       break
   }
 
-  return <DragOverlay>{component}</DragOverlay>
+  return (
+    <DragOverlay>
+      <Box style={{ cursor: 'grabbing' }}>{component}</Box>
+    </DragOverlay>
+  )
 }

@@ -28,6 +28,7 @@ export default function DraggableArea({ id, data, children }: Props) {
       style={{
         transform: CSS.Transform.toString(draggableData.transform),
         opacity: draggableData.isDragging ? 0 : 1, // Using DragOverlay instead
+        cursor: 'grab',
       }}
       {...draggableData.listeners}
       {...draggableData.attributes}

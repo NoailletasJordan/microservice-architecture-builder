@@ -25,7 +25,7 @@ import {
 import AddModuleMenu from './components/AddModuleMenu/index'
 import DeleteButton from './components/DeleteButton'
 import { DraggableModuleComponent } from './components/ModuleComponent'
-import SubServiceComponent from './components/SubServiceComponent'
+import { DraggableSubServiceComponent } from './components/SubServiceComponent'
 
 const MAX_MODULES_PER_SERVICE = 6
 
@@ -93,7 +93,10 @@ export default function CustomNode(props: NodeProps<Datatype>) {
 
             <SimpleGrid cols={3} verticalSpacing="xs" spacing="xs">
               {props.data.subServices.map((subService: SubService) => (
-                <SubServiceComponent key={v4()} subService={subService} />
+                <DraggableSubServiceComponent
+                  key={v4()}
+                  subService={subService}
+                />
               ))}
             </SimpleGrid>
           </Group>

@@ -1,5 +1,4 @@
 import { Edge, Node } from 'reactflow'
-import { moduleConfig } from './components/CustomNode/components/AddModuleMenu/moduleConstants'
 
 export interface Datatype {
   id: string
@@ -8,12 +7,30 @@ export interface Datatype {
   modules: Module[]
 }
 
-export interface Module {
+export interface IModuleRichText {
   id: string
-  moduleType: keyof typeof moduleConfig
-  data: any
   parentId: Datatype['id']
+  moduleType: 'markdown'
+  data: {
+    text: string
+  }
 }
+
+export interface IModuleEndpoint {
+  id: string
+  parentId: Datatype['id']
+  moduleType: 'endpoints'
+  data: IEndpointData
+}
+
+export type IEndpointData = {
+  endpoints: {
+    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+    address: string
+  }[]
+}
+
+export type Module = IModuleRichText | IModuleEndpoint
 
 export type SubService = Omit<Datatype, 'subServices' | 'modules'> & {
   parentId: Datatype['id']
@@ -24,7 +41,6 @@ export type TCustomNode = Node<Datatype>
 export type DroppableType = 'delete' | 'board' | 'node'
 
 type SUBSERVICE_KEY = 'subService'
-// todo camelcase
 type DASHBOARD_ITEM_KEY = 'dashboard-item'
 type MODULE_KEY = 'module'
 export type DraggableType = SUBSERVICE_KEY | DASHBOARD_ITEM_KEY | MODULE_KEY

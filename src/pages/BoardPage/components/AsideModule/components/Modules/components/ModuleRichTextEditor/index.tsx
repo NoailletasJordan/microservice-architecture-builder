@@ -1,4 +1,4 @@
-import { Module } from '@/pages/BoardPage/components/Board/constants'
+import { IModuleRichText } from '@/pages/BoardPage/components/Board/constants'
 import { deepCopy } from '@/pages/BoardPage/helpers'
 import { Link, RichTextEditor, getTaskListExtension } from '@mantine/tiptap'
 import Highlight from '@tiptap/extension-highlight'
@@ -10,12 +10,12 @@ import { useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 
 interface Props {
-  updateModule: (newModule: Module) => void
-  module: Module
+  updateModule: (newModule: IModuleRichText) => void
+  module: IModuleRichText
 }
 
 const DEFAULT_TEXT =
-  '<h3 style="text-align: center">Service</h3><p><strong>Here some description...?</strong></p><ul><li><p>General text formatting: <strong>bold</strong>, <em>italic</em>, <u>underline</u>, <s>strike-through</s></p></li></ul><ul class="m_8b44009a mantine-RichTextEditor-taskList" data-type="taskList"><li class="test-item" data-checked="true" data-type="taskItem"><label><input type="checkbox" checked="checked"><span></span></label><div><p><strong>Task 1</strong></p></div></li><li class="test-item" data-checked="false" data-type="taskItem"><label><input type="checkbox"><span></span></label><div><p><s>Task 2</s></p></div></li></ul>'
+  '<h3 style="text-align: center">Note</h3><p><strong>Here some description...</strong></p><ul class="m_8b44009a mantine-RichTextEditor-taskList" data-type="taskList"><li class="test-item" data-checked="true" data-type="taskItem"><label><input type="checkbox" checked="checked"><span></span></label><div><p><strong>Routing</strong></p><ul class="m_8b44009a mantine-RichTextEditor-taskList" data-type="taskList"><li class="test-item" data-checked="true" data-type="taskItem"><label><input type="checkbox" checked="checked"><span></span></label><div><p>Homepage</p></div></li><li class="test-item" data-checked="true" data-type="taskItem"><label><input type="checkbox" checked="checked"><span></span></label><div><p>Dashboard</p></div></li></ul></div></li></ul><p>To continue...</p>'
 
 export default function RichText({ module, updateModule }: Props) {
   const editor = useEditor({

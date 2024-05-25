@@ -42,7 +42,10 @@ export default function DeleteButton({
   return (
     <div style={{ ...style, transition: 'all 0.3s ease' }}>
       <ActionIcon
-        onClick={onClick}
+        onClick={(event) => {
+          event.stopPropagation()
+          onClick()
+        }}
         variant="filled"
         color="red"
         aria-label="Settings"

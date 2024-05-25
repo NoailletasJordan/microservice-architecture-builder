@@ -1,6 +1,11 @@
 import { ReactFlowInstance, XYPosition } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
-import { Module, ServiceIdType } from './components/Board/constants'
+import {
+  Datatype,
+  Module,
+  ServiceIdType,
+  serviceConfig,
+} from './components/Board/constants'
 
 import {
   ILocalStorage,
@@ -13,11 +18,12 @@ import {
 export const getNewNode = ({
   serviceIdType,
   position,
+  ...initialService
 }: {
   serviceIdType: ServiceIdType
   position: XYPosition
-}): TCustomNode => {
-  const nodeID = uuidv4()
+} & Partial<Datatype>): TCustomNode => {
+  const nodeID = initialService.id || uuidv4()
   return {
     id: nodeID,
     type: 'service',
@@ -25,20 +31,19 @@ export const getNewNode = ({
     data: {
       id: nodeID,
       serviceIdType,
+      technology: serviceConfig[serviceIdType].defaultTechnology,
       subServices: [],
       modules: [],
+      ...initialService,
     },
   }
 }
-export const addNewNode = (
-  serviceIdType: ServiceIdType,
+
+export const handleAddNode = (
+  newNode: TCustomNode,
   flowInstance: ReactFlowInstance,
-  position: XYPosition,
 ) => {
-  flowInstance.setNodes((oldNodes: TCustomNode[]) => [
-    ...oldNodes,
-    getNewNode({ serviceIdType, position }),
-  ])
+  flowInstance.setNodes((oldNodes: TCustomNode[]) => [...oldNodes, newNode])
 }
 
 export const getInitialBoardData = (boardId: string): ILocalStorage => {
@@ -102,6 +107,18 @@ export const handleDeleteModule = (
       newCompNode.data.modules = filteredModules
 
       return newCompNode
+    }),
+  )
+}
+
+export const handleUpdateNode = (
+  serviceId: string,
+  newNode: TCustomNode,
+  flowInstance: ReactFlowInstance,
+): void => {
+  flowInstance.setNodes((oldNodes) =>
+    oldNodes.map((compNode) => {
+      return compNode.id === serviceId ? deepCopy(newNode) : compNode
     }),
   )
 }

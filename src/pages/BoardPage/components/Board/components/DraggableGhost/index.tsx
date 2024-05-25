@@ -3,7 +3,7 @@ import { Box } from '@mantine/core'
 import { DashboardCard } from '../../../DashBoard/components/DashboardCard'
 import { DraggableData } from '../../constants'
 import { ModuleComponent } from '../CustomNode/components/ModuleComponent'
-import { SubServiceComponent } from '../CustomNode/components/SubServiceComponent'
+import { SubServiceComponent } from '../CustomNode/components/SubServicesSection/components/SubServiceComponent'
 
 export default function DraggableGhost() {
   const { active } = useDndContext()

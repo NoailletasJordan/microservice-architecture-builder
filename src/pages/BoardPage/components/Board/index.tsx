@@ -1,5 +1,5 @@
 import { useWindowEvent } from '@mantine/hooks'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import ReactFlow, {
   Connection,
   ConnectionMode,
@@ -23,7 +23,7 @@ import {
 } from '../../helpers'
 import ConnexionLine from './components/ConnectionLine'
 import CustomEdgeWrapper from './components/CustomEdge'
-import CustomNode from './components/CustomNode/index'
+import CustomNode from './components/CustomNode'
 import DraggableGhost from './components/DraggableGhost/index'
 import FitToView from './components/FitToView/index'
 import { NO_DRAG_REACTFLOW_CLASS, TCustomNode } from './constants'
@@ -45,9 +45,13 @@ export default function Board({ boardId }: Props) {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
 
   const [targetedEdge, setTargetedEdge] = useState<string | null>(null)
-  const edgeTypes: EdgeTypes = {
-    custom: CustomEdgeWrapper({ targetedEdge }),
-  }
+  const edgeTypes: EdgeTypes = useMemo(
+    () => ({
+      custom: CustomEdgeWrapper({ targetedEdge }),
+    }),
+    [targetedEdge],
+  )
+
   const flowInstance = useReactFlow()
 
   const onNodeDragEnd: NodeDragHandler = (_event, node: TCustomNode) => {

@@ -1,10 +1,11 @@
 import selectedNodeContext from '@/selectedNodeContext'
-import { ActionIcon, Box, Menu, ThemeIcon } from '@mantine/core'
+import { ActionIcon, Menu, ThemeIcon } from '@mantine/core'
 import { IconCubePlus } from '@tabler/icons-react'
 import { useContext } from 'react'
 import { useReactFlow } from 'reactflow'
 import { deepCopy } from '../../../../../../helpers'
 import { NO_DRAG_REACTFLOW_CLASS, TCustomNode } from '../../../../constants'
+import DividerWrapper from '../DividerWrapper/index'
 import { ModuleType, moduleConfig } from './moduleConstants'
 
 interface Props {
@@ -17,7 +18,7 @@ export default function AddModuleMenu({ serviceId }: Props) {
   const flowInstance = useReactFlow()
   const targettedService = flowInstance.getNode(serviceId) as TCustomNode
 
-  const handleAddModule = (moduleType: ModuleType) => () => {
+  const handleAddModule = (moduleType: ModuleType) => {
     const newModule = moduleConfig[moduleType].getNew(serviceId)
     const targettedServiceCopy = deepCopy(targettedService)
     targettedServiceCopy.data.modules.push(newModule)
@@ -32,9 +33,10 @@ export default function AddModuleMenu({ serviceId }: Props) {
 
   return (
     <Menu shadow="md" width={200}>
-      <Menu.Target>
-        <Box>
+      <DividerWrapper>
+        <Menu.Target>
           <ActionIcon
+            onClick={(event) => event.stopPropagation()}
             variant="filled"
             aria-label="Settings"
             size="sm"
@@ -42,9 +44,8 @@ export default function AddModuleMenu({ serviceId }: Props) {
           >
             <IconCubePlus size="md" stroke={1.5} />
           </ActionIcon>
-        </Box>
-      </Menu.Target>
-
+        </Menu.Target>
+      </DividerWrapper>
       <Menu.Dropdown>
         <Menu.Label>Add a module</Menu.Label>
         {Object.entries(moduleConfig).map(([moduleType, { label, icon }]) => {
@@ -55,7 +56,7 @@ export default function AddModuleMenu({ serviceId }: Props) {
             <Menu.Item
               disabled={moduleAlreadyPresent}
               key={moduleType}
-              onClick={handleAddModule(moduleType as ModuleType)}
+              onClick={() => handleAddModule(moduleType as ModuleType)}
               leftSection={
                 <ThemeIcon
                   variant="filled"

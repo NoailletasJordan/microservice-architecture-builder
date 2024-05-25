@@ -1,6 +1,10 @@
+import DraggableArea from '@/components/DraggableArea'
+import {
+  DraggableData,
+  SubService,
+  serviceConfig,
+} from '@/pages/BoardPage/components/Board/constants'
 import { Box, Image } from '@mantine/core'
-import DraggableArea from '../../../../../../../../components/DraggableArea'
-import { DraggableData, SubService, serviceConfig } from '../../../../constants'
 
 interface Props {
   subService: SubService

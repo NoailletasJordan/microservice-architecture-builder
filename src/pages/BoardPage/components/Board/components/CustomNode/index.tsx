@@ -1,16 +1,16 @@
 import {
-  Badge,
   Card,
+  Flex,
   Group,
   Image,
   SimpleGrid,
-  Stack,
+  Space,
   Text,
 } from '@mantine/core'
 import { Handle, NodeProps, Position, useReactFlow } from 'reactflow'
-import { v4 } from 'uuid'
 
 import { handleDeleteNode } from '@/pages/BoardPage/helpers'
+import { Box } from '@mantine/core'
 import { useContext } from 'react'
 import DroppableArea from '../../../../../../components/DroppableArea/index'
 import selectedNodeContext from '../../../../../../selectedNodeContext'
@@ -18,26 +18,24 @@ import {
   CARD_WIDTH,
   Datatype,
   NO_DRAG_REACTFLOW_CLASS,
-  SubService,
   TCustomNode,
   serviceConfig,
 } from '../../constants'
 import AddModuleMenu from './components/AddModuleMenu/index'
 import DeleteButton from './components/DeleteButton'
 import { DraggableModuleComponent } from './components/ModuleComponent'
-import { DraggableSubServiceComponent } from './components/SubServiceComponent'
+import SubServiceSection from './components/SubServicesSection'
+import TechnologieSelector from './components/TechnologieSelector'
 
 const MAX_MODULES_PER_SERVICE = 6
 
 export default function CustomNode(props: NodeProps<Datatype>) {
   const flowInstance = useReactFlow()
-  const { setServiceId: setSelectedServiceId, openSelectedNodeSection } =
-    useContext(selectedNodeContext)
+  const { setServiceId: setSelectedServiceId } = useContext(selectedNodeContext)
 
   const addNodeToContext = () => {
     const selectedNode = flowInstance.getNode(props.data.id) as TCustomNode
     setSelectedServiceId(selectedNode.id)
-    openSelectedNodeSection()
   }
 
   return (
@@ -48,20 +46,22 @@ export default function CustomNode(props: NodeProps<Datatype>) {
       }}
     >
       <Card
+        onClick={addNodeToContext}
         shadow="sm"
         radius="md"
         withBorder
-        miw={CARD_WIDTH}
-        maw={CARD_WIDTH}
+        w={CARD_WIDTH}
         pos="relative"
       >
         <Card.Section>
           <Group
-            justify="flex-end"
+            align="center"
+            justify="space-between"
             p="xs"
-            style={{ backgroundColor: '#ccc' }}
+            bg="#ccc"
             h="2.5rem"
           >
+            <Text>{serviceConfig[props.data.serviceIdType].label}</Text>
             <DroppableArea
               id={`${props.id}-delete`}
               data={{
@@ -81,34 +81,39 @@ export default function CustomNode(props: NodeProps<Datatype>) {
         </Card.Section>
         <Card.Section
           p="md"
+          pb="xs"
           className={NO_DRAG_REACTFLOW_CLASS}
           style={{ cursor: 'default' }}
         >
-          <Group align="flex-end" gap="xs">
+          <Flex align="flex-end" gap="xs">
             <Image
-              h={70}
+              h={50}
               src={serviceConfig[props.data.serviceIdType].imageUrl}
               alt={props.data.serviceIdType}
             />
+            <Box>
+              <TechnologieSelector service={props.data} />
+            </Box>
+          </Flex>
+          <Space h="md" />
 
-            <SimpleGrid cols={3} verticalSpacing="xs" spacing="xs">
-              {props.data.subServices.map((subService: SubService) => (
-                <DraggableSubServiceComponent
-                  key={v4()}
-                  subService={subService}
-                />
+          {!!props.data.subServices.length && (
+            <Box>
+              <SubServiceSection subServices={props.data.subServices} />
+              <Space h="md" />
+            </Box>
+          )}
+
+          <Box>
+            {props.data.modules.length < MAX_MODULES_PER_SERVICE && (
+              <AddModuleMenu serviceId={props.id} />
+            )}
+            <SimpleGrid cols={6} verticalSpacing="xs" spacing="xs">
+              {props.data.modules.map((module) => (
+                <DraggableModuleComponent key={module.id} module={module} />
               ))}
             </SimpleGrid>
-          </Group>
-
-          <Group justify="space-between" mt="md" mb="xs">
-            <Text fw={500}>
-              {serviceConfig[props.data.serviceIdType].label}
-            </Text>
-            {/* TODO */}
-            <Badge color="red">Status</Badge>
-          </Group>
-
+          </Box>
           <Handle
             style={{ width: 20, height: 20 }}
             type="source"
@@ -121,26 +126,6 @@ export default function CustomNode(props: NodeProps<Datatype>) {
             position={Position.Right}
             id="r"
           />
-
-          <Stack align="flex-start">
-            <Text
-              onClick={addNodeToContext}
-              fw={500}
-              c="blue"
-              style={{ cursor: 'pointer' }}
-            >
-              {'Modules >'}
-            </Text>
-
-            <SimpleGrid cols={6}>
-              {props.data.modules.length < MAX_MODULES_PER_SERVICE && (
-                <AddModuleMenu serviceId={props.id} />
-              )}
-              {props.data.modules.map((module) => (
-                <DraggableModuleComponent key={module.id} module={module} />
-              ))}
-            </SimpleGrid>
-          </Stack>
         </Card.Section>
       </Card>
     </DroppableArea>

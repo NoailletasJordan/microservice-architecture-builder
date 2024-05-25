@@ -1,8 +1,19 @@
 import { Edge, Node } from 'reactflow'
+import {
+  TechnologiesKeys,
+  TechnologiesValue,
+  technologyAuthService,
+  technologyDatabases,
+  technologyEmailService,
+  technologyFrontend,
+  technologyPayment,
+  technologyServer,
+} from './components/CustomNode/components/TechnologieSelector/technologies-constant'
 
 export interface Datatype {
   id: string
   serviceIdType: ServiceIdType
+  technology: TechnologiesKeys
   subServices: SubService[]
   modules: Module[]
 }
@@ -76,32 +87,46 @@ export type ServiceIdType =
 type ServiceConfigValue = {
   imageUrl: string
   label: string
+  technologies: Record<string, TechnologiesValue>
+  defaultTechnology: TechnologiesKeys
 }
 
 export const serviceConfig: Record<ServiceIdType, ServiceConfigValue> = {
   frontend: {
     imageUrl: '/board/a-frontend.svg',
     label: 'Frontend',
+    technologies: technologyFrontend,
+    defaultTechnology: 'React',
   },
   'service-payment': {
     imageUrl: '/board/a-payment.svg',
     label: 'Payment service',
+    technologies: technologyPayment,
+    defaultTechnology: 'Stripe',
   },
   database: {
     imageUrl: '/board/a-database.svg',
     label: 'Database',
+    technologies: technologyDatabases,
+    defaultTechnology: 'Postgres',
   },
   server: {
     imageUrl: '/board/a-server.svg',
     label: 'Server',
+    technologies: technologyServer,
+    defaultTechnology: 'Express',
   },
   'service-email': {
     imageUrl: '/board/a-email.svg',
     label: 'Email-service',
+    technologies: technologyEmailService,
+    defaultTechnology: 'SendGrid',
   },
   authentification: {
     imageUrl: '/board/a-auth.svg',
     label: 'Authentification',
+    technologies: technologyAuthService,
+    defaultTechnology: 'Auth0',
   },
 }
 
@@ -124,11 +149,13 @@ export const defaultNodes: TCustomNode[] = [
     data: {
       id: '1',
       serviceIdType: 'authentification',
+      technology: 'Auth0',
       subServices: [
         {
           id: '3',
           parentId: '1',
           serviceIdType: 'service-email',
+          technology: 'Mailgun',
         },
       ],
       modules: [],
@@ -140,6 +167,7 @@ export const defaultNodes: TCustomNode[] = [
     data: {
       id: '2',
       serviceIdType: 'database',
+      technology: 'Postgres',
       subServices: [],
       modules: [],
     },
@@ -147,5 +175,5 @@ export const defaultNodes: TCustomNode[] = [
   },
 ]
 
-export const CARD_WIDTH = 230
+export const CARD_WIDTH = 240
 export const NO_DRAG_REACTFLOW_CLASS = 'noDragReactflow'

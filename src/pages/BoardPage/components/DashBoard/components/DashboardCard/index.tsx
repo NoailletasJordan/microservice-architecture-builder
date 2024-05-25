@@ -16,6 +16,7 @@ export function DraggableDashboardCard({ serviceIdType }: Props) {
     node: {
       id: serviceIdType,
       serviceIdType: serviceIdType,
+      technology: serviceConfig[serviceIdType].defaultTechnology,
       modules: [],
       subServices: [],
     },

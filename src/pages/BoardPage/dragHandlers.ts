@@ -7,12 +7,14 @@ import {
   DraggableData,
   DroppableType,
   TCustomNode,
+  serviceConfig,
 } from './components/Board/constants'
 import {
-  addNewNode,
-  deepCopy,
+  getNewNode,
+  handleAddNode,
   handleDeleteModule,
   handleDeleteSubservice,
+  handleUpdateNode,
 } from './helpers'
 
 type DragEventHandler = (
@@ -35,18 +37,28 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
       .current as DraggableData
 
     switch (draggableType) {
-      case 'dashboard-item':
-        setTimeout(() => {
-          addNewNode(draggedNode.serviceIdType, flowInstance, position)
-        }, 0)
+      case 'dashboard-item': {
+        const draggedService = draggedNode
+        const newNode = getNewNode({
+          position,
+          serviceIdType: draggedService.serviceIdType,
+        })
+        handleAddNode(newNode, flowInstance)
         break
-      case 'subService':
-        handleDeleteSubservice(draggedNode.id, flowInstance)
+      }
+      case 'subService': {
+        const draggedSubService = draggedNode
+        handleDeleteSubservice(draggedSubService.id, flowInstance)
         // shameful timeout to chain with previous setNode
         setTimeout(() => {
-          addNewNode(draggedNode.serviceIdType, flowInstance, position)
+          const newNode = getNewNode({
+            position,
+            ...draggedSubService,
+          })
+          handleAddNode(newNode, flowInstance)
         }, 0)
         break
+      }
     }
   },
   node: (event, flowInstance) => {
@@ -61,17 +73,15 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
           id: v4(),
           parentId: targetId,
           serviceIdType: draggedData.serviceIdType,
+          technology:
+            serviceConfig[draggedData.serviceIdType].defaultTechnology,
         }
         targetNode.data.subServices = [
           ...targetNode.data.subServices,
           newSubService,
         ]
 
-        flowInstance.setNodes((oldNodes) =>
-          oldNodes.map((compNode) =>
-            compNode.id === targetNode.id ? deepCopy(targetNode) : compNode,
-          ),
-        )
+        handleUpdateNode(targetNode.id, targetNode, flowInstance)
         break
       }
       case 'subService': {
@@ -85,12 +95,9 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
         ]
 
         handleDeleteSubservice(draggedSubService.id, flowInstance)
+
         setTimeout(() => {
-          flowInstance.setNodes((oldNodes) =>
-            oldNodes.map((compNode) => {
-              return compNode.id === targetNode.id ? targetNode : compNode
-            }),
-          )
+          handleUpdateNode(targetNode.id, targetNode, flowInstance)
         }, 0)
         break
       }
@@ -109,11 +116,7 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
 
         handleDeleteModule(draggedModule.id, flowInstance)
         setTimeout(() => {
-          flowInstance.setNodes((oldNodes) =>
-            oldNodes.map((compNode) => {
-              return compNode.id === targetNode.id ? targetNode : compNode
-            }),
-          )
+          handleUpdateNode(targetNode.id, targetNode, flowInstance)
         }, 0)
         break
       }

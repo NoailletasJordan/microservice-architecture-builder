@@ -1,11 +1,30 @@
-import { Box, Center, Flex, Image, Stack, Title } from '@mantine/core'
-import { useViewportSize } from '@mantine/hooks'
-import { IconChevronsLeft, IconChevronsRight } from '@tabler/icons-react'
-import { useContext, useEffect, useRef } from 'react'
-import { useNodes } from 'reactflow'
+import Title from '@/components/Title'
+import {
+  Box,
+  Button,
+  Card,
+  CloseButton,
+  Divider,
+  Group,
+  Image,
+  Stack,
+  Text,
+} from '@mantine/core'
+import { IconTrash } from '@tabler/icons-react'
+import { useContext, useEffect } from 'react'
+import { useNodes, useReactFlow } from 'reactflow'
 import selectedNodeContext from '../../../../selectedNodeContext'
-import { Datatype, TCustomNode, serviceConfig } from '../Board/constants'
-import Modules from './components/Modules/index'
+import { handleDeleteNode } from '../../helpers'
+import { ServiceTool } from '../Board/components/BuilderOptions/components/ServiceTool'
+import {
+  Datatype,
+  ICON_STYLE,
+  TCustomNode,
+  serviceConfig,
+} from '../Board/constants'
+import DirectLinks from './components/DirectLinks/index'
+import MainTechnologySection from './components/MainTechnologySection/index'
+import ModulesSection from './components/ModulesSection'
 import NoServiceSelected from './components/NoServiceSelected'
 
 const MODULE_SECTION_WIDTH_PX = 300
@@ -19,6 +38,7 @@ export default function AsideModules({
   asideIsOpened,
   toggleAsideIsOpened,
 }: Props) {
+  const flowInstance = useReactFlow()
   const nodes = useNodes<Datatype>()
   const { serviceId: selectedServiceId, setServiceId: setSelectedServiceId } =
     useContext(selectedNodeContext)
@@ -35,57 +55,71 @@ export default function AsideModules({
     if (focusedServiceGotRemoved) setSelectedServiceId(null)
   }, [nodes, selectedServiceId, setSelectedServiceId])
 
-  const { height: viewportHeight } = useViewportSize()
-
-  const asideRef = useRef<HTMLDivElement | null>(null)
-  const { top: asideYposition } =
-    asideRef?.current?.getBoundingClientRect?.() || {}
-  const asideHeight = viewportHeight - Number(asideYposition)
-
   return (
-    <div ref={asideRef}>
-      <Flex
-        style={{
-          transition: 'margin-right 300ms ease',
-        }}
-        mr={asideIsOpened ? 0 : -MODULE_SECTION_WIDTH_PX}
-      >
-        <Center
-          onClick={toggleAsideIsOpened}
-          h={asideHeight}
-          w="2rem"
-          style={{
-            border: '1px solid red',
-          }}
-          bg="#c4c4c4"
-        >
-          {asideIsOpened ? <IconChevronsRight /> : <IconChevronsLeft />}
-        </Center>
-        <Box h={asideHeight} w={MODULE_SECTION_WIDTH_PX}>
-          {!selectedNode ? (
-            <NoServiceSelected />
-          ) : (
-            <Stack>
-              <Box>
-                <Image
-                  h={70}
-                  w={70}
-                  src={serviceConfig[selectedNode.data.serviceIdType].imageUrl}
-                  alt="frontend"
-                />
-                <Title>
-                  {serviceConfig[selectedNode.data.serviceIdType].label}
-                </Title>
-              </Box>
+    <Box
+      h="100vh"
+      w={MODULE_SECTION_WIDTH_PX}
+      style={{
+        transition: 'margin-right 300ms ease',
+      }}
+      mr={asideIsOpened ? 0 : -MODULE_SECTION_WIDTH_PX}
+      p="md"
+    >
+      <Group justify="space-between" align="center" mb="md">
+        <Title>Service Overview</Title>
+        <CloseButton color="primary" size="sm" onClick={toggleAsideIsOpened} />
+      </Group>
+      <Divider orientation="horizontal" mb="sm" />
 
-              <Modules
-                serviceId={selectedNode.id}
-                modules={selectedNode.data.modules}
+      {!selectedNode ? (
+        <NoServiceSelected />
+      ) : (
+        <Stack>
+          <Card bg="#ddd">
+            <Group align="start" justify="space-between" mb="md">
+              <Image
+                h={70}
+                w={70}
+                src={serviceConfig[selectedNode.data.serviceIdType].imageUrl}
               />
-            </Stack>
+
+              <Button
+                leftSection={<IconTrash style={ICON_STYLE} />}
+                variant="outline"
+                color="red"
+                size="xs"
+                onClick={() =>
+                  handleDeleteNode(selectedNode.data.id, flowInstance)
+                }
+              >
+                Delete
+              </Button>
+            </Group>
+          </Card>
+          <MainTechnologySection service={selectedNode.data} />
+
+          {!!selectedNode.data.subServices.length && (
+            <Box>
+              <Text size="xs">Internal Services</Text>
+              <Group gap="xs">
+                {selectedNode.data.subServices.map((subService) => (
+                  <ServiceTool
+                    key={subService.id}
+                    serviceIdType={subService.serviceIdType}
+                  />
+                ))}
+              </Group>
+            </Box>
           )}
-        </Box>
-      </Flex>
-    </div>
+
+          <DirectLinks node={selectedNode} />
+
+          <ModulesSection
+            serviceId={selectedNode.id}
+            modules={selectedNode.data.modules}
+          />
+        </Stack>
+      )}
+    </Box>
   )
 }

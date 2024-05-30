@@ -2,9 +2,8 @@ import DraggableArea from '@/components/DraggableArea'
 import {
   DraggableData,
   SubService,
-  serviceConfig,
 } from '@/pages/BoardPage/components/Board/constants'
-import { Box, Image } from '@mantine/core'
+import { ServiceTool } from '../../../../../BuilderOptions/components/ServiceTool'
 
 interface Props {
   subService: SubService
@@ -13,7 +12,7 @@ interface Props {
 export function DraggableSubServiceComponent({ subService }: Props) {
   const draggableProps: DraggableData = {
     draggableType: 'subService',
-    node: subService,
+    draggedContent: subService,
   }
 
   return (
@@ -24,14 +23,5 @@ export function DraggableSubServiceComponent({ subService }: Props) {
 }
 
 export function SubServiceComponent({ subService }: Props) {
-  return (
-    <Box style={{ border: '1px solid red' }}>
-      <Image
-        h="1.8rem"
-        w="1.8rem"
-        src={serviceConfig[subService.serviceIdType]?.imageUrl}
-        alt="props.data.imageUrl"
-      />
-    </Box>
-  )
+  return <ServiceTool serviceIdType={subService.serviceIdType} />
 }

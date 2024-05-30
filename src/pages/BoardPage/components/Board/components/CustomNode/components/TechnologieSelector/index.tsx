@@ -1,23 +1,26 @@
 import { handleUpdateNode } from '@/pages/BoardPage/helpers'
-import { Box, Group, Select, Text, ThemeIcon } from '@mantine/core'
+import { Group, Select, Text, ThemeIcon } from '@mantine/core'
 import { groupBy, mapValues } from 'lodash'
 import { useMemo } from 'react'
 import { useReactFlow } from 'reactflow'
-import { Datatype, serviceConfig } from '../../../../constants'
+import { Datatype, ICON_STYLE, serviceConfig } from '../../../../constants'
 import { TechnologiesKeys } from './technologies-constant'
 
 interface Props {
-  service: Datatype
+  serviceWithTechnologie: Datatype
 }
 
-export default function TechnologieSelector({ service }: Props) {
+export default function TechnologieEditor({
+  serviceWithTechnologie: service,
+}: Props) {
+  const technology = service.technology!
   const serviceIdType = service.serviceIdType
   const { technologies } = serviceConfig[serviceIdType]
-  const { color, icon: Icon } = technologies[service.technology] || {}
+  const { color, icon: Icon } = technologies[technology]
   const flowInstance = useReactFlow<Datatype>()
 
   const onSearchChange = (newTechnology: TechnologiesKeys) => {
-    if (!newTechnology || newTechnology === service.technology) return
+    if (!newTechnology || newTechnology === technology) return
     const nodes = flowInstance.getNodes()
     const newNode = nodes.find(({ data }) => data.id === service.id)!
     newNode.data.technology = newTechnology
@@ -37,38 +40,37 @@ export default function TechnologieSelector({ service }: Props) {
   }, [serviceIdType])
 
   return (
-    <Box onClick={(event) => event.stopPropagation()}>
-      <Select
-        variant="unstyled"
-        searchValue={service.technology}
-        onSearchChange={(v) => onSearchChange(v as TechnologiesKeys)}
-        allowDeselect={false}
-        label={<Text size="xs">Main Technology</Text>}
-        data={Object.entries(groupedByUnderlying).map(([group, items]) => ({
-          group,
-          items: items.map((item) => item!.key),
-        }))}
-        leftSection={
-          <ThemeIcon color={color} variant="outline" mr="xs">
-            {Icon && <Icon style={{ width: '70%', height: '70%' }} />}
-          </ThemeIcon>
-        }
-        rightSectionWidth="1.1rem"
-        leftSectionPointerEvents="none"
-        renderOption={({ option }) => {
-          const optionValue = option.value as TechnologiesKeys
-          const Icon = technologies[optionValue].icon
-          const color = technologies[optionValue].color
-          return (
-            <Group align="center" gap="0.4rem" wrap="nowrap">
-              <ThemeIcon color={color} variant="outline">
-                {Icon && <Icon style={{ width: '70%', height: '70%' }} />}
-              </ThemeIcon>
-              {option.label}
-            </Group>
-          )
-        }}
-      />
-    </Box>
+    <Select
+      size="sm"
+      variant="unstyled"
+      searchValue={technology}
+      onSearchChange={(v) => onSearchChange(v as TechnologiesKeys)}
+      allowDeselect={false}
+      label={<Text size="xs">Main Technology</Text>}
+      data={Object.entries(groupedByUnderlying).map(([group, items]) => ({
+        group,
+        items: items.map((item) => item!.key),
+      }))}
+      leftSection={
+        <ThemeIcon color={color} variant="outline" mr="xs">
+          {Icon && <Icon style={ICON_STYLE} />}
+        </ThemeIcon>
+      }
+      rightSectionWidth="1.7rem"
+      leftSectionPointerEvents="none"
+      renderOption={({ option }) => {
+        const optionValue = option.value as TechnologiesKeys
+        const Icon = technologies[optionValue].icon
+        const color = technologies[optionValue].color
+        return (
+          <Group align="center" gap="0.4rem" wrap="nowrap">
+            <ThemeIcon color={color} variant="outline">
+              {Icon && <Icon style={ICON_STYLE} />}
+            </ThemeIcon>
+            {option.label}
+          </Group>
+        )
+      }}
+    />
   )
 }

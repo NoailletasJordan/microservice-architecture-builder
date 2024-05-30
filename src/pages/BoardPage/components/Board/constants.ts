@@ -13,7 +13,7 @@ import {
 export interface Datatype {
   id: string
   serviceIdType: ServiceIdType
-  technology: TechnologiesKeys
+  technology?: TechnologiesKeys
   subServices: SubService[]
   modules: Module[]
 }
@@ -49,7 +49,7 @@ export type SubService = Omit<Datatype, 'subServices' | 'modules'> & {
 
 export type TCustomNode = Node<Datatype>
 
-export type DroppableType = 'delete' | 'board' | 'node'
+export type DroppableType = 'delete' | 'board' | 'node' | 'toolbox'
 
 type SUBSERVICE_KEY = 'subService'
 type DASHBOARD_ITEM_KEY = 'dashboard-item'
@@ -59,15 +59,15 @@ export type DraggableType = SUBSERVICE_KEY | DASHBOARD_ITEM_KEY | MODULE_KEY
 export type DraggableData =
   | {
       draggableType: SUBSERVICE_KEY
-      node: SubService
+      draggedContent: SubService
     }
   | {
       draggableType: DASHBOARD_ITEM_KEY
-      node: Datatype
+      draggedContent: Pick<Datatype, 'serviceIdType'>
     }
   | {
       draggableType: MODULE_KEY
-      node: Module
+      draggedContent: Module
     }
 
 export interface ILocalStorage {
@@ -88,7 +88,6 @@ type ServiceConfigValue = {
   imageUrl: string
   label: string
   technologies: Record<string, TechnologiesValue>
-  defaultTechnology: TechnologiesKeys
 }
 
 export const serviceConfig: Record<ServiceIdType, ServiceConfigValue> = {
@@ -96,37 +95,31 @@ export const serviceConfig: Record<ServiceIdType, ServiceConfigValue> = {
     imageUrl: '/board/a-frontend.svg',
     label: 'Frontend',
     technologies: technologyFrontend,
-    defaultTechnology: 'React',
   },
   'service-payment': {
     imageUrl: '/board/a-payment.svg',
-    label: 'Payment service',
+    label: 'Payment',
     technologies: technologyPayment,
-    defaultTechnology: 'Stripe',
   },
   database: {
     imageUrl: '/board/a-database.svg',
     label: 'Database',
     technologies: technologyDatabases,
-    defaultTechnology: 'Postgres',
   },
   server: {
     imageUrl: '/board/a-server.svg',
     label: 'Server',
     technologies: technologyServer,
-    defaultTechnology: 'Express',
   },
   'service-email': {
     imageUrl: '/board/a-email.svg',
-    label: 'Email-service',
+    label: 'Mailing',
     technologies: technologyEmailService,
-    defaultTechnology: 'SendGrid',
   },
   authentification: {
     imageUrl: '/board/a-auth.svg',
-    label: 'Authentification',
+    label: 'Auth',
     technologies: technologyAuthService,
-    defaultTechnology: 'Auth0',
   },
 }
 
@@ -149,13 +142,12 @@ export const defaultNodes: TCustomNode[] = [
     data: {
       id: '1',
       serviceIdType: 'authentification',
-      technology: 'Auth0',
+
       subServices: [
         {
           id: '3',
           parentId: '1',
           serviceIdType: 'service-email',
-          technology: 'Mailgun',
         },
       ],
       modules: [],
@@ -167,7 +159,7 @@ export const defaultNodes: TCustomNode[] = [
     data: {
       id: '2',
       serviceIdType: 'database',
-      technology: 'Postgres',
+
       subServices: [],
       modules: [],
     },
@@ -175,5 +167,9 @@ export const defaultNodes: TCustomNode[] = [
   },
 ]
 
-export const CARD_WIDTH = 240
+export const CARD_WIDTH = 210
 export const NO_DRAG_REACTFLOW_CLASS = 'noDragReactflow'
+export const NO_WhEEL_REACTFLOW_CLASS = 'nowheel'
+export const NO_PAN_REACTFLOW_CLASS = 'nopan'
+
+export const ICON_STYLE = { height: '70%', width: '70%' }

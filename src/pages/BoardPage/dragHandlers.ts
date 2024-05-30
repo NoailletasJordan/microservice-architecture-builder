@@ -7,7 +7,6 @@ import {
   DraggableData,
   DroppableType,
   TCustomNode,
-  serviceConfig,
 } from './components/Board/constants'
 import {
   getNewNode,
@@ -33,12 +32,12 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
       y: centerY,
     })
 
-    const { draggableType, node: draggedNode } = event.active.data
+    const { draggableType, draggedContent } = event.active.data
       .current as DraggableData
 
     switch (draggableType) {
       case 'dashboard-item': {
-        const draggedService = draggedNode
+        const draggedService = draggedContent
         const newNode = getNewNode({
           position,
           serviceIdType: draggedService.serviceIdType,
@@ -47,7 +46,7 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
         break
       }
       case 'subService': {
-        const draggedSubService = draggedNode
+        const draggedSubService = draggedContent
         handleDeleteSubservice(draggedSubService.id, flowInstance)
         // shameful timeout to chain with previous setNode
         setTimeout(() => {
@@ -63,7 +62,7 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
   },
   node: (event, flowInstance) => {
     const targetId = event.over!.id as string
-    const { draggableType, node: draggedData } = event.active.data
+    const { draggableType, draggedContent } = event.active.data
       .current as DraggableData
     const targetNode: TCustomNode = flowInstance.getNode(targetId)!
 
@@ -72,9 +71,7 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
         const newSubService = {
           id: v4(),
           parentId: targetId,
-          serviceIdType: draggedData.serviceIdType,
-          technology:
-            serviceConfig[draggedData.serviceIdType].defaultTechnology,
+          serviceIdType: draggedContent.serviceIdType,
         }
         targetNode.data.subServices = [
           ...targetNode.data.subServices,
@@ -85,7 +82,7 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
         break
       }
       case 'subService': {
-        const draggedSubService = draggedData
+        const draggedSubService = draggedContent
         const droppedInOriginalNode = draggedSubService.parentId === targetId
         if (droppedInOriginalNode) break
 
@@ -102,7 +99,7 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
         break
       }
       case 'module': {
-        const draggedModule = draggedData
+        const draggedModule = draggedContent
         const droppedInOriginalNode = draggedModule.parentId === targetId
         const moduleAlreadyPresentInTarget = !!targetNode.data.modules.find(
           (m) => m.moduleType === draggedModule.moduleType,
@@ -123,15 +120,17 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
     }
   },
   delete: (event, flowInstance) => {
-    const { draggableType, node } = event.active.data.current as DraggableData
+    const { draggableType, draggedContent } = event.active.data
+      .current as DraggableData
     switch (draggableType) {
       case 'subService':
-        handleDeleteSubservice(node.id, flowInstance)
+        handleDeleteSubservice(draggedContent.id, flowInstance)
         break
 
       case 'module':
-        handleDeleteModule(node.id, flowInstance)
+        handleDeleteModule(draggedContent.id, flowInstance)
         break
     }
   },
+  toolbox: () => null,
 }

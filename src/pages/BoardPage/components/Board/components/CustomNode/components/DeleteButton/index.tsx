@@ -2,7 +2,7 @@ import { useDndContext } from '@dnd-kit/core'
 import { ActionIcon } from '@mantine/core'
 import { IconTrash } from '@tabler/icons-react'
 import { CSSProperties } from 'react'
-import { DraggableData } from '../../../../constants'
+import { DraggableData, ICON_STYLE } from '../../../../constants'
 
 interface Props {
   onClick: () => void
@@ -31,7 +31,8 @@ export default function DeleteButton({
   const style: CSSProperties = {}
   if (someElementIsDragged) {
     const elementIsFromSameService =
-      'parentId' in current.node && current.node.parentId === parentId
+      'parentId' in current.draggedContent &&
+      current.draggedContent.parentId === parentId
     style.transform = elementIsOverDeleteButton
       ? TRANSFORM_STYLE.isDraggedOver
       : elementIsFromSameService
@@ -46,13 +47,12 @@ export default function DeleteButton({
           event.stopPropagation()
           onClick()
         }}
-        variant="filled"
-        color="red"
+        variant="subtle"
+        color="gray"
         aria-label="Settings"
-        size="sm"
         className="noDragReactflow"
       >
-        <IconTrash size="md" stroke={1.5} />
+        <IconTrash style={ICON_STYLE} />
       </ActionIcon>
     </div>
   )

@@ -12,7 +12,7 @@ export default function SubServiceSection({ subServices }: Props) {
   return (
     <Box>
       <DividerWrapper>
-        <Text size="xs">SubServices</Text>
+        <Text size="xs">Internal Services</Text>
       </DividerWrapper>
 
       <SimpleGrid cols={5} verticalSpacing="xs">

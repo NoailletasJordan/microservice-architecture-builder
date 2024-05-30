@@ -8,9 +8,6 @@ interface Props {
 export default function DividerWrapper({ children }: Props) {
   return (
     <Grid align="center">
-      <Grid.Col span="auto">
-        <Divider my="md" bg="primary" />
-      </Grid.Col>
       <Grid.Col span="content">{children}</Grid.Col>
       <Grid.Col span="auto">
         <Divider my="md" bg="primary" />

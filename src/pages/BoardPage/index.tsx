@@ -7,7 +7,6 @@ import { useReactFlow } from 'reactflow'
 import selectedNodeContext, {
   ISelectedNodeContext,
 } from '../../selectedNodeContext'
-import Dashboard from '../BoardPage/components/DashBoard'
 import AsideModule from './components/AsideModule/index'
 import Board from './components/Board'
 import { DroppableType } from './components/Board/constants'
@@ -35,18 +34,8 @@ export default function BoardPage() {
 
   return (
     <>
-      <AppShell
-        header={{ height: 60 }}
-        navbar={{
-          width: 300,
-          breakpoint: 'sm',
-        }}
-        padding="md"
-      >
+      <AppShell>
         <selectedNodeContext.Provider value={nodeAsideContext}>
-          <AppShell.Header>
-            <div>Logo</div>
-          </AppShell.Header>
           <DndContext
             onDragEnd={(e: DragEndEvent) => {
               if (!e.over) return
@@ -59,12 +48,11 @@ export default function BoardPage() {
               onDragEndConfig[type](e, flowInstance)
             }}
           >
-            <AppShell.Navbar p="md">
-              <Dashboard />
-            </AppShell.Navbar>
-
             <AppShell.Main>
-              <Board boardId={boardId} />
+              <Board
+                boardId={boardId}
+                toggleAsideIsOpened={toggleAsideIsOpened}
+              />
             </AppShell.Main>
           </DndContext>
           <AppShell.Aside>

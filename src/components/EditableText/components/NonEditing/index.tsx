@@ -1,3 +1,4 @@
+import { ICON_STYLE } from '@/pages/BoardPage/components/Board/constants'
 import { ActionIcon, Box, Flex, Group } from '@mantine/core'
 import { IconEdit } from '@tabler/icons-react'
 
@@ -7,7 +8,6 @@ interface Props {
 }
 
 export default function NonInput({ value, onClickEdit }: Props) {
-  const iconStyle = { width: '70%', height: '70%' }
   return (
     <Group gap="xs" justify="space-between">
       <Flex align="center" component="span" gap=".2rem">
@@ -21,7 +21,7 @@ export default function NonInput({ value, onClickEdit }: Props) {
           aria-label="Settings"
           onClick={onClickEdit}
         >
-          <IconEdit style={iconStyle} stroke={1.5} />
+          <IconEdit style={ICON_STYLE} stroke={1.5} />
         </ActionIcon>
       </Box>
     </Group>

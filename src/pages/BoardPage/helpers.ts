@@ -1,11 +1,6 @@
 import { ReactFlowInstance, XYPosition } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
-import {
-  Datatype,
-  Module,
-  ServiceIdType,
-  serviceConfig,
-} from './components/Board/constants'
+import { Datatype, Module, ServiceIdType } from './components/Board/constants'
 
 import {
   ILocalStorage,
@@ -31,7 +26,6 @@ export const getNewNode = ({
     data: {
       id: nodeID,
       serviceIdType,
-      technology: serviceConfig[serviceIdType].defaultTechnology,
       subServices: [],
       modules: [],
       ...initialService,
@@ -72,6 +66,9 @@ export const handleDeleteNode = (
 ) => {
   flowInstance.setNodes((oldNodes) =>
     oldNodes.filter((compNode) => compNode.id != nodeId),
+  )
+  flowInstance.setEdges((oldEdges) =>
+    oldEdges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId),
   )
 }
 

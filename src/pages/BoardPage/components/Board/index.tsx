@@ -1,6 +1,9 @@
+import { Box } from '@mantine/core'
 import { useWindowEvent } from '@mantine/hooks'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import ReactFlow, {
+  Background,
+  BackgroundVariant,
   Connection,
   ConnectionMode,
   Edge,
@@ -13,7 +16,7 @@ import ReactFlow, {
   useReactFlow,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4, v4 } from 'uuid'
 import DroppableArea from '../../../../components/DroppableArea/index'
 import {
   deepCopy,
@@ -21,24 +24,34 @@ import {
   handleDeleteNode,
   storeInLocal,
 } from '../../helpers'
+import BuilderOptions from './components/BuilderOptions'
 import ConnexionLine from './components/ConnectionLine'
 import CustomEdgeWrapper from './components/CustomEdge'
 import CustomNode from './components/CustomNode'
 import DraggableGhost from './components/DraggableGhost/index'
 import FitToView from './components/FitToView/index'
-import { NO_DRAG_REACTFLOW_CLASS, TCustomNode } from './constants'
+import ServiceOverviewButton from './components/ServiceOverviewButton/index'
+import {
+  NO_DRAG_REACTFLOW_CLASS,
+  NO_PAN_REACTFLOW_CLASS,
+  NO_WhEEL_REACTFLOW_CLASS,
+  TCustomNode,
+} from './constants'
 
 interface Props {
   boardId: string
+  toggleAsideIsOpened: () => void
 }
 
-const DEBOUNCE_SAVE_MS = 2000
+const DEBOUNCE_SAVE_MS = 600
 
 const nodeTypes: NodeTypes = {
   service: CustomNode,
 }
 
-export default function Board({ boardId }: Props) {
+const preventScrollbarOnPan = { overflow: 'hidden' }
+
+export default function Board({ boardId, toggleAsideIsOpened }: Props) {
   const { nodes: initialnodes, edges: initialEdges } =
     getInitialBoardData(boardId)
   const [nodes, setNodes, onNodesChange] = useNodesState(initialnodes)
@@ -135,13 +148,7 @@ export default function Board({ boardId }: Props) {
 
   return (
     <DroppableArea id="board" data={{ droppableType: 'board' }}>
-      <div
-        style={{
-          width: '100%',
-          height: 'calc(100vh - 100px)',
-          border: 'red solid 1px',
-        }}
-      >
+      <Box w="100%" h="100vh" style={preventScrollbarOnPan}>
         <ReactFlow
           // TODO - allow wider zooms
           minZoom={1}
@@ -159,12 +166,16 @@ export default function Board({ boardId }: Props) {
           onEdgeClick={onEdgeClick}
           onNodeDragStop={onNodeDragEnd}
           noDragClassName={NO_DRAG_REACTFLOW_CLASS}
+          noWheelClassName={NO_WhEEL_REACTFLOW_CLASS}
+          noPanClassName={NO_PAN_REACTFLOW_CLASS}
         >
           <FitToView />
+          <Background id={v4()} variant={BackgroundVariant.Dots} />
+          <BuilderOptions />
         </ReactFlow>
-
+        <ServiceOverviewButton onClick={toggleAsideIsOpened} />
         <DraggableGhost />
-      </div>
+      </Box>
     </DroppableArea>
   )
 }

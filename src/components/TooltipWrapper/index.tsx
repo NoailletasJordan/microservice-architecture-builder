@@ -13,7 +13,7 @@ const TooltipWrapper = ({
   position = 'bottom-end',
 }: Props) => (
   <Tooltip label={label} position={position}>
-    <Group gap="xs" style={{ cursor: 'help' }}>
+    <Group gap="xs">
       <Text fs="italic">{children}</Text>
     </Group>
   </Tooltip>

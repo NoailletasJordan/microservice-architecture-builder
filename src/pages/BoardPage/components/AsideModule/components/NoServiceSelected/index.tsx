@@ -7,18 +7,16 @@ export default function NoServiceSelected() {
     <Center h="100%">
       <Stack>
         <SubTitle ta="center">No service selected...</SubTitle>
-        <Text ta="center" lh="1rem">
+        <Text ta="center" lh="1rem" component="div" size="sm">
           Select a service by clicking the associated button (
-          <Text component="span">
-            <ThemeIcon
-              style={{ transform: 'translateY(.4rem)' }}
-              variant="transparent"
-              color="primary"
-              aria-label="Settings"
-            >
-              <IconBook stroke={1.5} />
-            </ThemeIcon>
-          </Text>
+          <ThemeIcon
+            style={{ transform: 'translateY(.4rem)' }}
+            variant="transparent"
+            color="primary"
+            aria-label="Settings"
+          >
+            <IconBook stroke={1.5} />
+          </ThemeIcon>
           )
         </Text>
       </Stack>

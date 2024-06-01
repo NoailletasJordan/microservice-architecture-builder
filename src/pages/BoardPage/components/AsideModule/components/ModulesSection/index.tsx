@@ -3,11 +3,11 @@ import { Box, ScrollArea, Stack, Text } from '@mantine/core'
 import { useViewportSize } from '@mantine/hooks'
 import { useRef } from 'react'
 import AddModuleMenu from '../../../../../../components/AddModuleMenu/index'
-import { Datatype, Module } from '../../../Board/constants'
+import { IService, Module } from '../../../Board/constants'
 
 interface Props {
   modules: Module[]
-  serviceId: Datatype['id']
+  serviceId: IService['id']
 }
 
 export default function Modules({ serviceId, modules }: Props) {
@@ -19,7 +19,7 @@ export default function Modules({ serviceId, modules }: Props) {
 
   return (
     <Box>
-      <Text size="xs">Modules</Text>
+      <Text>Modules</Text>
 
       <Stack>
         <AddModuleMenu serviceId={serviceId} />

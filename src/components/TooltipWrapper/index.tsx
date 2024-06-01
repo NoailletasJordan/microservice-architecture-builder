@@ -14,7 +14,9 @@ const TooltipWrapper = ({
 }: Props) => (
   <Tooltip label={label} position={position}>
     <Group gap="xs">
-      <Text fs="italic">{children}</Text>
+      <Text fs="italic" component="div">
+        {children}
+      </Text>
     </Group>
   </Tooltip>
 )

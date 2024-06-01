@@ -14,20 +14,20 @@ import { groupBy, mapValues, upperFirst } from 'lodash'
 import { useMemo } from 'react'
 import { useReactFlow } from 'reactflow'
 import {
-  Datatype,
   ICON_STYLE,
+  IService,
   serviceConfig,
 } from '../../../../../Board/constants'
 
 interface Props {
-  service: Datatype
+  service: IService
 }
 
 export default function AddTechnology({ service }: Props) {
   const technology = service.technology!
   const serviceIdType = service.serviceIdType
   const { technologies } = serviceConfig[serviceIdType]
-  const flowInstance = useReactFlow<Datatype>()
+  const flowInstance = useReactFlow<IService>()
 
   const groupedByUnderlying = useMemo(() => {
     const transformedTechnologyFrontend = mapValues(
@@ -69,12 +69,11 @@ export default function AddTechnology({ service }: Props) {
           {Object.entries(groupedByUnderlying).map(([groupLabel, techlist]) => (
             <Box key={groupLabel}>
               <Menu.Label key={groupLabel}>
-                <Text component="span" size="xs">
-                  {upperFirst(groupLabel)}
-                </Text>
+                <Text component="span">{upperFirst(groupLabel)}</Text>
               </Menu.Label>
               {techlist.map(({ color, key, icon: Icon }) => (
                 <Menu.Item
+                  key={key}
                   onClick={() => onSearchChange(key as TechnologiesKeys)}
                 >
                   <Group align="center" gap="0.4rem" wrap="nowrap">

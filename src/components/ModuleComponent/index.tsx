@@ -4,8 +4,8 @@ import {
 } from '@/components/AddModuleMenu/moduleConstants'
 import { ModuleIcon } from '@/pages/BoardPage/components/Board/components/CustomNode/components/ModuleIcon'
 import {
-  Datatype,
   ICON_STYLE,
+  IService,
   Module,
   TCustomNode,
 } from '@/pages/BoardPage/components/Board/constants'
@@ -19,7 +19,7 @@ import ModuleRichTextEditor from './components/ModuleRichTextEditor'
 
 interface Props {
   module: Module
-  serviceId: Datatype['id']
+  serviceId: IService['id']
 }
 
 const getContentComponent: Record<ModuleType, (props: any) => ReactNode> = {

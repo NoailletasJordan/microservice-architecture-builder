@@ -1,59 +1,41 @@
-import { ActionIcon, Center, Paper } from '@mantine/core'
-import { IconTrash } from '@tabler/icons-react'
-import { EdgeLabelRenderer, useViewport } from 'reactflow'
+import { Group, Paper, ThemeIcon } from '@mantine/core'
+import { EdgeLabelRenderer } from 'reactflow'
+import { IConnexion, connexionConfig } from '../../../../connexionContants'
 
 interface Props {
   labelX: number
   labelY: number
   handleDeleteEdge: () => void
-}
-
-const itemStyle = {
-  paddingRight: '.3rem',
-  display: 'grid',
-  gridTemplateColumns: 'max-content auto',
-  padding: '.1rem',
-  gap: '0.1rem',
+  connection: IConnexion
 }
 
 export default function EdgeActions({
   labelX,
   labelY,
-  handleDeleteEdge,
+  // handleDeleteEdge,
+  connection,
 }: Props) {
-  const { zoom } = useViewport()
+  const Icon = connexionConfig[connection.connexionType].Icon
 
   return (
     <EdgeLabelRenderer>
       <div className="nodrag nopan" onClick={(e) => e.stopPropagation()}>
         <Paper
           withBorder
+          radius="xl"
           style={{
             position: 'absolute',
-            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px) scale( ${
-              1.5 - zoom / 2.5
-            })`,
-            borderRadius: 5,
+            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px) `,
             pointerEvents: 'all',
-            fontSize: '10px',
+            overflow: 'hidden',
           }}
+          p=".2rem"
         >
-          <div style={itemStyle}>
-            <ActionIcon
-              onClick={handleDeleteEdge}
-              variant="filled"
-              color="pink"
-              aria-label="Settings"
-              size="sm"
-            >
-              <IconTrash
-                size="md"
-                style={{ width: '90%', height: '90%' }}
-                stroke={1.5}
-              />
-            </ActionIcon>
-            <Center>Remove connection</Center>
-          </div>
+          <Group gap="xs">
+            <ThemeIcon variant="subtle">
+              <Icon />
+            </ThemeIcon>
+          </Group>
         </Paper>
       </div>
     </EdgeLabelRenderer>

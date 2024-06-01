@@ -3,11 +3,11 @@ import { Group, Select, Text, ThemeIcon } from '@mantine/core'
 import { groupBy, mapValues } from 'lodash'
 import { useMemo } from 'react'
 import { useReactFlow } from 'reactflow'
-import { Datatype, ICON_STYLE, serviceConfig } from '../../../../constants'
+import { ICON_STYLE, IService, serviceConfig } from '../../../../constants'
 import { TechnologiesKeys } from './technologies-constant'
 
 interface Props {
-  serviceWithTechnologie: Datatype
+  serviceWithTechnologie: IService
 }
 
 export default function TechnologieEditor({
@@ -17,7 +17,7 @@ export default function TechnologieEditor({
   const serviceIdType = service.serviceIdType
   const { technologies } = serviceConfig[serviceIdType]
   const { color, icon: Icon } = technologies[technology]
-  const flowInstance = useReactFlow<Datatype>()
+  const flowInstance = useReactFlow<IService>()
 
   const onSearchChange = (newTechnology: TechnologiesKeys) => {
     if (!newTechnology || newTechnology === technology) return
@@ -46,7 +46,7 @@ export default function TechnologieEditor({
       searchValue={technology}
       onSearchChange={(v) => onSearchChange(v as TechnologiesKeys)}
       allowDeselect={false}
-      label={<Text size="xs">Main Technology</Text>}
+      label={<Text>Main Technology</Text>}
       data={Object.entries(groupedByUnderlying).map(([group, items]) => ({
         group,
         items: items.map((item) => item!.key),

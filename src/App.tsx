@@ -2,7 +2,7 @@ import '@mantine/core/styles.css'
 import '@mantine/tiptap/styles.css'
 import './fix.css'
 
-import { MantineProvider, createTheme } from '@mantine/core'
+import { MantineProvider, Text, createTheme } from '@mantine/core'
 import { StrictMode } from 'react'
 import {
   Route,
@@ -31,7 +31,7 @@ const router = createBrowserRouter(
 export default function App() {
   return (
     <StrictMode>
-      <MantineProvider theme={theme}>
+      <MantineProvider theme={theme} forceColorScheme="light">
         <RouterProvider router={router} />
       </MantineProvider>
     </StrictMode>
@@ -40,4 +40,11 @@ export default function App() {
 
 const theme = createTheme({
   primaryColor: 'indigo',
+  components: {
+    Text: Text.extend({
+      defaultProps: {
+        size: 'xs',
+      },
+    }),
+  },
 })

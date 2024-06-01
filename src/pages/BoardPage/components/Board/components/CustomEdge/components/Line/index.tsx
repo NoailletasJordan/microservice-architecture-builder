@@ -22,7 +22,7 @@ export default function Line({ d, stroke, animated, ...pathProps }: ILine) {
           attributeName="stroke-dashoffset"
           from="0"
           to="20"
-          dur="1s"
+          dur="2s"
           repeatCount="indefinite"
         />
       )}

@@ -24,11 +24,7 @@ export default function EditableInput(props: EditableInputProps) {
   } = props
   return (
     <Stack gap="0">
-      {label && (
-        <Text size="xs" c="primary">
-          {label}
-        </Text>
-      )}
+      {label && <Text c="primary">{label}</Text>}
       {isEditing ? (
         <Editing
           options={autocompleteOptions}

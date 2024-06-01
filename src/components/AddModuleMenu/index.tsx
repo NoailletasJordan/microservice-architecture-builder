@@ -1,4 +1,4 @@
-import selectedNodeContext from '@/selectedNodeContext'
+import { selectedNodeContext } from '@/contexts/SelectedNode/constants'
 import { Button, Menu, ThemeIcon } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
 import { useContext } from 'react'
@@ -16,7 +16,7 @@ interface Props {
 }
 
 export default function AddModuleMenu({ serviceId }: Props) {
-  const { setServiceId: setSelectedServiceId, openSelectedNodeSection } =
+  const { setServiceId: setSelectedServiceId, openAside } =
     useContext(selectedNodeContext)
   const flowInstance = useReactFlow()
   const targettedService = flowInstance.getNode(serviceId) as TCustomNode
@@ -31,7 +31,7 @@ export default function AddModuleMenu({ serviceId }: Props) {
       ),
     )
     setSelectedServiceId(targettedService.id)
-    openSelectedNodeSection()
+    openAside()
   }
 
   return (

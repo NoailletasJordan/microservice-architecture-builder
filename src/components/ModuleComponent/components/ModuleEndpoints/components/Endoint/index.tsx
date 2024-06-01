@@ -143,7 +143,7 @@ function NonInput({
         {address?.split('/').map((text) => (
           <Box key={v4()}>
             <Kbd>/</Kbd>
-            <Text component="span" size="xs" onClick={onClickEdit}>
+            <Text component="span" onClick={onClickEdit}>
               {text}
             </Text>
           </Box>

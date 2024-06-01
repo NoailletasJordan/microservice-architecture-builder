@@ -1,12 +1,12 @@
+import { connexionContext } from '@/contexts/Connexion/constants'
+import { selectedNodeContext } from '@/contexts/SelectedNode/constants'
 import { Box } from '@mantine/core'
-import { useWindowEvent } from '@mantine/hooks'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useContext, useEffect } from 'react'
 import ReactFlow, {
   Background,
   BackgroundVariant,
   Connection,
   ConnectionMode,
-  Edge,
   EdgeTypes,
   NodeDragHandler,
   NodeTypes,
@@ -24,13 +24,14 @@ import {
   handleDeleteNode,
   storeInLocal,
 } from '../../helpers'
-import BuilderOptions from './components/BuilderOptions'
 import ConnexionLine from './components/ConnectionLine'
-import CustomEdgeWrapper from './components/CustomEdge'
+import CustomEdge from './components/CustomEdge'
 import CustomNode from './components/CustomNode'
 import DraggableGhost from './components/DraggableGhost/index'
 import FitToView from './components/FitToView/index'
 import ServiceOverviewButton from './components/ServiceOverviewButton/index'
+import Toolbar from './components/Toolbar'
+import { TCustomEdge } from './components/connexionContants'
 import {
   NO_DRAG_REACTFLOW_CLASS,
   NO_PAN_REACTFLOW_CLASS,
@@ -40,7 +41,6 @@ import {
 
 interface Props {
   boardId: string
-  toggleAsideIsOpened: () => void
 }
 
 const DEBOUNCE_SAVE_MS = 600
@@ -49,21 +49,19 @@ const nodeTypes: NodeTypes = {
   service: CustomNode,
 }
 
+const edgeTypes: EdgeTypes = {
+  custom: CustomEdge,
+}
+
 const preventScrollbarOnPan = { overflow: 'hidden' }
 
-export default function Board({ boardId, toggleAsideIsOpened }: Props) {
+export default function Board({ boardId }: Props) {
+  const { toggleAsideOpen } = useContext(selectedNodeContext)
+  const { connexionType } = useContext(connexionContext)
   const { nodes: initialnodes, edges: initialEdges } =
     getInitialBoardData(boardId)
   const [nodes, setNodes, onNodesChange] = useNodesState(initialnodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
-
-  const [targetedEdge, setTargetedEdge] = useState<string | null>(null)
-  const edgeTypes: EdgeTypes = useMemo(
-    () => ({
-      custom: CustomEdgeWrapper({ targetedEdge }),
-    }),
-    [targetedEdge],
-  )
 
   const flowInstance = useReactFlow()
 
@@ -110,28 +108,20 @@ export default function Board({ boardId, toggleAsideIsOpened }: Props) {
     }
   }, [nodes, edges, boardId])
 
-  useWindowEvent('click', () => setTargetedEdge(null))
-  const onEdgeClick = useCallback(
-    (event: any, { id }: Edge) => {
-      event.stopPropagation()
-      if (targetedEdge === id) {
-        setTargetedEdge(null)
-        return
-      }
-      setTargetedEdge(id)
-    },
-    [setTargetedEdge, targetedEdge],
-  )
-
   const onConnect = useCallback(
     ({ source, sourceHandle, target, targetHandle }: Connection) => {
-      const newEdge = {
-        id: uuidv4(),
-        source,
-        target,
+      const id = uuidv4()
+      const newEdge: TCustomEdge = {
+        id,
+        source: source!,
+        target: target!,
         sourceHandle,
         targetHandle,
         type: 'custom',
+        data: {
+          id,
+          connexionType: connexionType,
+        },
       }
 
       const edgeAlleadyExist = !!edges.filter(
@@ -143,7 +133,7 @@ export default function Board({ boardId, toggleAsideIsOpened }: Props) {
 
       setEdges((oldEdges) => addEdge(newEdge, oldEdges))
     },
-    [setEdges, edges],
+    [setEdges, edges, connexionType],
   )
 
   return (
@@ -163,7 +153,6 @@ export default function Board({ boardId, toggleAsideIsOpened }: Props) {
           connectionMode={ConnectionMode.Loose}
           edgeTypes={edgeTypes}
           connectionLineComponent={ConnexionLine}
-          onEdgeClick={onEdgeClick}
           onNodeDragStop={onNodeDragEnd}
           noDragClassName={NO_DRAG_REACTFLOW_CLASS}
           noWheelClassName={NO_WhEEL_REACTFLOW_CLASS}
@@ -171,9 +160,9 @@ export default function Board({ boardId, toggleAsideIsOpened }: Props) {
         >
           <FitToView />
           <Background id={v4()} variant={BackgroundVariant.Dots} />
-          <BuilderOptions />
+          <Toolbar />
         </ReactFlow>
-        <ServiceOverviewButton onClick={toggleAsideIsOpened} />
+        <ServiceOverviewButton onClick={toggleAsideOpen} />
         <DraggableGhost />
       </Box>
     </DroppableArea>

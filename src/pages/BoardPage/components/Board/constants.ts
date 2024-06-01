@@ -1,4 +1,4 @@
-import { Edge, Node } from 'reactflow'
+import { Node } from 'reactflow'
 import {
   TechnologiesKeys,
   TechnologiesValue,
@@ -9,8 +9,9 @@ import {
   technologyPayment,
   technologyServer,
 } from './components/CustomNode/components/TechnologieSelector/technologies-constant'
+import { TCustomEdge } from './components/connexionContants'
 
-export interface Datatype {
+export interface IService {
   id: string
   serviceIdType: ServiceIdType
   technology?: TechnologiesKeys
@@ -20,7 +21,7 @@ export interface Datatype {
 
 export interface IModuleRichText {
   id: string
-  parentId: Datatype['id']
+  parentId: IService['id']
   moduleType: 'markdown'
   data: {
     text: string
@@ -29,7 +30,7 @@ export interface IModuleRichText {
 
 export interface IModuleEndpoint {
   id: string
-  parentId: Datatype['id']
+  parentId: IService['id']
   moduleType: 'endpoints'
   data: IEndpointData
 }
@@ -43,11 +44,11 @@ export type IEndpointData = {
 
 export type Module = IModuleRichText | IModuleEndpoint
 
-export type SubService = Omit<Datatype, 'subServices' | 'modules'> & {
-  parentId: Datatype['id']
+export type SubService = Omit<IService, 'subServices' | 'modules'> & {
+  parentId: IService['id']
 }
 
-export type TCustomNode = Node<Datatype>
+export type TCustomNode = Node<IService>
 
 export type DroppableType = 'delete' | 'board' | 'node' | 'toolbox'
 
@@ -63,7 +64,7 @@ export type DraggableData =
     }
   | {
       draggableType: DASHBOARD_ITEM_KEY
-      draggedContent: Pick<Datatype, 'serviceIdType'>
+      draggedContent: Pick<IService, 'serviceIdType'>
     }
   | {
       draggableType: MODULE_KEY
@@ -72,7 +73,7 @@ export type DraggableData =
 
 export interface ILocalStorage {
   nodes: TCustomNode[]
-  edges: Edge[]
+  edges: TCustomEdge[]
   timestamp: Date
 }
 
@@ -96,41 +97,45 @@ export const serviceConfig: Record<ServiceIdType, ServiceConfigValue> = {
     label: 'Frontend',
     technologies: technologyFrontend,
   },
-  'service-payment': {
-    imageUrl: '/board/a-payment.svg',
-    label: 'Payment',
-    technologies: technologyPayment,
+  server: {
+    imageUrl: '/board/a-server.svg',
+    label: 'Server',
+    technologies: technologyServer,
   },
   database: {
     imageUrl: '/board/a-database.svg',
     label: 'Database',
     technologies: technologyDatabases,
   },
-  server: {
-    imageUrl: '/board/a-server.svg',
-    label: 'Server',
-    technologies: technologyServer,
+  authentification: {
+    imageUrl: '/board/a-auth.svg',
+    label: 'Auth',
+    technologies: technologyAuthService,
   },
   'service-email': {
     imageUrl: '/board/a-email.svg',
     label: 'Mailing',
     technologies: technologyEmailService,
   },
-  authentification: {
-    imageUrl: '/board/a-auth.svg',
-    label: 'Auth',
-    technologies: technologyAuthService,
+  'service-payment': {
+    imageUrl: '/board/a-payment.svg',
+    label: 'Payment',
+    technologies: technologyPayment,
   },
 }
 
-export const defaultEdges: Edge[] = [
+export const defaultEdges: TCustomEdge[] = [
   {
-    id: 'test',
+    id: '123',
     source: '1',
     target: '2',
     sourceHandle: 'r',
     targetHandle: 'l',
     type: 'custom',
+    data: {
+      id: '123',
+      connexionType: 'http',
+    },
   },
 ]
 
@@ -142,7 +147,6 @@ export const defaultNodes: TCustomNode[] = [
     data: {
       id: '1',
       serviceIdType: 'authentification',
-
       subServices: [
         {
           id: '3',
@@ -159,7 +163,6 @@ export const defaultNodes: TCustomNode[] = [
     data: {
       id: '2',
       serviceIdType: 'database',
-
       subServices: [],
       modules: [],
     },

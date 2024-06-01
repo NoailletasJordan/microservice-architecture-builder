@@ -1,5 +1,4 @@
-import IconCustomHttp from '@/components/IconsCustom/IconCustomHttp'
-import selectedNodeContext from '@/selectedNodeContext'
+import { selectedNodeContext } from '@/contexts/SelectedNode/constants'
 import {
   ActionIcon,
   Box,
@@ -12,7 +11,11 @@ import {
 import { IconAffiliate, IconTrash } from '@tabler/icons-react'
 import { useContext } from 'react'
 import { Edge, Node, useEdges, useReactFlow } from 'reactflow'
-import { ServiceTool } from '../../../Board/components/BuilderOptions/components/ServiceTool'
+import { ServiceTool } from '../../../Board/components/Toolbar/components/ServiceTool'
+import {
+  IConnexion,
+  connexionConfig,
+} from '../../../Board/components/connexionContants'
 import {
   ICON_STYLE,
   ServiceIdType,
@@ -25,7 +28,7 @@ interface Props {
 
 export default function DirectLinks({ node }: Props) {
   const flowInstance = useReactFlow()
-  const edges = useEdges()
+  const edges = useEdges<IConnexion>()
   const currentService = node.data
   const { setServiceId: setSelectedServiceId } = useContext(selectedNodeContext)
 
@@ -42,7 +45,7 @@ export default function DirectLinks({ node }: Props) {
 
   return (
     <Box>
-      <Text size="xs">Direct Connexion(s)</Text>
+      <Text>Direct Connexion(s)</Text>
       <Card withBorder>
         {edgesFromCurrentService.map((edge) => {
           const externalNodeId =
@@ -59,6 +62,7 @@ export default function DirectLinks({ node }: Props) {
               externalServiceIdType={externalNode.data.serviceIdType}
               node={node}
               edge={edge}
+              connexionType={edge.data!.connexionType}
               handleDelete={() => handleDelete(edge.id)}
               handleClick={() => setSelectedServiceId(externalNode.data.id)}
             />
@@ -74,8 +78,10 @@ interface ConnexionProps {
   handleDelete: () => void
   externalServiceIdType: ServiceIdType
   handleClick: () => void
+  connexionType: IConnexion['connexionType']
 }
 const Connection = (props: ConnexionProps) => {
+  const Icon = connexionConfig[props.connexionType].Icon
   return (
     <Card.Section withBorder p="0.2rem">
       <Group align="center">
@@ -84,8 +90,7 @@ const Connection = (props: ConnexionProps) => {
         </ThemeIcon>
         <ServiceTool serviceIdType={props.externalServiceIdType} />
         <Flex align="center" h={30} w={30} c="indigo">
-          {/* todo, put the right icon */}
-          <IconCustomHttp />
+          <Icon />
         </Flex>
 
         <ActionIcon

@@ -3,9 +3,9 @@ import { ReactFlowInstance } from 'reactflow'
 import { v4 } from 'uuid'
 import {
   CARD_WIDTH,
-  Datatype,
   DraggableData,
   DroppableType,
+  IService,
   TCustomNode,
 } from './components/Board/constants'
 import {
@@ -18,7 +18,7 @@ import {
 
 type DragEventHandler = (
   e: DragEndEvent,
-  flowInstance: ReactFlowInstance<Datatype>,
+  flowInstance: ReactFlowInstance<IService>,
 ) => void
 
 export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {

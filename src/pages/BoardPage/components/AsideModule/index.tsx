@@ -1,4 +1,5 @@
 import Title from '@/components/Title'
+import { selectedNodeContext } from '@/contexts/SelectedNode/constants'
 import {
   Box,
   Button,
@@ -13,35 +14,31 @@ import {
 import { IconTrash } from '@tabler/icons-react'
 import { useContext, useEffect } from 'react'
 import { useNodes, useReactFlow } from 'reactflow'
-import selectedNodeContext from '../../../../selectedNodeContext'
 import { handleDeleteNode } from '../../helpers'
-import { ServiceTool } from '../Board/components/BuilderOptions/components/ServiceTool'
+import { ServiceTool } from '../Board/components/Toolbar/components/ServiceTool'
 import {
-  Datatype,
   ICON_STYLE,
+  IService,
   TCustomNode,
   serviceConfig,
 } from '../Board/constants'
-import DirectLinks from './components/DirectLinks/index'
+import DirectLinks from './components/DirectConnexions/index'
 import MainTechnologySection from './components/MainTechnologySection/index'
 import ModulesSection from './components/ModulesSection'
 import NoServiceSelected from './components/NoServiceSelected'
 
 const MODULE_SECTION_WIDTH_PX = 300
 
-interface Props {
-  asideIsOpened: boolean
-  toggleAsideIsOpened: () => void
-}
-
-export default function AsideModules({
-  asideIsOpened,
-  toggleAsideIsOpened,
-}: Props) {
+export default function AsideModules() {
   const flowInstance = useReactFlow()
-  const nodes = useNodes<Datatype>()
-  const { serviceId: selectedServiceId, setServiceId: setSelectedServiceId } =
-    useContext(selectedNodeContext)
+  const nodes = useNodes<IService>()
+  const {
+    serviceId: selectedServiceId,
+    setServiceId: setSelectedServiceId,
+    toggleAsideOpen,
+    asideIsOpened,
+  } = useContext(selectedNodeContext)
+
   let selectedNode: TCustomNode | undefined
   if (selectedServiceId)
     selectedNode = nodes.find(({ id }) => id === selectedServiceId)
@@ -67,7 +64,7 @@ export default function AsideModules({
     >
       <Group justify="space-between" align="center" mb="md">
         <Title>Service Overview</Title>
-        <CloseButton color="primary" size="sm" onClick={toggleAsideIsOpened} />
+        <CloseButton color="primary" size="sm" onClick={toggleAsideOpen} />
       </Group>
       <Divider orientation="horizontal" mb="sm" />
 
@@ -100,7 +97,7 @@ export default function AsideModules({
 
           {!!selectedNode.data.subServices.length && (
             <Box>
-              <Text size="xs">Internal Services</Text>
+              <Text>Internal Services</Text>
               <Group gap="xs">
                 {selectedNode.data.subServices.map((subService) => (
                   <ServiceTool

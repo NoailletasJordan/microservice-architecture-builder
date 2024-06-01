@@ -2,14 +2,14 @@ import ModuleComponent from '@/components/ModuleComponent'
 import { Card, ScrollArea, SimpleGrid } from '@mantine/core'
 import { NodeToolbar, Position } from 'reactflow'
 import {
-  Datatype,
+  IService,
   NO_DRAG_REACTFLOW_CLASS,
   NO_PAN_REACTFLOW_CLASS,
   NO_WhEEL_REACTFLOW_CLASS,
 } from '../../../../constants'
 
 interface Props {
-  service: Datatype
+  service: IService
   open: boolean
 }
 

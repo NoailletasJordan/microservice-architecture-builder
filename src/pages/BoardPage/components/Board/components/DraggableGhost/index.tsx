@@ -1,9 +1,9 @@
 import { DragOverlay, useDndContext } from '@dnd-kit/core'
 import { Box } from '@mantine/core'
 import { DraggableData } from '../../constants'
-import { ServiceTool } from '../BuilderOptions/components/ServiceTool'
 import { ModuleIcon } from '../CustomNode/components/ModuleIcon'
 import { SubServiceComponent } from '../CustomNode/components/SubServicesSection/components/SubServiceComponent'
+import { ServiceTool } from '../Toolbar/components/ServiceTool'
 
 export default function DraggableGhost() {
   const { active } = useDndContext()

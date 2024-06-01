@@ -3,7 +3,7 @@ import {
   DraggableData,
   SubService,
 } from '@/pages/BoardPage/components/Board/constants'
-import { ServiceTool } from '../../../../../BuilderOptions/components/ServiceTool'
+import { ServiceTool } from '../../../../../Toolbar/components/ServiceTool'
 
 interface Props {
   subService: SubService

@@ -3,11 +3,11 @@ import { ActionIcon, Grid } from '@mantine/core'
 import { IconTrash } from '@tabler/icons-react'
 import { useReactFlow } from 'reactflow'
 import TechnologieEditor from '../../../Board/components/CustomNode/components/TechnologieSelector'
-import { Datatype, ICON_STYLE } from '../../../Board/constants'
+import { ICON_STYLE, IService } from '../../../Board/constants'
 import AddTechnology from './components/AddTechnology'
 
 interface Props {
-  service: Datatype
+  service: IService
 }
 
 export default function MainTechnologySection({ service }: Props) {

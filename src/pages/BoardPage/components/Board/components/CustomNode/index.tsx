@@ -11,16 +11,16 @@ import {
 import { NodeProps, Position, useReactFlow } from 'reactflow'
 
 import SubTitle from '@/components/SubTitle'
+import { selectedNodeContext } from '@/contexts/SelectedNode/constants'
 import { handleDeleteNode } from '@/pages/BoardPage/helpers'
 import { Box } from '@mantine/core'
 import { IconBook, IconEye, IconEyeClosed } from '@tabler/icons-react'
 import { useContext, useState } from 'react'
 import DroppableArea from '../../../../../../components/DroppableArea/index'
-import selectedNodeContext from '../../../../../../selectedNodeContext'
 import {
   CARD_WIDTH,
-  Datatype,
   ICON_STYLE,
+  IService,
   NO_DRAG_REACTFLOW_CLASS,
   TCustomNode,
   serviceConfig,
@@ -33,7 +33,7 @@ import { DraggableModuleIcon } from './components/ModuleIcon'
 import SubServiceSection from './components/SubServicesSection'
 import TechnologieEditor from './components/TechnologieSelector'
 
-export default function CustomNode(props: NodeProps<Datatype>) {
+export default function CustomNode(props: NodeProps<IService>) {
   const [showFullModule, setShowFullModule] = useState(false)
   const flowInstance = useReactFlow()
   const { serviceId, setServiceId: setSelectedServiceId } =
@@ -130,7 +130,7 @@ export default function CustomNode(props: NodeProps<Datatype>) {
           {!!props.data.modules.length && (
             <DividerWrapper>
               <Group gap="xs">
-                <Text size="xs">Modules</Text>
+                <Text>Modules</Text>
                 <Switch
                   size="xs"
                   color="dark.4"

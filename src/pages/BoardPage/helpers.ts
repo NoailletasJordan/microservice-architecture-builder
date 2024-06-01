@@ -1,6 +1,6 @@
 import { ReactFlowInstance, XYPosition } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
-import { Datatype, Module, ServiceIdType } from './components/Board/constants'
+import { IService, Module, ServiceIdType } from './components/Board/constants'
 
 import {
   ILocalStorage,
@@ -17,7 +17,7 @@ export const getNewNode = ({
 }: {
   serviceIdType: ServiceIdType
   position: XYPosition
-} & Partial<Datatype>): TCustomNode => {
+} & Partial<IService>): TCustomNode => {
   const nodeID = initialService.id || uuidv4()
   return {
     id: nodeID,

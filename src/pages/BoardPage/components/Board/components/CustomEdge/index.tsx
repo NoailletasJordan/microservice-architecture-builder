@@ -1,8 +1,7 @@
-import { useMantineTheme } from '@mantine/core'
 import { EdgeProps, getSmoothStepPath, useReactFlow } from 'reactflow'
 import { IConnexion } from '../connexionContants'
 import EdgeActions from './components/Line/EdgeActions'
-import Line from './components/Line/index'
+import { DashedLine, FullLine } from './components/Line/index'
 
 const OFFSET_DOUBLE = 0
 // svg gradient dont get rendered on straight lines
@@ -51,20 +50,13 @@ export default function CustomEdge(props: EdgeProps<IConnexion>) {
   const handleDeleteEdge = () => {
     setEdges((edges) => edges.filter((edge) => edge.id !== id))
   }
-  const theme = useMantineTheme()
-  const strokeColor = theme.colors[theme.primaryColor][3]
   // Todo
   const duplexCommunication = true
   return (
     <>
       {!duplexCommunication && (
         <>
-          <Line
-            d={bezierPathUpper}
-            strokeWidth="1"
-            stroke={strokeColor}
-            animated
-          />
+          <DashedLine path={bezierPathUpper} />
           {/* <Line
               d={bezierPathLower}
               strokeWidth="1"
@@ -74,14 +66,12 @@ export default function CustomEdge(props: EdgeProps<IConnexion>) {
         </>
       )}
       {/* Thick Hidden Line to ease mouseover/select */}
-      {duplexCommunication && (
-        <Line d={bezierPathCenter} stroke={strokeColor} strokeDasharray="" />
-      )}
+      {duplexCommunication && <FullLine path={bezierPathCenter} />}
       <EdgeActions
         handleDeleteEdge={handleDeleteEdge}
         labelX={labelX}
         labelY={labelY}
-        connection={props.data!}
+        connexionType={props.data!.connexionType}
       />
     </>
   )

@@ -5,17 +5,18 @@ import { IConnexion, connexionConfig } from '../../../../connexionContants'
 interface Props {
   labelX: number
   labelY: number
-  handleDeleteEdge: () => void
-  connection: IConnexion
+  connexionType: IConnexion['connexionType']
+  opacity?: number
+  handleDeleteEdge?: () => void
 }
 
 export default function EdgeActions({
   labelX,
   labelY,
-  // handleDeleteEdge,
-  connection,
+  connexionType,
+  opacity,
 }: Props) {
-  const Icon = connexionConfig[connection.connexionType].Icon
+  const Icon = connexionConfig[connexionType].Icon
 
   return (
     <EdgeLabelRenderer>
@@ -28,6 +29,8 @@ export default function EdgeActions({
             transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px) `,
             pointerEvents: 'all',
             overflow: 'hidden',
+            opacity,
+            transition: 'opacity 300ms ease-out',
           }}
           p=".2rem"
         >

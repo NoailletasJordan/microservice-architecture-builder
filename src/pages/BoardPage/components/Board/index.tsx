@@ -24,7 +24,7 @@ import {
   handleDeleteNode,
   storeInLocal,
 } from '../../helpers'
-import ConnexionLine from './components/ConnectionLine'
+import ConnexionPreview from './components/ConnexionPreview'
 import CustomEdge from './components/CustomEdge'
 import CustomNode from './components/CustomNode'
 import DraggableGhost from './components/DraggableGhost/index'
@@ -120,7 +120,7 @@ export default function Board({ boardId }: Props) {
         type: 'custom',
         data: {
           id,
-          connexionType: connexionType,
+          connexionType,
         },
       }
 
@@ -129,7 +129,9 @@ export default function Board({ boardId }: Props) {
           (compEdge.source === source || compEdge.source === target) &&
           (compEdge.target === source || compEdge.target === target),
       ).length
-      if (edgeAlleadyExist) return
+
+      const connectToSelf = source === target
+      if (edgeAlleadyExist || connectToSelf) return
 
       setEdges((oldEdges) => addEdge(newEdge, oldEdges))
     },
@@ -152,7 +154,7 @@ export default function Board({ boardId }: Props) {
           nodeTypes={nodeTypes}
           connectionMode={ConnectionMode.Loose}
           edgeTypes={edgeTypes}
-          connectionLineComponent={ConnexionLine}
+          connectionLineComponent={ConnexionPreview}
           onNodeDragStop={onNodeDragEnd}
           noDragClassName={NO_DRAG_REACTFLOW_CLASS}
           noWheelClassName={NO_WhEEL_REACTFLOW_CLASS}

@@ -14,7 +14,7 @@ interface Props {
 export function ServiceTool({ serviceIdType }: Props) {
   return (
     <TooltipWrapper
-      label={serviceConfig[serviceIdType].label}
+      label={serviceConfig[serviceIdType].defaultLabel}
       position="bottom"
     >
       <ThemeIcon size="lg" color="gray" variant="default" aria-label="Settings">

@@ -1,7 +1,7 @@
 import {
   ActionIcon,
   Card,
-  Flex,
+  Grid,
   Group,
   Image,
   Space,
@@ -10,7 +10,6 @@ import {
 } from '@mantine/core'
 import { NodeProps, Position, useReactFlow } from 'reactflow'
 
-import SubTitle from '@/components/SubTitle'
 import { selectedNodeContext } from '@/contexts/SelectedNode/constants'
 import { handleDeleteNode } from '@/pages/BoardPage/helpers'
 import { Box } from '@mantine/core'
@@ -28,6 +27,7 @@ import {
 import CustomHandle from './components/CustomHandle/index'
 import DeleteButton from './components/DeleteButton'
 import DividerWrapper from './components/DividerWrapper'
+import EditableTitle from './components/EditableTitle'
 import FullModuleSection from './components/FullModuleSection'
 import { DraggableModuleIcon } from './components/ModuleIcon'
 import SubServiceSection from './components/SubServicesSection'
@@ -105,18 +105,20 @@ export default function CustomNode(props: NodeProps<IService>) {
           className={NO_DRAG_REACTFLOW_CLASS}
           style={{ cursor: 'default' }}
         >
-          <Flex gap="xs">
-            <Image
-              h={50}
-              src={serviceConfig[props.data.serviceIdType].imageUrl}
-              alt={props.data.serviceIdType}
-            />
-            <Box>
-              <SubTitle>
-                {serviceConfig[props.data.serviceIdType].label}
-              </SubTitle>
-            </Box>
-          </Flex>
+          <Grid gutter="xs">
+            <Grid.Col span="content">
+              <Image
+                h={50}
+                src={serviceConfig[props.data.serviceIdType].imageUrl}
+                alt={props.data.serviceIdType}
+              />
+            </Grid.Col>
+            <Grid.Col span="auto">
+              <Box>
+                <EditableTitle service={props.data} />
+              </Box>
+            </Grid.Col>
+          </Grid>
           <Space h="md" />
 
           {props.data.technology && (

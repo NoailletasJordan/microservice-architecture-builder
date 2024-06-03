@@ -13,7 +13,7 @@ import { NodeProps, Position, useReactFlow } from 'reactflow'
 import { selectedNodeContext } from '@/contexts/SelectedNode/constants'
 import { handleDeleteNode } from '@/pages/BoardPage/helpers'
 import { Box } from '@mantine/core'
-import { IconBook, IconEye, IconEyeClosed } from '@tabler/icons-react'
+import { IconClick, IconEye, IconEyeClosed } from '@tabler/icons-react'
 import { useContext, useState } from 'react'
 import DroppableArea from '../../../../../../components/DroppableArea/index'
 import {
@@ -24,6 +24,7 @@ import {
   TCustomNode,
   serviceConfig,
 } from '../../constants'
+import AddModule from './components/AddModule'
 import CustomHandle from './components/CustomHandle/index'
 import DeleteButton from './components/DeleteButton'
 import DividerWrapper from './components/DividerWrapper'
@@ -39,7 +40,8 @@ export default function CustomNode(props: NodeProps<IService>) {
   const { serviceId, setServiceId: setSelectedServiceId } =
     useContext(selectedNodeContext)
 
-  const addNodeToContext = () => {
+  const toggleSelectedNode = () => {
+    if (serviceId === props.data.id) return setSelectedServiceId(null)
     const selectedNode = flowInstance.getNode(props.data.id) as TCustomNode
     setSelectedServiceId(selectedNode.id)
   }
@@ -75,10 +77,10 @@ export default function CustomNode(props: NodeProps<IService>) {
             <Box>
               <ActionIcon
                 className={NO_DRAG_REACTFLOW_CLASS}
-                onClick={addNodeToContext}
-                variant="light"
+                onClick={toggleSelectedNode}
+                variant={isSelected ? 'filled' : 'light'}
               >
-                <IconBook style={ICON_STYLE} />
+                <IconClick style={ICON_STYLE} />
               </ActionIcon>
             </Box>
 
@@ -159,6 +161,12 @@ export default function CustomNode(props: NodeProps<IService>) {
         <FullModuleSection
           open={showFullModule && !!props.data.modules.length}
           service={props.data}
+        />
+
+        <AddModule
+          serviceId={serviceId}
+          serviceIsSelected={isSelected}
+          modules={props.data.modules}
         />
       </Card>
     </DroppableArea>

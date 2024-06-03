@@ -1,6 +1,6 @@
 import SubTitle from '@/components/SubTitle'
 import { Center, Stack, Text, ThemeIcon } from '@mantine/core'
-import { IconBook } from '@tabler/icons-react'
+import { IconClick } from '@tabler/icons-react'
 
 export default function NoServiceSelected() {
   return (
@@ -15,7 +15,7 @@ export default function NoServiceSelected() {
             color="primary"
             aria-label="Settings"
           >
-            <IconBook stroke={1.5} />
+            <IconClick stroke={1.5} />
           </ThemeIcon>
           )
         </Text>

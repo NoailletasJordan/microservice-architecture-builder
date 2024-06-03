@@ -1,6 +1,11 @@
 import { ReactFlowInstance, XYPosition } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
-import { IService, Module, ServiceIdType } from './components/Board/constants'
+import {
+  IService,
+  Module,
+  ServiceIdType,
+  serviceConfig,
+} from './components/Board/constants'
 
 import {
   ILocalStorage,
@@ -26,6 +31,7 @@ export const getNewNode = ({
     data: {
       id: nodeID,
       serviceIdType,
+      title: serviceConfig[serviceIdType].defaultLabel,
       subServices: [],
       modules: [],
       ...initialService,

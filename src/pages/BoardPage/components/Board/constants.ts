@@ -15,6 +15,7 @@ export interface IService {
   id: string
   serviceIdType: ServiceIdType
   technology?: TechnologiesKeys
+  title: string
   subServices: SubService[]
   modules: Module[]
 }
@@ -87,39 +88,39 @@ export type ServiceIdType =
 
 type ServiceConfigValue = {
   imageUrl: string
-  label: string
+  defaultLabel: string
   technologies: Record<string, TechnologiesValue>
 }
 
 export const serviceConfig: Record<ServiceIdType, ServiceConfigValue> = {
   frontend: {
     imageUrl: '/board/a-frontend.svg',
-    label: 'Frontend',
+    defaultLabel: 'Frontend',
     technologies: technologyFrontend,
   },
   server: {
     imageUrl: '/board/a-server.svg',
-    label: 'Server',
+    defaultLabel: 'Server',
     technologies: technologyServer,
   },
   database: {
     imageUrl: '/board/a-database.svg',
-    label: 'Database',
+    defaultLabel: 'Database',
     technologies: technologyDatabases,
   },
   authentification: {
     imageUrl: '/board/a-auth.svg',
-    label: 'Auth',
+    defaultLabel: 'Auth',
     technologies: technologyAuthService,
   },
   'service-email': {
     imageUrl: '/board/a-email.svg',
-    label: 'Mailing',
+    defaultLabel: 'Mailing',
     technologies: technologyEmailService,
   },
   'service-payment': {
     imageUrl: '/board/a-payment.svg',
-    label: 'Payment',
+    defaultLabel: 'Payment',
     technologies: technologyPayment,
   },
 }
@@ -146,14 +147,9 @@ export const defaultNodes: TCustomNode[] = [
     type: 'service',
     data: {
       id: '1',
-      serviceIdType: 'authentification',
-      subServices: [
-        {
-          id: '3',
-          parentId: '1',
-          serviceIdType: 'service-email',
-        },
-      ],
+      serviceIdType: 'frontend',
+      title: serviceConfig['frontend'].defaultLabel,
+      subServices: [],
       modules: [],
     },
   },
@@ -162,7 +158,8 @@ export const defaultNodes: TCustomNode[] = [
     position: { x: 300, y: 50 },
     data: {
       id: '2',
-      serviceIdType: 'database',
+      serviceIdType: 'server',
+      title: serviceConfig['server'].defaultLabel,
       subServices: [],
       modules: [],
     },

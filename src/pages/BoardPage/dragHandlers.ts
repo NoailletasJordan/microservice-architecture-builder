@@ -7,6 +7,7 @@ import {
   DroppableType,
   IService,
   TCustomNode,
+  serviceConfig,
 } from './components/Board/constants'
 import {
   getNewNode,
@@ -72,6 +73,7 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
           id: v4(),
           parentId: targetId,
           serviceIdType: draggedContent.serviceIdType,
+          title: serviceConfig[draggedContent.serviceIdType].defaultLabel,
         }
         targetNode.data.subServices = [
           ...targetNode.data.subServices,

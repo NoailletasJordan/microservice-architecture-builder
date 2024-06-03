@@ -1,19 +1,22 @@
 import { ReactFlowInstance, XYPosition } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 import {
+  ILocalStorage,
   IService,
   Module,
   ServiceIdType,
-  serviceConfig,
-} from './components/Board/constants'
-
-import {
-  ILocalStorage,
   SubService,
   TCustomNode,
   defaultEdges,
   defaultNodes,
+  serviceConfig,
 } from './components/Board/constants'
+
+import {
+  ModuleType,
+  moduleConfig,
+} from '@/components/AddModuleMenu/moduleConstants'
+import { cloneDeep } from 'lodash'
 
 export const getNewNode = ({
   serviceIdType,
@@ -121,9 +124,21 @@ export const handleUpdateNode = (
 ): void => {
   flowInstance.setNodes((oldNodes) =>
     oldNodes.map((compNode) => {
-      return compNode.id === serviceId ? deepCopy(newNode) : compNode
+      return compNode.id === serviceId ? cloneDeep(newNode) : compNode
     }),
   )
+}
+
+export const handleAddModule = (
+  moduleType: ModuleType,
+  nodeId: TCustomNode['id'],
+  flowInstance: ReactFlowInstance,
+) => {
+  const node = flowInstance.getNode(nodeId) as TCustomNode
+  const newModule = moduleConfig[moduleType].getNew(node.data.id)
+  const targettedNodeCopy = cloneDeep(node)
+  targettedNodeCopy.data.modules.push(newModule)
+  handleUpdateNode(node.data.id, targettedNodeCopy, flowInstance)
 }
 
 export const deepCopy = <T>(obj: T): T => JSON.parse(JSON.stringify(obj))

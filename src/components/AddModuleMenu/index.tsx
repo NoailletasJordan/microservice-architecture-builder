@@ -1,14 +1,12 @@
-import { selectedNodeContext } from '@/contexts/SelectedNode/constants'
 import { Button, Menu, ThemeIcon } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
-import { useContext } from 'react'
 import { useReactFlow } from 'reactflow'
 import {
   ICON_STYLE,
   NO_DRAG_REACTFLOW_CLASS,
   TCustomNode,
 } from '../../pages/BoardPage/components/Board/constants'
-import { deepCopy } from '../../pages/BoardPage/helpers'
+import { handleAddModule } from '../../pages/BoardPage/helpers'
 import { ModuleType, moduleConfig } from './moduleConstants'
 
 interface Props {
@@ -16,23 +14,8 @@ interface Props {
 }
 
 export default function AddModuleMenu({ serviceId }: Props) {
-  const { setServiceId: setSelectedServiceId, openAside } =
-    useContext(selectedNodeContext)
   const flowInstance = useReactFlow()
-  const targettedService = flowInstance.getNode(serviceId) as TCustomNode
-
-  const handleAddModule = (moduleType: ModuleType) => {
-    const newModule = moduleConfig[moduleType].getNew(serviceId)
-    const targettedServiceCopy = deepCopy(targettedService)
-    targettedServiceCopy.data.modules.push(newModule)
-    flowInstance.setNodes((nodes) =>
-      nodes.map((compNode) =>
-        compNode.id === serviceId ? targettedServiceCopy : compNode,
-      ),
-    )
-    setSelectedServiceId(targettedService.id)
-    openAside()
-  }
+  const currentNode = flowInstance.getNode(serviceId) as TCustomNode
 
   return (
     <Menu shadow="md" width={200}>
@@ -51,14 +34,20 @@ export default function AddModuleMenu({ serviceId }: Props) {
         <Menu.Label>Module</Menu.Label>
         {Object.entries(moduleConfig).map(
           ([moduleType, { label, icon, disabled }]) => {
-            const moduleAlreadyPresent = !!targettedService.data.modules.find(
+            const moduleAlreadyPresent = !!currentNode.data.modules.find(
               (compModule) => compModule.moduleType === moduleType,
             )
             return (
               <Menu.Item
                 disabled={moduleAlreadyPresent || disabled}
                 key={moduleType}
-                onClick={() => handleAddModule(moduleType as ModuleType)}
+                onClick={() =>
+                  handleAddModule(
+                    moduleType as ModuleType,
+                    serviceId,
+                    flowInstance,
+                  )
+                }
                 leftSection={
                   <ThemeIcon
                     variant="filled"

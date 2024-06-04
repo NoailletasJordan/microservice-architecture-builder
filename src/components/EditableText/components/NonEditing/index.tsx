@@ -1,5 +1,5 @@
 import SubTitle from '@/components/SubTitle'
-import { ICON_STYLE } from '@/pages/BoardPage/components/Board/constants'
+import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import { ActionIcon, Box } from '@mantine/core'
 import { IconEdit } from '@tabler/icons-react'
 

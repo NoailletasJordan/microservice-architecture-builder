@@ -6,16 +6,13 @@ import {
   Image,
   Space,
   Switch,
-  Text,
+  ThemeIcon,
+  useMantineTheme,
 } from '@mantine/core'
 import { NodeProps, Position, useReactFlow } from 'reactflow'
 
+import StrongText from '@/components/StrongText'
 import { selectedNodeContext } from '@/contexts/SelectedNode/constants'
-import { handleDeleteNode } from '@/pages/BoardPage/helpers'
-import { Box } from '@mantine/core'
-import { IconClick, IconEye, IconEyeClosed } from '@tabler/icons-react'
-import { useContext, useState } from 'react'
-import DroppableArea from '../../../../../../components/DroppableArea/index'
 import {
   CARD_WIDTH,
   ICON_STYLE,
@@ -23,7 +20,20 @@ import {
   NO_DRAG_REACTFLOW_CLASS,
   TCustomNode,
   serviceConfig,
-} from '../../constants'
+} from '@/pages/BoardPage/configs/constants'
+import {
+  handleDeleteNode,
+  handleUpdateModule,
+} from '@/pages/BoardPage/configs/helpers'
+import { Box } from '@mantine/core'
+import {
+  IconClick,
+  IconEye,
+  IconEyeClosed,
+  IconGripHorizontal,
+} from '@tabler/icons-react'
+import { useContext } from 'react'
+import DroppableArea from '../../../../../../components/DroppableArea/index'
 import AddModule from './components/AddModule'
 import CustomHandle from './components/CustomHandle/index'
 import DeleteButton from './components/DeleteButton'
@@ -35,7 +45,6 @@ import SubServiceSection from './components/SubServicesSection'
 import TechnologieEditor from './components/TechnologieSelector'
 
 export default function CustomNode(props: NodeProps<IService>) {
-  const [showFullModule, setShowFullModule] = useState(false)
   const flowInstance = useReactFlow()
   const { serviceId, setServiceId: setSelectedServiceId } =
     useContext(selectedNodeContext)
@@ -46,6 +55,13 @@ export default function CustomNode(props: NodeProps<IService>) {
     setSelectedServiceId(selectedNode.id)
   }
   const isSelected = serviceId === props.data.id
+
+  const theme = useMantineTheme()
+  const primaryColors = theme.colors[theme.primaryColor]
+
+  const note = props.data.modules.find(
+    ({ moduleType }) => moduleType === 'markdown',
+  )
 
   return (
     <DroppableArea
@@ -58,9 +74,7 @@ export default function CustomNode(props: NodeProps<IService>) {
         radius="md"
         style={{
           border: `2px solid ${
-            isSelected
-              ? 'var(--mantine-primary-color-3)'
-              : 'var(--mantine-color-gray-3)'
+            isSelected ? primaryColors[3] : theme.colors.gray[3]
           }`,
         }}
         w={CARD_WIDTH}
@@ -71,7 +85,7 @@ export default function CustomNode(props: NodeProps<IService>) {
             align="center"
             justify="space-between"
             px="xs"
-            bg="var(--mantine-color-gray-3)"
+            bg={theme.colors.gray[3]}
             h="2.5rem"
           >
             <Box>
@@ -83,6 +97,10 @@ export default function CustomNode(props: NodeProps<IService>) {
                 <IconClick style={ICON_STYLE} />
               </ActionIcon>
             </Box>
+
+            <ThemeIcon variant="transparent" color="gray">
+              <IconGripHorizontal style={ICON_STYLE} />
+            </ThemeIcon>
 
             <DroppableArea
               id={`${props.id}-delete`}
@@ -107,10 +125,10 @@ export default function CustomNode(props: NodeProps<IService>) {
           className={NO_DRAG_REACTFLOW_CLASS}
           style={{ cursor: 'default' }}
         >
-          <Grid gutter="xs">
+          <Grid gutter="xs" align="center">
             <Grid.Col span="content">
               <Image
-                h={50}
+                h={40}
                 src={serviceConfig[props.data.serviceIdType].imageUrl}
                 alt={props.data.serviceIdType}
               />
@@ -134,16 +152,22 @@ export default function CustomNode(props: NodeProps<IService>) {
           {!!props.data.modules.length && (
             <DividerWrapper>
               <Group gap="xs">
-                <Text>Modules</Text>
+                <StrongText>Modules</StrongText>
                 <Switch
                   size="xs"
-                  color="dark.4"
+                  color={theme.colors[theme.primaryColor][4]}
                   onLabel={<IconEye size="xs" />}
                   offLabel={<IconEyeClosed size="xs" />}
-                  checked={showFullModule}
-                  onChange={(event) =>
-                    setShowFullModule(event.currentTarget.checked)
-                  }
+                  checked={note?.isVisible}
+                  onChange={(event) => {
+                    if (!note) return
+
+                    handleUpdateModule(
+                      note.id,
+                      { ...note, isVisible: event.currentTarget.checked },
+                      flowInstance,
+                    )
+                  }}
                 />
               </Group>
             </DividerWrapper>
@@ -159,7 +183,7 @@ export default function CustomNode(props: NodeProps<IService>) {
         </Card.Section>
 
         <FullModuleSection
-          open={showFullModule && !!props.data.modules.length}
+          open={!!note?.isVisible && !!props.data.modules.length}
           service={props.data}
         />
 

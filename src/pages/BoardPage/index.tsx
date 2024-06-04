@@ -6,8 +6,8 @@ import { useParams } from 'react-router-dom'
 import { useReactFlow } from 'reactflow'
 import AsideModule from './components/AsideModule/index'
 import Board from './components/Board'
-import { DroppableType } from './components/Board/constants'
-import { onDragEndConfig } from './dragHandlers'
+import { DroppableType } from './configs/constants'
+import { onDragEndConfig } from './configs/drag-handlers'
 
 export default function BoardPage() {
   const { id: boardId } = useParams()

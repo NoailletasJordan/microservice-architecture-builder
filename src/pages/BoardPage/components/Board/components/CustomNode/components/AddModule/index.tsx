@@ -1,14 +1,14 @@
-import { handleAddModule } from '@/pages/BoardPage/helpers'
-import { Button, Text } from '@mantine/core'
-import { IconNote } from '@tabler/icons-react'
-import { NodeToolbar, Position, useReactFlow } from 'reactflow'
 import {
   IService,
   Module,
   NO_DRAG_REACTFLOW_CLASS,
   NO_PAN_REACTFLOW_CLASS,
   NO_WhEEL_REACTFLOW_CLASS,
-} from '../../../../constants'
+} from '@/pages/BoardPage/configs/constants'
+import { handleAddModule } from '@/pages/BoardPage/configs/helpers'
+import { Button, Text } from '@mantine/core'
+import { IconNotes } from '@tabler/icons-react'
+import { NodeToolbar, Position, useReactFlow } from 'reactflow'
 
 interface Props {
   serviceId: IService['id'] | null
@@ -35,7 +35,7 @@ export default function AddModule({
         }
         variant="subtle"
         size="compact-sm"
-        leftSection={<IconNote />}
+        leftSection={<IconNotes />}
       >
         <Text component="span">Add a note</Text>
       </Button>

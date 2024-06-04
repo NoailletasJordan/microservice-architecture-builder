@@ -1,26 +1,20 @@
+import StrongText from '@/components/StrongText'
 import { selectedNodeContext } from '@/contexts/SelectedNode/constants'
 import {
-  ActionIcon,
-  Box,
-  Card,
-  Flex,
-  Group,
-  Text,
-  ThemeIcon,
-} from '@mantine/core'
+  ICON_STYLE,
+  ServiceIdType,
+  TCustomNode,
+} from '@/pages/BoardPage/configs/constants'
+import { ActionIcon, Box, Card, Flex, Group, ThemeIcon } from '@mantine/core'
 import { IconAffiliate, IconTrash } from '@tabler/icons-react'
 import { useContext } from 'react'
 import { Edge, Node, useEdges, useReactFlow } from 'reactflow'
+import DividerWrapper from '../../../Board/components/CustomNode/components/DividerWrapper'
 import { ServiceTool } from '../../../Board/components/Toolbar/components/ServiceTool'
 import {
   IConnexion,
   connexionConfig,
 } from '../../../Board/components/connexionContants'
-import {
-  ICON_STYLE,
-  ServiceIdType,
-  TCustomNode,
-} from '../../../Board/constants'
 
 interface Props {
   node: TCustomNode
@@ -45,7 +39,9 @@ export default function DirectLinks({ node }: Props) {
 
   return (
     <Box>
-      <Text>Direct Connexion(s)</Text>
+      <DividerWrapper>
+        <StrongText>Direct Connexions</StrongText>
+      </DividerWrapper>
       <Card withBorder>
         {edgesFromCurrentService.map((edge) => {
           const externalNodeId =
@@ -89,7 +85,7 @@ const Connection = (props: ConnexionProps) => {
           <IconAffiliate style={ICON_STYLE} />
         </ThemeIcon>
         <ServiceTool serviceIdType={props.externalServiceIdType} />
-        <Flex align="center" h={30} w={30} c="indigo">
+        <Flex align="center" h={30} w={30}>
           <Icon />
         </Flex>
 

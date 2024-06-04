@@ -1,5 +1,10 @@
-import { TechnologiesKeys } from '@/pages/BoardPage/components/Board/components/CustomNode/components/TechnologieSelector/technologies-constant'
-import { handleUpdateNode } from '@/pages/BoardPage/helpers'
+import {
+  ICON_STYLE,
+  IService,
+  serviceConfig,
+} from '@/pages/BoardPage/configs/constants'
+import { handleUpdateNode } from '@/pages/BoardPage/configs/helpers'
+import { TechnologiesKeys } from '@/pages/BoardPage/configs/technologies'
 import {
   Box,
   Button,
@@ -13,11 +18,6 @@ import { IconPlus } from '@tabler/icons-react'
 import { groupBy, mapValues, upperFirst } from 'lodash'
 import { useMemo } from 'react'
 import { useReactFlow } from 'reactflow'
-import {
-  ICON_STYLE,
-  IService,
-  serviceConfig,
-} from '../../../../../Board/constants'
 
 interface Props {
   service: IService

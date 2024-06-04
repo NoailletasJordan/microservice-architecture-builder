@@ -1,5 +1,7 @@
 import { ReactFlowInstance, XYPosition } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
+
+import { cloneDeep } from 'lodash'
 import {
   ILocalStorage,
   IService,
@@ -10,13 +12,8 @@ import {
   defaultEdges,
   defaultNodes,
   serviceConfig,
-} from './components/Board/constants'
-
-import {
-  ModuleType,
-  moduleConfig,
-} from '@/components/AddModuleMenu/moduleConstants'
-import { cloneDeep } from 'lodash'
+} from './constants'
+import { ModuleType, moduleConfig } from './modules'
 
 export const getNewNode = ({
   serviceIdType,
@@ -91,7 +88,7 @@ export const handleDeleteSubservice = (
         (compSubService) => compSubService.id != deleteId,
       )
 
-      const newCompNode = deepCopy(compNode)
+      const newCompNode = cloneDeep(compNode)
       newCompNode.data.subServices = filteredSubServices
 
       return newCompNode
@@ -109,7 +106,7 @@ export const handleDeleteModule = (
         (compModule) => compModule.id != deleteId,
       )
 
-      const newCompNode = deepCopy(compNode)
+      const newCompNode = cloneDeep(compNode)
       newCompNode.data.modules = filteredModules
 
       return newCompNode
@@ -141,4 +138,20 @@ export const handleAddModule = (
   handleUpdateNode(node.data.id, targettedNodeCopy, flowInstance)
 }
 
-export const deepCopy = <T>(obj: T): T => JSON.parse(JSON.stringify(obj))
+export const handleUpdateModule = (
+  moduleId: Module['id'],
+  newModule: Module,
+  flowInstance: ReactFlowInstance,
+) => {
+  const nodes = flowInstance.getNodes() as TCustomNode[]
+
+  const nodeFromModule = nodes.find((node) => {
+    return !!node.data.modules.find((compModule) => compModule.id === moduleId)
+  })!
+
+  nodeFromModule.data.modules = nodeFromModule.data.modules.map((compModule) =>
+    compModule.id === moduleId ? newModule : compModule,
+  )
+
+  handleUpdateNode(nodeFromModule.id, nodeFromModule, flowInstance)
+}

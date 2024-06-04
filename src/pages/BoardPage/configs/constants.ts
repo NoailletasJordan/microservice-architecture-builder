@@ -1,4 +1,5 @@
 import { Node } from 'reactflow'
+import { TCustomEdge } from '../components/Board/components/connexionContants'
 import {
   TechnologiesKeys,
   TechnologiesValue,
@@ -8,8 +9,7 @@ import {
   technologyFrontend,
   technologyPayment,
   technologyServer,
-} from './components/CustomNode/components/TechnologieSelector/technologies-constant'
-import { TCustomEdge } from './components/connexionContants'
+} from './technologies'
 
 export interface IService {
   id: string
@@ -24,27 +24,13 @@ export interface IModuleRichText {
   id: string
   parentId: IService['id']
   moduleType: 'markdown'
+  isVisible: boolean
   data: {
     text: string
   }
 }
 
-export interface IModuleEndpoint {
-  id: string
-  parentId: IService['id']
-  moduleType: 'endpoints'
-  data: IEndpointData
-}
-
-export type IEndpointData = {
-  endpoints: {
-    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
-    address: string
-  }[]
-}
-
-export type Module = IModuleRichText | IModuleEndpoint
-
+export type Module = IModuleRichText
 export type SubService = Omit<IService, 'subServices' | 'modules'> & {
   parentId: IService['id']
 }

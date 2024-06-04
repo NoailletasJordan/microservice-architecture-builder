@@ -8,7 +8,7 @@ import {
   IService,
   TCustomNode,
   serviceConfig,
-} from './components/Board/constants'
+} from './constants'
 import {
   getNewNode,
   handleAddNode,

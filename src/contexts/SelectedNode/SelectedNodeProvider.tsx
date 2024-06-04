@@ -1,4 +1,4 @@
-import { IService } from '@/pages/BoardPage/components/Board/constants'
+import { IService } from '@/pages/BoardPage/configs/constants'
 import { useDisclosure } from '@mantine/hooks'
 import { ReactNode, useState } from 'react'
 import { ISelectedNodeContext, selectedNodeContext } from './constants'

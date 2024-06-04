@@ -1,16 +1,27 @@
+import TooltipWrapper from '@/components/TooltipWrapper'
+import {
+  ServiceIdType,
+  serviceConfig,
+} from '@/pages/BoardPage/configs/constants'
 import { Card, Divider, Group } from '@mantine/core'
 import { Panel } from 'reactflow'
 import DroppableArea from '../../../../../../components/DroppableArea/index'
-import { ServiceIdType, serviceConfig } from '../../constants'
 import CommunicationTool from './components/CommunicationTool/index'
 import { DraggableServiceTool } from './components/ServiceTool'
 
 export default function Toolbar() {
   const services = Object.entries(serviceConfig).map(([serviceIdType]) => (
-    <DraggableServiceTool
+    <TooltipWrapper
+      label={serviceConfig[serviceIdType as ServiceIdType].defaultLabel}
+      position="bottom"
       key={serviceIdType}
-      serviceIdType={serviceIdType as ServiceIdType}
-    />
+    >
+      <DraggableServiceTool
+        key={serviceIdType}
+        draggableIndicator
+        serviceIdType={serviceIdType as ServiceIdType}
+      />
+    </TooltipWrapper>
   ))
 
   return (

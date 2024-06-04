@@ -1,8 +1,5 @@
 import DraggableArea from '@/components/DraggableArea'
-import {
-  DraggableData,
-  SubService,
-} from '@/pages/BoardPage/components/Board/constants'
+import { DraggableData, SubService } from '@/pages/BoardPage/configs/constants'
 import { ServiceTool } from '../../../../../Toolbar/components/ServiceTool'
 
 interface Props {
@@ -23,5 +20,7 @@ export function DraggableSubServiceComponent({ subService }: Props) {
 }
 
 export function SubServiceComponent({ subService }: Props) {
-  return <ServiceTool serviceIdType={subService.serviceIdType} />
+  return (
+    <ServiceTool serviceIdType={subService.serviceIdType} draggableIndicator />
+  )
 }

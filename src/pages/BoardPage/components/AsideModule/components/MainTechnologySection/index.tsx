@@ -1,9 +1,9 @@
-import { handleUpdateNode } from '@/pages/BoardPage/helpers'
+import { ICON_STYLE, IService } from '@/pages/BoardPage/configs/constants'
+import { handleUpdateNode } from '@/pages/BoardPage/configs/helpers'
 import { ActionIcon, Grid } from '@mantine/core'
 import { IconTrash } from '@tabler/icons-react'
 import { useReactFlow } from 'reactflow'
 import TechnologieEditor from '../../../Board/components/CustomNode/components/TechnologieSelector'
-import { ICON_STYLE, IService } from '../../../Board/constants'
 import AddTechnology from './components/AddTechnology'
 
 interface Props {

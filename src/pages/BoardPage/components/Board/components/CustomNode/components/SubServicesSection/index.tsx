@@ -1,6 +1,7 @@
-import { Box, SimpleGrid, Text } from '@mantine/core'
+import StrongText from '@/components/StrongText'
+import { SubService } from '@/pages/BoardPage/configs/constants'
+import { Box, SimpleGrid } from '@mantine/core'
 import { v4 } from 'uuid'
-import { SubService } from '../../../../constants'
 import DividerWrapper from '../DividerWrapper'
 import { DraggableSubServiceComponent } from './components/SubServiceComponent'
 
@@ -12,7 +13,7 @@ export default function SubServiceSection({ subServices }: Props) {
   return (
     <Box>
       <DividerWrapper>
-        <Text>Internal Services</Text>
+        <StrongText>Internal Services</StrongText>
       </DividerWrapper>
 
       <SimpleGrid cols={5} verticalSpacing="xs">

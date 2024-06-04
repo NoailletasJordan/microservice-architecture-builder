@@ -1,7 +1,8 @@
 import DraggableArea from '@/components/DraggableArea'
-import { Center, ThemeIcon } from '@mantine/core'
-import { moduleConfig } from '../../../../../../../../components/AddModuleMenu/moduleConstants'
-import { DraggableData, Module } from '../../../../constants'
+import DraggableIndicator from '@/components/DraggableIndicator'
+import { DraggableData, Module } from '@/pages/BoardPage/configs/constants'
+import { moduleConfig } from '@/pages/BoardPage/configs/modules'
+import { Box, Center, ThemeIcon } from '@mantine/core'
 
 interface Props {
   module: Module
@@ -21,17 +22,15 @@ export function DraggableModuleIcon({ module }: Props) {
 }
 
 export function ModuleIcon({ module }: Props) {
-  const icon = moduleConfig[module.moduleType].icon
+  const Icon = moduleConfig[module.moduleType].Icon
   return (
-    <Center>
-      <ThemeIcon
-        variant="filled"
-        aria-label="Settings"
-        size="sm"
-        color="violet"
-      >
-        {icon}
-      </ThemeIcon>
-    </Center>
+    <Box pos="relative">
+      <Center>
+        <ThemeIcon size="lg" color="gray" variant="default">
+          <Icon />
+        </ThemeIcon>
+        <DraggableIndicator />
+      </Center>
+    </Box>
   )
 }

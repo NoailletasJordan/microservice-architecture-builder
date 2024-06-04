@@ -1,6 +1,7 @@
 import { connexionContext } from '@/contexts/Connexion/constants'
 import { selectedNodeContext } from '@/contexts/SelectedNode/constants'
-import { Box } from '@mantine/core'
+import { Box, useMantineTheme } from '@mantine/core'
+import { cloneDeep } from 'lodash'
 import { useCallback, useContext, useEffect } from 'react'
 import ReactFlow, {
   Background,
@@ -19,11 +20,16 @@ import 'reactflow/dist/style.css'
 import { v4 as uuidv4, v4 } from 'uuid'
 import DroppableArea from '../../../../components/DroppableArea/index'
 import {
-  deepCopy,
+  NO_DRAG_REACTFLOW_CLASS,
+  NO_PAN_REACTFLOW_CLASS,
+  NO_WhEEL_REACTFLOW_CLASS,
+  TCustomNode,
+} from '../../configs/constants'
+import {
   getInitialBoardData,
   handleDeleteNode,
   storeInLocal,
-} from '../../helpers'
+} from '../../configs/helpers'
 import ConnexionPreview from './components/ConnexionPreview'
 import CustomEdge from './components/CustomEdge'
 import CustomNode from './components/CustomNode'
@@ -32,12 +38,6 @@ import FitToView from './components/FitToView/index'
 import ServiceOverviewButton from './components/ServiceOverviewButton/index'
 import Toolbar from './components/Toolbar'
 import { TCustomEdge } from './components/connexionContants'
-import {
-  NO_DRAG_REACTFLOW_CLASS,
-  NO_PAN_REACTFLOW_CLASS,
-  NO_WhEEL_REACTFLOW_CLASS,
-  TCustomNode,
-} from './constants'
 
 interface Props {
   boardId: string
@@ -91,7 +91,7 @@ export default function Board({ boardId }: Props) {
 
     setNodes((oldNodes) =>
       oldNodes.map((compNode) =>
-        compNode.id === targetNode.id ? deepCopy(targetNode) : compNode,
+        compNode.id === targetNode.id ? cloneDeep(targetNode) : compNode,
       ),
     )
   }
@@ -138,9 +138,15 @@ export default function Board({ boardId }: Props) {
     [setEdges, edges, connexionType],
   )
 
+  const theme = useMantineTheme()
   return (
     <DroppableArea id="board" data={{ droppableType: 'board' }}>
-      <Box w="100%" h="100vh" style={preventScrollbarOnPan}>
+      <Box
+        w="100%"
+        h="100vh"
+        style={preventScrollbarOnPan}
+        bg={theme.colors.gray[0]}
+      >
         <ReactFlow
           // TODO - allow wider zooms
           minZoom={1}

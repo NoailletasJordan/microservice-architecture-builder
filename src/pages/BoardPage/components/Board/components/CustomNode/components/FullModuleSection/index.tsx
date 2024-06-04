@@ -1,12 +1,12 @@
 import ModuleComponent from '@/components/ModuleComponent'
-import { ScrollArea } from '@mantine/core'
-import { NodeToolbar, Position } from 'reactflow'
 import {
   IService,
   NO_DRAG_REACTFLOW_CLASS,
   NO_PAN_REACTFLOW_CLASS,
   NO_WhEEL_REACTFLOW_CLASS,
-} from '../../../../constants'
+} from '@/pages/BoardPage/configs/constants'
+import { ScrollArea } from '@mantine/core'
+import { NodeToolbar, Position } from 'reactflow'
 
 interface Props {
   service: IService
@@ -23,12 +23,8 @@ export default function FullModuleSection({ service, open }: Props) {
       className={`${NO_WhEEL_REACTFLOW_CLASS} ${NO_DRAG_REACTFLOW_CLASS} ${NO_PAN_REACTFLOW_CLASS}`}
     >
       {service.modules.map((module) => (
-        <ScrollArea.Autosize offsetScrollbars mah={1000}>
-          <ModuleComponent
-            key={module.id}
-            module={module}
-            serviceId={service.id}
-          />
+        <ScrollArea.Autosize key={module.id} offsetScrollbars mah={1000}>
+          <ModuleComponent key={module.id} module={module} />
         </ScrollArea.Autosize>
       ))}
     </NodeToolbar>

@@ -1,31 +1,28 @@
 import DraggableArea from '@/components/DraggableArea'
-import TooltipWrapper from '@/components/TooltipWrapper'
-import { Image, ThemeIcon } from '@mantine/core'
+import DraggableIndicator from '@/components/DraggableIndicator'
 import {
   DraggableData,
   ServiceIdType,
   serviceConfig,
-} from '../../../../constants'
+} from '@/pages/BoardPage/configs/constants'
+import { Image, ThemeIcon } from '@mantine/core'
 
 interface Props {
   serviceIdType: ServiceIdType
+  draggableIndicator?: boolean
 }
 
-export function ServiceTool({ serviceIdType }: Props) {
+export function ServiceTool({ serviceIdType, draggableIndicator }: Props) {
   return (
-    <TooltipWrapper
-      label={serviceConfig[serviceIdType].defaultLabel}
-      position="bottom"
-    >
-      <ThemeIcon size="lg" color="gray" variant="default" aria-label="Settings">
-        <Image
-          h={25}
-          w={25}
-          src={serviceConfig[serviceIdType].imageUrl}
-          alt="frontend"
-        />
-      </ThemeIcon>
-    </TooltipWrapper>
+    <ThemeIcon size="lg" color="gray" variant="default">
+      <Image
+        h={25}
+        w={25}
+        src={serviceConfig[serviceIdType].imageUrl}
+        alt="frontend"
+      />
+      {draggableIndicator && <DraggableIndicator />}
+    </ThemeIcon>
   )
 }
 

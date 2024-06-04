@@ -1,8 +1,8 @@
+import { DraggableData, ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import { useDndContext } from '@dnd-kit/core'
 import { ActionIcon } from '@mantine/core'
 import { IconTrash } from '@tabler/icons-react'
 import { CSSProperties } from 'react'
-import { DraggableData, ICON_STYLE } from '../../../../constants'
 
 interface Props {
   onClick: () => void

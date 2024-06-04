@@ -1,6 +1,6 @@
+import { DroppableType } from '@/pages/BoardPage/configs/constants'
 import { useDroppable } from '@dnd-kit/core'
 import { ReactNode } from 'react'
-import { DroppableType } from '../../pages/BoardPage/components/Board/constants'
 
 interface Props {
   id: string

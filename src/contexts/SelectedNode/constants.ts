@@ -1,4 +1,4 @@
-import { IService } from '@/pages/BoardPage/components/Board/constants'
+import { IService } from '@/pages/BoardPage/configs/constants'
 import { createContext } from 'react'
 
 export type ID = string | null

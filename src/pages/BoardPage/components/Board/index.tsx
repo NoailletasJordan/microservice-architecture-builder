@@ -1,6 +1,9 @@
+import DroppableIndicator from '@/components/DroppableIndicator'
 import { connexionContext } from '@/contexts/Connexion/constants'
+import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { selectedNodeContext } from '@/contexts/SelectedNode/constants'
 import { Box, useMantineTheme } from '@mantine/core'
+import { useElementSize } from '@mantine/hooks'
 import { cloneDeep } from 'lodash'
 import { useCallback, useContext, useEffect } from 'react'
 import ReactFlow, {
@@ -36,6 +39,7 @@ import CustomNode from './components/CustomNode'
 import DraggableGhost from './components/DraggableGhost/index'
 import FitToView from './components/FitToView/index'
 import ServiceOverviewButton from './components/ServiceOverviewButton/index'
+import SwitchDropHints from './components/SwitchDropHints'
 import Toolbar from './components/Toolbar'
 import { TCustomEdge } from './components/connexionContants'
 
@@ -139,40 +143,53 @@ export default function Board({ boardId }: Props) {
   )
 
   const theme = useMantineTheme()
+  const { ref, height, width } = useElementSize()
+  const droppableType = 'board'
+
   return (
-    <DroppableArea id="board" data={{ droppableType: 'board' }}>
-      <Box
-        w="100%"
-        h="100vh"
-        style={preventScrollbarOnPan}
-        bg={theme.colors.gray[0]}
-      >
-        <ReactFlow
-          // TODO - allow wider zooms
-          minZoom={1}
-          maxZoom={1}
-          fitView
-          onConnect={onConnect}
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          nodeTypes={nodeTypes}
-          connectionMode={ConnectionMode.Loose}
-          edgeTypes={edgeTypes}
-          connectionLineComponent={ConnexionPreview}
-          onNodeDragStop={onNodeDragEnd}
-          noDragClassName={NO_DRAG_REACTFLOW_CLASS}
-          noWheelClassName={NO_WhEEL_REACTFLOW_CLASS}
-          noPanClassName={NO_PAN_REACTFLOW_CLASS}
+    <DroppableHintProvider>
+      <DroppableArea id="board" data={{ droppableType }}>
+        <Box
+          w="100%"
+          h="100vh"
+          style={preventScrollbarOnPan}
+          bg={theme.colors.gray[0]}
+          pos="relative"
+          ref={ref}
         >
-          <FitToView />
-          <Background id={v4()} variant={BackgroundVariant.Dots} />
-          <Toolbar />
-        </ReactFlow>
-        <ServiceOverviewButton onClick={toggleAsideOpen} />
-        <DraggableGhost />
-      </Box>
-    </DroppableArea>
+          <DroppableIndicator
+            height={height}
+            padding={20}
+            width={width}
+            droppableType={droppableType}
+          />
+          <ReactFlow
+            minZoom={1}
+            maxZoom={1}
+            fitView
+            onConnect={onConnect}
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            nodeTypes={nodeTypes}
+            connectionMode={ConnectionMode.Loose}
+            edgeTypes={edgeTypes}
+            connectionLineComponent={ConnexionPreview}
+            onNodeDragStop={onNodeDragEnd}
+            noDragClassName={NO_DRAG_REACTFLOW_CLASS}
+            noWheelClassName={NO_WhEEL_REACTFLOW_CLASS}
+            noPanClassName={NO_PAN_REACTFLOW_CLASS}
+          >
+            <FitToView />
+            <Background id={v4()} variant={BackgroundVariant.Dots} />
+            <Toolbar />
+          </ReactFlow>
+          <SwitchDropHints />
+          <ServiceOverviewButton onClick={toggleAsideOpen} />
+          <DraggableGhost />
+        </Box>
+      </DroppableArea>
+    </DroppableHintProvider>
   )
 }

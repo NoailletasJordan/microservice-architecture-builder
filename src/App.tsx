@@ -1,8 +1,17 @@
 import '@mantine/core/styles.css'
+import '@mantine/notifications/styles.css'
 import '@mantine/tiptap/styles.css'
 import './fix.css'
 
-import { MantineProvider, Text, createTheme } from '@mantine/core'
+import {
+  ActionIcon,
+  Button,
+  CloseButton,
+  MantineProvider,
+  Text,
+  createTheme,
+} from '@mantine/core'
+import { Notifications } from '@mantine/notifications'
 import { StrictMode } from 'react'
 import {
   Route,
@@ -17,7 +26,7 @@ const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route
-        path="/board/:id"
+        index
         element={
           <ReactFlowProvider>
             <BoardPage />
@@ -33,9 +42,18 @@ export default function App() {
     <StrictMode>
       <MantineProvider theme={theme} forceColorScheme="light">
         <RouterProvider router={router} />
+        <Notifications />
       </MantineProvider>
     </StrictMode>
   )
+}
+
+const preventActiveTranslate = {
+  styles: {
+    root: {
+      transform: 'none',
+    },
+  },
 }
 
 const theme = createTheme({
@@ -46,5 +64,8 @@ const theme = createTheme({
         size: 'xs',
       },
     }),
+    Button: Button.extend(preventActiveTranslate),
+    ActionIcon: ActionIcon.extend(preventActiveTranslate),
+    CloseButton: CloseButton.extend(preventActiveTranslate),
   },
 })

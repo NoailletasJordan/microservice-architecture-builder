@@ -2,19 +2,15 @@ import ConnexionContextProvider from '@/contexts/Connexion/ConnexionProvider'
 import SelectedNodeProvider from '@/contexts/SelectedNode/SelectedNodeProvider'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { AppShell } from '@mantine/core'
-import { useParams } from 'react-router-dom'
 import { useReactFlow } from 'reactflow'
 import AsideModule from './components/AsideModule/index'
 import Board from './components/Board'
+import ModalLoadShareableLink from './components/Board/components/LoadExternalBoardHandler'
 import { DroppableType } from './configs/constants'
 import { onDragEndConfig } from './configs/drag-handlers'
 
 export default function BoardPage() {
-  const { id: boardId } = useParams()
   const flowInstance = useReactFlow()
-
-  // TODO loader
-  if (!boardId) return <div />
 
   return (
     <>
@@ -34,7 +30,8 @@ export default function BoardPage() {
               }}
             >
               <AppShell.Main>
-                <Board boardId={boardId} />
+                <Board />
+                <ModalLoadShareableLink />
               </AppShell.Main>
             </DndContext>
             <AppShell.Aside>

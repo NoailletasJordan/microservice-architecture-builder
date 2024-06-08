@@ -153,6 +153,8 @@ export const defaultNodes: TCustomNode[] = [
   },
 ]
 
+export const shareHashTocken = '#json='
+export const STORAGE_DATA_INDEX_KEY = 'board-data-index'
 export const CARD_WIDTH = 210
 export const NO_DRAG_REACTFLOW_CLASS = 'noDragReactflow'
 export const NO_WhEEL_REACTFLOW_CLASS = 'nowheel'

@@ -1,7 +1,6 @@
 import DroppableIndicator from '@/components/DroppableIndicator'
 import { connexionContext } from '@/contexts/Connexion/constants'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
-import { selectedNodeContext } from '@/contexts/SelectedNode/constants'
 import { Box, useMantineTheme } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
 import { cloneDeep } from 'lodash'
@@ -26,6 +25,7 @@ import {
   NO_DRAG_REACTFLOW_CLASS,
   NO_PAN_REACTFLOW_CLASS,
   NO_WhEEL_REACTFLOW_CLASS,
+  STORAGE_DATA_INDEX_KEY,
   TCustomNode,
 } from '../../configs/constants'
 import {
@@ -38,14 +38,10 @@ import CustomEdge from './components/CustomEdge'
 import CustomNode from './components/CustomNode'
 import DraggableGhost from './components/DraggableGhost/index'
 import FitToView from './components/FitToView/index'
-import ServiceOverviewButton from './components/ServiceOverviewButton/index'
+import PrimaryActionsPanel from './components/PrimaryActionsPanel'
 import SwitchDropHints from './components/SwitchDropHints'
 import Toolbar from './components/Toolbar'
 import { TCustomEdge } from './components/connexionContants'
-
-interface Props {
-  boardId: string
-}
 
 const DEBOUNCE_SAVE_MS = 600
 
@@ -58,12 +54,11 @@ const edgeTypes: EdgeTypes = {
 }
 
 const preventScrollbarOnPan = { overflow: 'hidden' }
+const droppableType = 'board'
 
-export default function Board({ boardId }: Props) {
-  const { toggleAsideOpen } = useContext(selectedNodeContext)
+export default function Board() {
   const { connexionType } = useContext(connexionContext)
-  const { nodes: initialnodes, edges: initialEdges } =
-    getInitialBoardData(boardId)
+  const { nodes: initialnodes, edges: initialEdges } = getInitialBoardData()
   const [nodes, setNodes, onNodesChange] = useNodesState(initialnodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
 
@@ -104,13 +99,13 @@ export default function Board({ boardId }: Props) {
   useEffect(() => {
     const handle = setTimeout(() => {
       const dataToStore = { nodes, edges, timestamp: new Date() }
-      storeInLocal(boardId, dataToStore)
+      storeInLocal(STORAGE_DATA_INDEX_KEY, dataToStore)
     }, DEBOUNCE_SAVE_MS)
 
     return () => {
       clearTimeout(handle)
     }
-  }, [nodes, edges, boardId])
+  }, [nodes, edges])
 
   const onConnect = useCallback(
     ({ source, sourceHandle, target, targetHandle }: Connection) => {
@@ -144,7 +139,6 @@ export default function Board({ boardId }: Props) {
 
   const theme = useMantineTheme()
   const { ref, height, width } = useElementSize()
-  const droppableType = 'board'
 
   return (
     <DroppableHintProvider>
@@ -186,7 +180,7 @@ export default function Board({ boardId }: Props) {
             <Toolbar />
           </ReactFlow>
           <SwitchDropHints />
-          <ServiceOverviewButton onClick={toggleAsideOpen} />
+          <PrimaryActionsPanel />
           <DraggableGhost />
         </Box>
       </DroppableArea>

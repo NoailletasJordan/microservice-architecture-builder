@@ -6,6 +6,7 @@ import {
   ILocalStorage,
   IService,
   Module,
+  STORAGE_DATA_INDEX_KEY,
   ServiceIdType,
   SubService,
   TCustomNode,
@@ -46,11 +47,11 @@ export const handleAddNode = (
   flowInstance.setNodes((oldNodes: TCustomNode[]) => [...oldNodes, newNode])
 }
 
-export const getInitialBoardData = (boardId: string): ILocalStorage => {
+export const getInitialBoardData = (): ILocalStorage => {
   const storageReference: ILocalStorage | undefined =
-    boardId &&
-    !!localStorage.getItem(boardId) &&
-    JSON.parse(localStorage.getItem(boardId) as string)
+    STORAGE_DATA_INDEX_KEY &&
+    !!localStorage.getItem(STORAGE_DATA_INDEX_KEY) &&
+    JSON.parse(localStorage.getItem(STORAGE_DATA_INDEX_KEY) as string)
 
   if (!storageReference)
     return { timestamp: new Date(), nodes: defaultNodes, edges: defaultEdges }

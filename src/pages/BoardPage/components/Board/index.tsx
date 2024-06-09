@@ -4,7 +4,7 @@ import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvid
 import { Box, useMantineTheme } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
 import { cloneDeep } from 'lodash'
-import { useCallback, useContext, useEffect } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import ReactFlow, {
   Background,
   BackgroundVariant,
@@ -36,10 +36,13 @@ import {
 import ConnexionPreview from './components/ConnexionPreview'
 import CustomEdge from './components/CustomEdge'
 import CustomNode from './components/CustomNode'
+import DeleteModal from './components/DeleteModal'
 import DraggableGhost from './components/DraggableGhost/index'
 import FitToView from './components/FitToView/index'
+import LoadUrlBoardModal from './components/LoadUrlBoardModal'
 import PrimaryActionsPanel from './components/PrimaryActionsPanel'
-import SwitchDropHints from './components/SwitchDropHints'
+import Settings from './components/Settings/index'
+import ShareModal from './components/ShareModal'
 import Toolbar from './components/Toolbar'
 import { TCustomEdge } from './components/connexionContants'
 
@@ -61,7 +64,10 @@ export default function Board() {
   const { nodes: initialnodes, edges: initialEdges } = getInitialBoardData()
   const [nodes, setNodes, onNodesChange] = useNodesState(initialnodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
-
+  const [showResetBoardModal, setShowResetModal] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
+  const theme = useMantineTheme()
+  const { ref, height, width } = useElementSize()
   const flowInstance = useReactFlow()
 
   const onNodeDragEnd: NodeDragHandler = (_event, node: TCustomNode) => {
@@ -137,53 +143,64 @@ export default function Board() {
     [setEdges, edges, connexionType],
   )
 
-  const theme = useMantineTheme()
-  const { ref, height, width } = useElementSize()
-
   return (
-    <DroppableHintProvider>
-      <DroppableArea id="board" data={{ droppableType }}>
-        <Box
-          w="100%"
-          h="100vh"
-          style={preventScrollbarOnPan}
-          bg={theme.colors.gray[0]}
-          pos="relative"
-          ref={ref}
-        >
-          <DroppableIndicator
-            height={height}
-            padding={20}
-            width={width}
-            droppableType={droppableType}
-          />
-          <ReactFlow
-            minZoom={1}
-            maxZoom={1}
-            fitView
-            onConnect={onConnect}
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            nodeTypes={nodeTypes}
-            connectionMode={ConnectionMode.Loose}
-            edgeTypes={edgeTypes}
-            connectionLineComponent={ConnexionPreview}
-            onNodeDragStop={onNodeDragEnd}
-            noDragClassName={NO_DRAG_REACTFLOW_CLASS}
-            noWheelClassName={NO_WhEEL_REACTFLOW_CLASS}
-            noPanClassName={NO_PAN_REACTFLOW_CLASS}
+    <>
+      <DroppableHintProvider>
+        <DroppableArea id="board" data={{ droppableType }}>
+          <Box
+            w="100%"
+            h="100vh"
+            style={preventScrollbarOnPan}
+            bg={theme.colors.gray[0]}
+            pos="relative"
+            ref={ref}
           >
-            <FitToView />
-            <Background id={v4()} variant={BackgroundVariant.Dots} />
-            <Toolbar />
-          </ReactFlow>
-          <SwitchDropHints />
-          <PrimaryActionsPanel />
-          <DraggableGhost />
-        </Box>
-      </DroppableArea>
-    </DroppableHintProvider>
+            <DroppableIndicator
+              height={height}
+              padding={20}
+              width={width}
+              droppableType={droppableType}
+            />
+            <ReactFlow
+              minZoom={1}
+              maxZoom={1}
+              fitView
+              onConnect={onConnect}
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              nodeTypes={nodeTypes}
+              connectionMode={ConnectionMode.Loose}
+              edgeTypes={edgeTypes}
+              connectionLineComponent={ConnexionPreview}
+              onNodeDragStop={onNodeDragEnd}
+              noDragClassName={NO_DRAG_REACTFLOW_CLASS}
+              noWheelClassName={NO_WhEEL_REACTFLOW_CLASS}
+              noPanClassName={NO_PAN_REACTFLOW_CLASS}
+            >
+              <FitToView />
+              <Background id={v4()} variant={BackgroundVariant.Dots} />
+              <Toolbar />
+            </ReactFlow>
+            <Settings openResetModal={() => setShowResetModal(true)} />
+            <PrimaryActionsPanel
+              openShareModal={() => setShowShareModal(true)}
+            />
+            <DraggableGhost />
+          </Box>
+        </DroppableArea>
+      </DroppableHintProvider>
+
+      <DeleteModal
+        close={() => setShowResetModal(false)}
+        opened={showResetBoardModal}
+      />
+      <ShareModal
+        opened={showShareModal}
+        close={() => setShowShareModal(false)}
+      />
+      <LoadUrlBoardModal />
+    </>
   )
 }

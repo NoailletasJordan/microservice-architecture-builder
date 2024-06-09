@@ -183,7 +183,10 @@ export default function Board() {
               <Background id={v4()} variant={BackgroundVariant.Dots} />
               <Toolbar />
             </ReactFlow>
-            <Settings openResetModal={() => setShowResetModal(true)} />
+            <Settings
+              openShareModal={() => setShowShareModal(true)}
+              openResetModal={() => setShowResetModal(true)}
+            />
             <PrimaryActionsPanel
               openShareModal={() => setShowShareModal(true)}
             />

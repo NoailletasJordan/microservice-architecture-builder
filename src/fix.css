@@ -2,3 +2,7 @@ a[href="https://reactflow.dev"]
 {
   display: none;
 }
+
+body {
+  overflow: hidden;
+}

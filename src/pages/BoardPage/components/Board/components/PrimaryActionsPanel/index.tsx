@@ -4,9 +4,13 @@ import { useMediaQuery } from '@mantine/hooks'
 import { IconBook } from '@tabler/icons-react'
 import { useContext } from 'react'
 import { Panel } from 'reactflow'
-import SharableModalAndButton from '../SharableModalAndButton'
+import SharableButton from './components/SharableButton'
 
-export default function PrimaryActionsPanel() {
+interface Props {
+  openShareModal: () => void
+}
+
+export default function PrimaryActionsPanel({ openShareModal }: Props) {
   const maxSM = useMediaQuery('(max-width: 768px)')
   const { toggleAsideOpen } = useContext(selectedNodeContext)
 
@@ -29,7 +33,7 @@ export default function PrimaryActionsPanel() {
   return (
     <Panel position="top-right">
       <Group gap="xs">
-        <SharableModalAndButton />
+        <SharableButton onClick={openShareModal} />
         {serviceOverviewButton}
       </Group>
     </Panel>

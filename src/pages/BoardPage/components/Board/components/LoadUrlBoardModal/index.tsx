@@ -1,4 +1,4 @@
-import Title from '@/components/Title'
+import CustomModal from '@/components/CustomModal'
 import {
   ICON_STYLE,
   ILocalStorage,
@@ -9,7 +9,6 @@ import {
   Box,
   Button,
   Grid,
-  Modal,
   Text,
   ThemeIcon,
   useMantineTheme,
@@ -33,7 +32,7 @@ const getHasNodesInLocalStorage = (): boolean => {
   return !!fromStorage?.nodes.length
 }
 
-export default function LoadExternalBoardHandler() {
+export default function LoadLinkBoardModal() {
   const [currentBoardData] = useLocalStorage<ILocalStorage>({
     key: STORAGE_DATA_INDEX_KEY,
   })
@@ -62,7 +61,7 @@ export default function LoadExternalBoardHandler() {
         icon: <IconCheck style={ICON_STYLE} />,
         message: (
           <Text fw={700} size="sm">
-            Data loaded successfully
+            Board loaded successfully
           </Text>
         ),
         color: 'green',
@@ -94,13 +93,11 @@ export default function LoadExternalBoardHandler() {
   }, [hash, modalAction, currentBoardData, onClickOverwrite])
 
   return (
-    <Modal
+    <CustomModal
       fullScreen={maxSM}
-      centered
       opened={opened}
       onClose={handleCloseModal}
-      title={<Title>Load from link</Title>}
-      size="lg"
+      title="Load from link"
     >
       <Box bg="red.0" p="lg" style={{ borderRadius: theme.radius.md }}>
         <Grid align="center" justify="center">
@@ -121,6 +118,6 @@ export default function LoadExternalBoardHandler() {
           </Grid.Col>
         </Grid>
       </Box>
-    </Modal>
+    </CustomModal>
   )
 }

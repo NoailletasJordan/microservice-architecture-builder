@@ -1,6 +1,10 @@
-import { IModuleRichText } from '@/pages/BoardPage/configs/constants'
+import {
+  CARD_WIDTH,
+  IModuleRichText,
+} from '@/pages/BoardPage/configs/constants'
 import { handleUpdateModule } from '@/pages/BoardPage/configs/helpers'
-import { Box } from '@mantine/core'
+import { Collapse } from '@mantine/core'
+import { useDebouncedValue } from '@mantine/hooks'
 import { RichTextEditor, getTaskListExtension } from '@mantine/tiptap'
 import Highlight from '@tiptap/extension-highlight'
 import TaskItem from '@tiptap/extension-task-item'
@@ -39,13 +43,15 @@ export default function RichText({ module }: Props) {
     content: module.data.text,
   })
 
+  const [debouncedIsFocused] = useDebouncedValue(editor?.isFocused, 170)
+
   return (
-    <Box fz="var(--mantine-font-size-sm)">
-      <RichTextEditor editor={editor}>
-        <RichTextEditor.Toolbar>
+    <RichTextEditor editor={editor} miw={CARD_WIDTH} ml={12}>
+      {/* hack - TaskList looses input focus on click for a bit  */}
+      <Collapse in={editor?.isFocused || !!debouncedIsFocused}>
+        <RichTextEditor.Toolbar style={{ justifyContent: 'center' }}>
           <RichTextEditor.ControlsGroup>
             <RichTextEditor.Bold />
-            <RichTextEditor.H3 />
           </RichTextEditor.ControlsGroup>
 
           <RichTextEditor.ControlsGroup>
@@ -56,13 +62,11 @@ export default function RichText({ module }: Props) {
           <RichTextEditor.ControlsGroup>
             <RichTextEditor.TaskList />
             <RichTextEditor.Hr />
-            <RichTextEditor.Undo />
-            <RichTextEditor.Redo />
           </RichTextEditor.ControlsGroup>
         </RichTextEditor.Toolbar>
+      </Collapse>
 
-        <RichTextEditor.Content />
-      </RichTextEditor>
-    </Box>
+      <RichTextEditor.Content fz="var(--mantine-font-size-sm)" />
+    </RichTextEditor>
   )
 }

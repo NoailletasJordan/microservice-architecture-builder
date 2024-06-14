@@ -122,6 +122,8 @@ export const defaultEdges: TCustomEdge[] = [
     data: {
       id: '123',
       connexionType: 'http',
+      direction: 'duplex',
+      note: '',
     },
   },
 ]

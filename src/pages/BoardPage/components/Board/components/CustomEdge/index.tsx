@@ -1,12 +1,7 @@
+import ConnexionLabelItems from '@/components/ConnexionLabelItems'
 import { EdgeProps, getSmoothStepPath, useReactFlow } from 'reactflow'
+import { DashedLine, FullLine } from '../../../../../../components/Lines/index'
 import { IConnexion } from '../connexionContants'
-import EdgeActions from './components/Line/EdgeActions'
-import { DashedLine, FullLine } from './components/Line/index'
-
-const OFFSET_DOUBLE = 0
-// svg gradient dont get rendered on straight lines
-// https://stackoverflow.com/a/34687362
-const NO_STRAIGHT_LINE_OFFSET = 0.001
 
 export default function CustomEdge(props: EdgeProps<IConnexion>) {
   const {
@@ -17,28 +12,21 @@ export default function CustomEdge(props: EdgeProps<IConnexion>) {
     targetY,
     sourcePosition,
     targetPosition,
+    data,
   } = props
 
   const { setEdges } = useReactFlow()
+  const { connexionType, direction } = data!
 
-  const [bezierPathUpper, labelX, labelY] = getSmoothStepPath({
-    sourceX,
-    sourceY: sourceY - OFFSET_DOUBLE,
-    sourcePosition,
-    targetPosition,
-    targetX,
-    targetY: targetY - OFFSET_DOUBLE + NO_STRAIGHT_LINE_OFFSET,
-  })
-  // Todo
-  const [_bezierPathLower] = getSmoothStepPath({
+  const [bezierPathReverse] = getSmoothStepPath({
     sourceX: targetX,
-    sourceY: targetY + OFFSET_DOUBLE,
+    sourceY: targetY,
     sourcePosition: targetPosition,
     targetPosition: sourcePosition,
     targetX: sourceX,
-    targetY: sourceY + OFFSET_DOUBLE + NO_STRAIGHT_LINE_OFFSET,
+    targetY: sourceY,
   })
-  const [bezierPathCenter] = getSmoothStepPath({
+  const [bezierPathCenter, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
     sourcePosition,
@@ -50,28 +38,33 @@ export default function CustomEdge(props: EdgeProps<IConnexion>) {
   const handleDeleteEdge = () => {
     setEdges((edges) => edges.filter((edge) => edge.id !== id))
   }
-  // Todo
-  const duplexCommunication = true
+
+  let lineComponent
+  switch (direction) {
+    case 'forward':
+      lineComponent = <DashedLine path={bezierPathCenter} />
+      break
+
+    case 'reverse':
+      lineComponent = <DashedLine path={bezierPathReverse} />
+      break
+
+    default:
+      lineComponent = <FullLine path={bezierPathCenter} />
+      break
+  }
+
   return (
     <>
-      {!duplexCommunication && (
-        <>
-          <DashedLine path={bezierPathUpper} />
-          {/* <Line
-              d={bezierPathLower}
-              strokeWidth="1"
-              stroke={strokeColor}
-              animated
-            /> */}
-        </>
-      )}
-      {/* Thick Hidden Line to ease mouseover/select */}
-      {duplexCommunication && <FullLine path={bezierPathCenter} />}
-      <EdgeActions
+      {lineComponent}
+      <ConnexionLabelItems
         handleDeleteEdge={handleDeleteEdge}
         labelX={labelX}
         labelY={labelY}
-        connexionType={props.data!.connexionType}
+        connexionId={id}
+        connexionType={connexionType}
+        previewLineOnly={false}
+        connexion={props.data!}
       />
     </>
   )

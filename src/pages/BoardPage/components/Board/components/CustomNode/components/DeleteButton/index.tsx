@@ -6,6 +6,7 @@ import { ActionIcon, Box } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
 import { IconTrash } from '@tabler/icons-react'
 import { CSSProperties } from 'react'
+import TooltipWrapper from '../../../../../../../../components/TooltipWrapper/index'
 
 interface Props {
   onClick: () => void
@@ -24,22 +25,24 @@ export default function DeleteButtonWithIndicator(props: Props) {
   const droppableType = 'delete'
   return (
     <Box ref={ref} pos="relative">
-      <DroppableIndicator
-        droppableType={droppableType}
-        height={height}
-        padding={0}
-        width={width}
-        serviceId={props.parentId}
-      />
-      <DroppableArea
-        id={`${props.parentId}-delete`}
-        data={{
-          parentId: props.parentId,
-          droppableType,
-        }}
-      >
-        {({ isOver }) => <DeleteButton isOver={isOver} {...props} />}
-      </DroppableArea>
+      <TooltipWrapper label="Remove service" position="top">
+        <DroppableIndicator
+          droppableType={droppableType}
+          height={height}
+          padding={0}
+          width={width}
+          serviceId={props.parentId}
+        />
+        <DroppableArea
+          id={`${props.parentId}-delete`}
+          data={{
+            parentId: props.parentId,
+            droppableType,
+          }}
+        >
+          {({ isOver }) => <DeleteButton isOver={isOver} {...props} />}
+        </DroppableArea>
+      </TooltipWrapper>
     </Box>
   )
 }

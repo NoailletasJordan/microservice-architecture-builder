@@ -7,6 +7,7 @@ import { Collapse } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
 import { RichTextEditor, getTaskListExtension } from '@mantine/tiptap'
 import Highlight from '@tiptap/extension-highlight'
+import Placeholder from '@tiptap/extension-placeholder'
 import TaskItem from '@tiptap/extension-task-item'
 import TipTapTaskList from '@tiptap/extension-task-list'
 import TextAlign from '@tiptap/extension-text-align'
@@ -31,6 +32,7 @@ export default function RichText({ module }: Props) {
     extensions: [
       StarterKit,
       getTaskListExtension(TipTapTaskList),
+      Placeholder.configure({ placeholder: 'Add note ?' }),
       TaskItem.configure({
         nested: true,
         HTMLAttributes: {

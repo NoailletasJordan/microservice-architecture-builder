@@ -32,6 +32,8 @@ export type TCustomEdge = Edge<IConnexion>
 export interface IConnexion {
   id: string
   connexionType: IConnexionType
+  direction: (typeof connexionDirections)[number]
+  note: string
 }
 
 export type ConnexionConfig = Record<
@@ -43,6 +45,8 @@ export type ConnexionConfig = Record<
     value: IConnexionType
   }
 >
+
+export const connexionDirections = ['duplex', 'forward', 'reverse'] as const
 
 export const connexionConfig: ConnexionConfig = {
   http: {

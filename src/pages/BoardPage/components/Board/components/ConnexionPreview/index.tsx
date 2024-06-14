@@ -1,8 +1,8 @@
+import ConnexionLabelItems from '@/components/ConnexionLabelItems'
 import { connexionContext } from '@/contexts/Connexion/constants'
 import { useContext } from 'react'
 import { ConnectionLineComponentProps, getStraightPath } from 'reactflow'
-import { PreviewLine } from '../CustomEdge/components/Line'
-import EdgeActions from '../CustomEdge/components/Line/EdgeActions'
+import { PreviewLine } from '../../../../../../components/Lines'
 
 const MIN_DISTANCE_LABEL = 150
 
@@ -24,11 +24,13 @@ export default function ConnexionLine(props: ConnectionLineComponentProps) {
   return (
     <g>
       <PreviewLine path={path} />
-      <EdgeActions
+      <ConnexionLabelItems
         connexionType={connexionType}
         labelX={labelX}
         labelY={labelY}
         opacity={showLabel ? 1 : 0}
+        connexionId="preview"
+        previewLineOnly
       />
     </g>
   )

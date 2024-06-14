@@ -126,6 +126,8 @@ export default function Board() {
         data: {
           id,
           connexionType,
+          direction: 'duplex',
+          note: '',
         },
       }
 

@@ -5,7 +5,6 @@ import { cloneDeep } from 'lodash'
 import {
   ILocalStorage,
   IService,
-  Module,
   STORAGE_DATA_INDEX_KEY,
   ServiceIdType,
   SubService,
@@ -14,7 +13,6 @@ import {
   defaultNodes,
   serviceConfig,
 } from './constants'
-import { ModuleType, moduleConfig } from './modules'
 
 export const getNewNode = ({
   serviceIdType,
@@ -34,7 +32,7 @@ export const getNewNode = ({
       serviceIdType,
       title: serviceConfig[serviceIdType].defaultLabel,
       subServices: [],
-      modules: [],
+      note: '',
       ...initialService,
     },
   }
@@ -97,24 +95,6 @@ export const handleDeleteSubservice = (
   )
 }
 
-export const handleDeleteModule = (
-  deleteId: Module['id'],
-  flowInstance: ReactFlowInstance,
-) => {
-  flowInstance.setNodes((oldNodes) =>
-    oldNodes.map((compNode: TCustomNode) => {
-      const filteredModules = compNode.data.modules.filter(
-        (compModule) => compModule.id != deleteId,
-      )
-
-      const newCompNode = cloneDeep(compNode)
-      newCompNode.data.modules = filteredModules
-
-      return newCompNode
-    }),
-  )
-}
-
 export const handleUpdateNode = (
   serviceId: string,
   newNode: TCustomNode,
@@ -125,34 +105,4 @@ export const handleUpdateNode = (
       return compNode.id === serviceId ? cloneDeep(newNode) : compNode
     }),
   )
-}
-
-export const handleAddModule = (
-  moduleType: ModuleType,
-  nodeId: TCustomNode['id'],
-  flowInstance: ReactFlowInstance,
-) => {
-  const node = flowInstance.getNode(nodeId) as TCustomNode
-  const newModule = moduleConfig[moduleType].getNew(node.data.id)
-  const targettedNodeCopy = cloneDeep(node)
-  targettedNodeCopy.data.modules.push(newModule)
-  handleUpdateNode(node.data.id, targettedNodeCopy, flowInstance)
-}
-
-export const handleUpdateModule = (
-  moduleId: Module['id'],
-  newModule: Module,
-  flowInstance: ReactFlowInstance,
-) => {
-  const nodes = flowInstance.getNodes() as TCustomNode[]
-
-  const nodeFromModule = nodes.find((node) => {
-    return !!node.data.modules.find((compModule) => compModule.id === moduleId)
-  })!
-
-  nodeFromModule.data.modules = nodeFromModule.data.modules.map((compModule) =>
-    compModule.id === moduleId ? newModule : compModule,
-  )
-
-  handleUpdateNode(nodeFromModule.id, nodeFromModule, flowInstance)
 }

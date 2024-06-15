@@ -1,3 +1,4 @@
+import { getEditorParams } from '@/components/RichEditor'
 import {
   IConnexion,
   IConnexionType,
@@ -17,19 +18,11 @@ import {
   Text,
   ThemeIcon,
 } from '@mantine/core'
-import { useDebouncedValue } from '@mantine/hooks'
-import { RichTextEditor, getTaskListExtension } from '@mantine/tiptap'
 import { IconArrowsExchange, IconCheck, IconTrash } from '@tabler/icons-react'
-import Highlight from '@tiptap/extension-highlight'
-import Placeholder from '@tiptap/extension-placeholder'
-import TaskItem from '@tiptap/extension-task-item'
-import TipTapTaskList from '@tiptap/extension-task-list'
-import TextAlign from '@tiptap/extension-text-align'
 import { useEditor } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
 import { cloneDeep, groupBy } from 'lodash'
-import { useEffect, useState } from 'react'
 import { Edge, useReactFlow } from 'reactflow'
+import RichEditor from '../../../RichEditor/index'
 import TooltipWrapper from '../../../TooltipWrapper/index'
 
 interface Props {
@@ -78,11 +71,16 @@ export default function ConnexionCollapsableMenu({
     }
   })
 
-  const [noteIsFocused, setNoteIsFocused] = useState(false)
-  const defaultNote = '<p></p>'
-  const noteContent = flowInstance.getEdge(connexion.id)?.data.note
-  const noteisEmpty = !noteContent || noteContent === defaultNote
-  const collapseAll = !configIsOpen && !noteIsFocused && noteisEmpty
+  const editor = useEditor(
+    getEditorParams({
+      initialContent: flowInstance.getEdge(connexion.id)!.data.note,
+      onUpdate: (note: string) => handleUpdateEdge(connexion.id, { note }),
+    }),
+  )
+
+  const noteContent = editor?.getText()
+  const noteisEmpty = !noteContent
+  const collapseAll = !configIsOpen && !editor?.isFocused && noteisEmpty
 
   return (
     <Collapse in={!collapseAll}>
@@ -105,7 +103,7 @@ export default function ConnexionCollapsableMenu({
             >
               Switch direction
             </Button>
-            <TooltipWrapper label="Remove connexion" position="top">
+            <TooltipWrapper label="Remove connexion">
               <ActionIcon
                 variant="light"
                 color="gray"
@@ -139,79 +137,8 @@ export default function ConnexionCollapsableMenu({
           />
           <Space h="xs" />
         </Collapse>
-        <CustomRichText
-          onUpdate={(html) => {
-            handleUpdateEdge(connexion.id, { note: html })
-          }}
-          initialContent={flowInstance.getEdge(connexion.id)!.data.note}
-          onFocusChange={setNoteIsFocused}
-          forceToolsOpen={configIsOpen}
-        />
+        <RichEditor editor={editor} forceToolsOpen={configIsOpen} />
       </Paper>
     </Collapse>
-  )
-}
-
-function CustomRichText({
-  onUpdate,
-  initialContent,
-  onFocusChange,
-  forceToolsOpen,
-}: {
-  onUpdate: (html: string, rawText: string) => void
-  initialContent: string
-  onFocusChange: (isFocused: boolean) => void
-  forceToolsOpen: boolean
-}) {
-  const editor = useEditor({
-    onUpdate({ editor }) {
-      onUpdate(editor.getHTML(), editor.getText())
-    },
-    extensions: [
-      StarterKit,
-      getTaskListExtension(TipTapTaskList),
-      Placeholder.configure({ placeholder: 'Add note ?' }),
-      TaskItem.configure({
-        nested: true,
-        HTMLAttributes: {
-          class: 'test-item',
-        },
-      }),
-      Highlight,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
-    ],
-    content: initialContent,
-  })
-
-  useEffect(() => {
-    onFocusChange?.(!!editor?.isFocused)
-  }, [editor?.isFocused, onFocusChange])
-
-  const [debouncedIsFocused] = useDebouncedValue(editor?.isFocused, 170)
-  return (
-    <RichTextEditor editor={editor} w={`calc(${CARD_WIDTH}px - 0.5rem)`}>
-      {/* debounce hack - TaskList looses input focus on click for a bit  */}
-      <Collapse
-        in={forceToolsOpen || editor?.isFocused || !!debouncedIsFocused}
-      >
-        <RichTextEditor.Toolbar style={{ justifyContent: 'center' }}>
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.Bold />
-          </RichTextEditor.ControlsGroup>
-
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.AlignLeft />
-            <RichTextEditor.AlignCenter />
-          </RichTextEditor.ControlsGroup>
-
-          <RichTextEditor.ControlsGroup>
-            <RichTextEditor.TaskList />
-            <RichTextEditor.Hr />
-          </RichTextEditor.ControlsGroup>
-        </RichTextEditor.Toolbar>
-      </Collapse>
-
-      <RichTextEditor.Content fz="var(--mantine-font-size-sm)" />
-    </RichTextEditor>
   )
 }

@@ -1,37 +1,15 @@
 import { Node } from 'reactflow'
 import { TCustomEdge } from '../components/Board/components/connexionContants'
-import {
-  TechnologiesKeys,
-  TechnologiesValue,
-  technologyAuthService,
-  technologyDatabases,
-  technologyEmailService,
-  technologyFrontend,
-  technologyPayment,
-  technologyServer,
-} from './technologies'
 
 export interface IService {
   id: string
   serviceIdType: ServiceIdType
-  technology?: TechnologiesKeys
   title: string
   subServices: SubService[]
-  modules: Module[]
+  note: string
 }
 
-export interface IModuleRichText {
-  id: string
-  parentId: IService['id']
-  moduleType: 'markdown'
-  isVisible: boolean
-  data: {
-    text: string
-  }
-}
-
-export type Module = IModuleRichText
-export type SubService = Omit<IService, 'subServices' | 'modules'> & {
+export type SubService = Omit<IService, 'subServices'> & {
   parentId: IService['id']
 }
 
@@ -41,8 +19,7 @@ export type DroppableType = 'delete' | 'board' | 'node' | 'toolbox'
 
 type SUBSERVICE_KEY = 'subService'
 type DASHBOARD_ITEM_KEY = 'dashboard-item'
-type MODULE_KEY = 'module'
-export type DraggableType = SUBSERVICE_KEY | DASHBOARD_ITEM_KEY | MODULE_KEY
+export type DraggableType = SUBSERVICE_KEY | DASHBOARD_ITEM_KEY
 
 export type DraggableData =
   | {
@@ -52,10 +29,6 @@ export type DraggableData =
   | {
       draggableType: DASHBOARD_ITEM_KEY
       draggedContent: Pick<IService, 'serviceIdType'>
-    }
-  | {
-      draggableType: MODULE_KEY
-      draggedContent: Module
     }
 
 export interface ILocalStorage {
@@ -75,39 +48,32 @@ export type ServiceIdType =
 type ServiceConfigValue = {
   imageUrl: string
   defaultLabel: string
-  technologies: Record<string, TechnologiesValue>
 }
 
 export const serviceConfig: Record<ServiceIdType, ServiceConfigValue> = {
   frontend: {
     imageUrl: '/board/a-frontend.svg',
     defaultLabel: 'Frontend',
-    technologies: technologyFrontend,
   },
   server: {
     imageUrl: '/board/a-server.svg',
     defaultLabel: 'Server',
-    technologies: technologyServer,
   },
   database: {
     imageUrl: '/board/a-database.svg',
     defaultLabel: 'Database',
-    technologies: technologyDatabases,
   },
   authentification: {
     imageUrl: '/board/a-auth.svg',
     defaultLabel: 'Auth',
-    technologies: technologyAuthService,
   },
   'service-email': {
     imageUrl: '/board/a-email.svg',
     defaultLabel: 'Mailing',
-    technologies: technologyEmailService,
   },
   'service-payment': {
     imageUrl: '/board/a-payment.svg',
     defaultLabel: 'Payment',
-    technologies: technologyPayment,
   },
 }
 
@@ -138,7 +104,7 @@ export const defaultNodes: TCustomNode[] = [
       serviceIdType: 'frontend',
       title: serviceConfig['frontend'].defaultLabel,
       subServices: [],
-      modules: [],
+      note: '',
     },
   },
   {
@@ -149,7 +115,7 @@ export const defaultNodes: TCustomNode[] = [
       serviceIdType: 'server',
       title: serviceConfig['server'].defaultLabel,
       subServices: [],
-      modules: [],
+      note: '',
     },
     type: 'service',
   },

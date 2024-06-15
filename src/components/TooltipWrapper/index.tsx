@@ -7,12 +7,14 @@ interface Props {
   position?: FloatingPosition
 }
 
-const TooltipWrapper = ({
-  children,
-  label,
-  position = 'bottom-end',
-}: Props) => (
-  <Tooltip label={label} position={position}>
+const TooltipWrapper = ({ children, label, position = 'top' }: Props) => (
+  <Tooltip
+    label={label}
+    position={position}
+    opacity={0.9}
+    openDelay={150}
+    color="gray"
+  >
     <Group gap="xs">
       <Text fs="italic" component="div">
         {children}

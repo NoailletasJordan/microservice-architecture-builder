@@ -12,7 +12,6 @@ import {
 import {
   getNewNode,
   handleAddNode,
-  handleDeleteModule,
   handleDeleteSubservice,
   handleUpdateNode,
 } from './helpers'
@@ -73,6 +72,7 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
           id: v4(),
           parentId: targetId,
           serviceIdType: draggedContent.serviceIdType,
+          note: '',
           title: serviceConfig[draggedContent.serviceIdType].defaultLabel,
         }
         targetNode.data.subServices = [
@@ -100,25 +100,6 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
         }, 0)
         break
       }
-      case 'module': {
-        const draggedModule = draggedContent
-        const droppedInOriginalNode = draggedModule.parentId === targetId
-        const moduleAlreadyPresentInTarget = !!targetNode.data.modules.find(
-          (m) => m.moduleType === draggedModule.moduleType,
-        )
-        if (droppedInOriginalNode || moduleAlreadyPresentInTarget) break
-
-        targetNode.data.modules = [
-          ...targetNode.data.modules,
-          { ...draggedModule, parentId: targetNode.id },
-        ]
-
-        handleDeleteModule(draggedModule.id, flowInstance)
-        setTimeout(() => {
-          handleUpdateNode(targetNode.id, targetNode, flowInstance)
-        }, 0)
-        break
-      }
     }
   },
   delete: (event, flowInstance) => {
@@ -127,10 +108,6 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
     switch (draggableType) {
       case 'subService':
         handleDeleteSubservice(draggedContent.id, flowInstance)
-        break
-
-      case 'module':
-        handleDeleteModule(draggedContent.id, flowInstance)
         break
     }
   },

@@ -5,68 +5,57 @@ import {
   Group,
   Image,
   Space,
-  Switch,
   ThemeIcon,
   useMantineTheme,
 } from '@mantine/core'
 import { NodeProps, Position, useReactFlow } from 'reactflow'
 
 import DroppableIndicator from '@/components/DroppableIndicator'
-import StrongText from '@/components/StrongText'
-import { selectedNodeContext } from '@/contexts/SelectedNode/constants'
+import { getEditorParams } from '@/components/RichEditor'
+import TooltipWrapper from '@/components/TooltipWrapper'
 import {
   CARD_WIDTH,
   ICON_STYLE,
   IService,
   NO_DRAG_REACTFLOW_CLASS,
-  TCustomNode,
   serviceConfig,
 } from '@/pages/BoardPage/configs/constants'
 import {
   handleDeleteNode,
-  handleUpdateModule,
+  handleUpdateNode,
 } from '@/pages/BoardPage/configs/helpers'
 import { Box } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
-import {
-  IconClick,
-  IconEye,
-  IconEyeClosed,
-  IconGripHorizontal,
-} from '@tabler/icons-react'
-import { useContext } from 'react'
+import { IconGripHorizontal, IconNote } from '@tabler/icons-react'
+import { useEditor } from '@tiptap/react'
 import DroppableArea from '../../../../../../components/DroppableArea/index'
-import AddModule from './components/AddModule'
 import CustomHandle from './components/CustomHandle/index'
 import DeleteButton from './components/DeleteButton'
-import DividerWrapper from './components/DividerWrapper'
 import EditableTitle from './components/EditableTitle'
-import FullModuleSection from './components/FullModuleSection'
-import { DraggableModuleIcon } from './components/ModuleIcon'
+import NoteSection from './components/NoteSection/index'
 import SubServiceSection from './components/SubServicesSection'
-import TechnologieEditor from './components/TechnologieSelector'
 
 export default function CustomNode(props: NodeProps<IService>) {
   const flowInstance = useReactFlow()
-  const { serviceId, setServiceId: setSelectedServiceId } =
-    useContext(selectedNodeContext)
-
-  const toggleSelectedNode = () => {
-    if (serviceId === props.data.id) return setSelectedServiceId(null)
-    const selectedNode = flowInstance.getNode(props.data.id) as TCustomNode
-    setSelectedServiceId(selectedNode.id)
-  }
-  const isSelected = serviceId === props.data.id
-
   const theme = useMantineTheme()
-  const primaryColors = theme.colors[theme.primaryColor]
+  const { ref, height, width } = useElementSize()
+  const service = props.data
 
-  const note = props.data.modules.find(
-    ({ moduleType }) => moduleType === 'markdown',
+  const droppableType = 'node'
+
+  const handleNoteChange = (newNote: string) => {
+    const nodeToEdit = flowInstance.getNode(service.id)!
+    nodeToEdit.data.note = newNote
+    handleUpdateNode(service.id, nodeToEdit, flowInstance)
+  }
+
+  const editor = useEditor(
+    getEditorParams({
+      initialContent: service.note,
+      onUpdate: handleNoteChange,
+    }),
   )
 
-  const { ref, height, width } = useElementSize()
-  const droppableType = 'node'
   return (
     <DroppableArea
       id={props.id}
@@ -78,9 +67,7 @@ export default function CustomNode(props: NodeProps<IService>) {
         <Card
           radius="md"
           style={{
-            border: `2px solid ${
-              isSelected ? primaryColors[3] : theme.colors.gray[3]
-            }`,
+            border: `2px solid ${theme.colors.gray[3]}`,
           }}
           w={CARD_WIDTH}
           pos="relative"
@@ -91,7 +78,7 @@ export default function CustomNode(props: NodeProps<IService>) {
               width={width}
               padding={5}
               droppableType={droppableType}
-              serviceId={props.data.id}
+              serviceId={service.id}
             />
             <Group
               align="center"
@@ -100,20 +87,22 @@ export default function CustomNode(props: NodeProps<IService>) {
               bg={theme.colors.gray[3]}
               h="2.5rem"
             >
-              <Box>
-                <ActionIcon
-                  className={NO_DRAG_REACTFLOW_CLASS}
-                  onClick={toggleSelectedNode}
-                  variant={isSelected ? 'filled' : 'light'}
-                >
-                  <IconClick style={ICON_STYLE} />
-                </ActionIcon>
-              </Box>
+              <TooltipWrapper label="Add a note">
+                <Box mt={4}>
+                  <ActionIcon
+                    onClick={() => editor?.commands.focus()}
+                    className={NO_DRAG_REACTFLOW_CLASS}
+                    variant="subtle"
+                    color="gray"
+                  >
+                    <IconNote style={ICON_STYLE} />
+                  </ActionIcon>
+                </Box>
+              </TooltipWrapper>
 
               <ThemeIcon variant="transparent" color="gray">
                 <IconGripHorizontal style={ICON_STYLE} />
               </ThemeIcon>
-
               <DeleteButton
                 parentId={props.id}
                 onClick={() => handleDeleteNode(props.id, flowInstance)}
@@ -130,69 +119,27 @@ export default function CustomNode(props: NodeProps<IService>) {
               <Grid.Col span="content">
                 <Image
                   h={40}
-                  src={serviceConfig[props.data.serviceIdType].imageUrl}
-                  alt={props.data.serviceIdType}
+                  src={serviceConfig[service.serviceIdType].imageUrl}
+                  alt={service.serviceIdType}
                 />
               </Grid.Col>
               <Grid.Col span="auto">
                 <Box>
-                  <EditableTitle service={props.data} />
+                  <EditableTitle service={service} />
                 </Box>
               </Grid.Col>
             </Grid>
             <Space h="md" />
 
-            {props.data.technology && (
-              <TechnologieEditor serviceWithTechnologie={props.data} />
+            {!!service.subServices.length && (
+              <SubServiceSection subServices={service.subServices} />
             )}
-
-            {!!props.data.subServices.length && (
-              <SubServiceSection subServices={props.data.subServices} />
-            )}
-
-            {!!props.data.modules.length && (
-              <DividerWrapper>
-                <Group gap="xs">
-                  <StrongText>Modules</StrongText>
-                  <Switch
-                    size="xs"
-                    color={theme.colors[theme.primaryColor][4]}
-                    onLabel={<IconEye size="xs" />}
-                    offLabel={<IconEyeClosed size="xs" />}
-                    checked={note?.isVisible}
-                    onChange={(event) => {
-                      if (!note) return
-
-                      handleUpdateModule(
-                        note.id,
-                        { ...note, isVisible: event.currentTarget.checked },
-                        flowInstance,
-                      )
-                    }}
-                  />
-                </Group>
-              </DividerWrapper>
-            )}
-            <Group className={NO_DRAG_REACTFLOW_CLASS} gap="sm">
-              {props.data.modules.map((module) => (
-                <DraggableModuleIcon key={module.id} module={module} />
-              ))}
-            </Group>
 
             <CustomHandle position={Position.Left} id="l" />
             <CustomHandle position={Position.Right} id="r" />
           </Card.Section>
 
-          <FullModuleSection
-            open={!!note?.isVisible && !!props.data.modules.length}
-            service={props.data}
-          />
-
-          <AddModule
-            serviceId={serviceId}
-            serviceIsSelected={isSelected}
-            modules={props.data.modules}
-          />
+          <NoteSection editor={editor} />
         </Card>
       </Box>
     </DroppableArea>

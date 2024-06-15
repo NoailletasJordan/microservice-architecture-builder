@@ -29,10 +29,6 @@ const config: Record<
     board: [],
     node: [],
   },
-  module: {
-    node: ['preventSameService'],
-    delete: ['preventOtherServices'],
-  },
   subService: {
     board: [],
     node: ['preventSameService'],

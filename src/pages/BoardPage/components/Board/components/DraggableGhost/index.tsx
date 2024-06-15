@@ -1,7 +1,6 @@
 import { DraggableData } from '@/pages/BoardPage/configs/constants'
 import { DragOverlay, useDndContext } from '@dnd-kit/core'
 import { Box } from '@mantine/core'
-import { ModuleIcon } from '../CustomNode/components/ModuleIcon'
 import { SubServiceComponent } from '../CustomNode/components/SubServicesSection/components/SubServiceComponent'
 import { ServiceTool } from '../Toolbar/components/ServiceTool'
 
@@ -23,9 +22,6 @@ export default function DraggableGhost() {
           draggableIndicator
         />
       )
-      break
-    case 'module':
-      component = <ModuleIcon module={current.draggedContent} />
       break
   }
 

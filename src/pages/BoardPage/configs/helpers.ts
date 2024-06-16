@@ -103,3 +103,23 @@ export const handleUpdateNode = (
     }),
   )
 }
+
+export const getNodeOverlapped = (
+  draggedNode: TCustomNode,
+  nodes: TCustomNode[],
+) => {
+  const centerX = draggedNode.position.x + Number(draggedNode.width) * 0.5
+  const centerY = draggedNode.position.y + Number(draggedNode.height) * 0.5
+
+  const targetNode = nodes
+    .filter((compNode) => compNode.id !== draggedNode.id)
+    .find(
+      (n) =>
+        centerX > n.position.x &&
+        centerX < n.position.x + Number(n.width) &&
+        centerY > n.position.y &&
+        centerY < n.position.y + Number(n.height),
+    )
+
+  return targetNode
+}

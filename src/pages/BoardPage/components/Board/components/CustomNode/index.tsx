@@ -21,6 +21,7 @@ import {
   serviceConfig,
 } from '@/pages/BoardPage/configs/constants'
 import {
+  getNodeOverlapped,
   handleDeleteNode,
   handleUpdateNode,
 } from '@/pages/BoardPage/configs/helpers'
@@ -28,11 +29,13 @@ import { Box } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
 import { IconGripHorizontal, IconNote } from '@tabler/icons-react'
 import { useEditor } from '@tiptap/react'
+import { useMemo } from 'react'
 import DroppableArea from '../../../../../../components/DroppableArea/index'
 import CustomHandle from './components/CustomHandle/index'
 import DeleteButton from './components/DeleteButton'
 import EditableTitle from './components/EditableTitle'
 import NoteSection from './components/NoteSection/index'
+import OverlapOverlay from './components/OverlapOverlay'
 import SubServiceSection from './components/SubServicesSection'
 
 export default function CustomNode(props: NodeProps<IService>) {
@@ -40,6 +43,15 @@ export default function CustomNode(props: NodeProps<IService>) {
   const theme = useMantineTheme()
   const { ref, height, width } = useElementSize()
   const service = props.data
+
+  const isOverlapingNode = useMemo(
+    () =>
+      !!getNodeOverlapped(
+        flowInstance.getNode(props.id)!,
+        flowInstance.getNodes(),
+      ),
+    [flowInstance, props],
+  )
 
   const droppableType = 'node'
 
@@ -108,6 +120,7 @@ export default function CustomNode(props: NodeProps<IService>) {
                 onClick={() => handleDeleteNode(props.id, flowInstance)}
               />
             </Group>
+            {isOverlapingNode && <OverlapOverlay />}
           </Card.Section>
           <Card.Section
             p="md"

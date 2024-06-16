@@ -1,8 +1,12 @@
 import DroppableIndicator from '@/components/DroppableIndicator'
+import OnBoardingHelp from '@/components/OnboardingComponents/OnBoardingHelp'
+import OnBoardingMain from '@/components/OnboardingComponents/OnBoardingMain'
 import { connexionContext } from '@/contexts/Connexion/constants'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
-import { Box, useMantineTheme } from '@mantine/core'
+import { onBoardingContext } from '@/contexts/Onboarding/constants'
+import { ActionIcon, Box, useMantineTheme } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
+import { IconHelp } from '@tabler/icons-react'
 import { cloneDeep } from 'lodash'
 import { useCallback, useContext, useEffect, useState } from 'react'
 import ReactFlow, {
@@ -13,6 +17,7 @@ import ReactFlow, {
   EdgeTypes,
   NodeDragHandler,
   NodeTypes,
+  Panel,
   addEdge,
   useEdgesState,
   useNodesState,
@@ -22,17 +27,15 @@ import 'reactflow/dist/style.css'
 import { v4 as uuidv4, v4 } from 'uuid'
 import DroppableArea from '../../../../components/DroppableArea/index'
 import {
+  ICON_STYLE,
+  IService,
   NO_DRAG_REACTFLOW_CLASS,
   NO_PAN_REACTFLOW_CLASS,
   NO_WhEEL_REACTFLOW_CLASS,
   STORAGE_DATA_INDEX_KEY,
   TCustomNode,
 } from '../../configs/constants'
-import {
-  getInitialBoardData,
-  handleDeleteNode,
-  storeInLocal,
-} from '../../configs/helpers'
+import { handleDeleteNode, storeInLocal } from '../../configs/helpers'
 import ConnexionPreview from './components/ConnexionPreview'
 import CustomEdge from './components/CustomEdge'
 import CustomNode from './components/CustomNode'
@@ -44,7 +47,7 @@ import PrimaryActionsPanel from './components/PrimaryActionsPanel'
 import Settings from './components/Settings/index'
 import ShareModal from './components/ShareModal'
 import Toolbar from './components/Toolbar'
-import { TCustomEdge } from './components/connexionContants'
+import { IConnexion, TCustomEdge } from './components/connexionContants'
 
 const DEBOUNCE_SAVE_MS = 600
 
@@ -59,11 +62,16 @@ const edgeTypes: EdgeTypes = {
 const preventScrollbarOnPan = { overflow: 'hidden' }
 const droppableType = 'board'
 
-export default function Board() {
+interface Props {
+  nodeState: ReturnType<typeof useNodesState<IService>>
+  edgeState: ReturnType<typeof useEdgesState<IConnexion>>
+}
+
+export default function Board({ nodeState, edgeState }: Props) {
+  const { showOnBoarding } = useContext(onBoardingContext)
   const { connexionType } = useContext(connexionContext)
-  const { nodes: initialnodes, edges: initialEdges } = getInitialBoardData()
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialnodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+  const [nodes, setNodes, onNodesChange] = nodeState
+  const [edges, setEdges, onEdgesChange] = edgeState
   const [showResetBoardModal, setShowResetModal] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
   const theme = useMantineTheme()
@@ -182,8 +190,20 @@ export default function Board() {
               noPanClassName={NO_PAN_REACTFLOW_CLASS}
             >
               <FitToView />
-              <Background id={v4()} variant={BackgroundVariant.Dots} />
+              {!showOnBoarding && (
+                <Background id={v4()} variant={BackgroundVariant.Dots} />
+              )}
               <Toolbar />
+
+              {showOnBoarding && <OnBoardingMain />}
+
+              <Panel position="bottom-right">
+                {showOnBoarding && <OnBoardingHelp />}
+
+                <ActionIcon variant="light" color="gray" size="lg">
+                  <IconHelp style={ICON_STYLE} />
+                </ActionIcon>
+              </Panel>
             </ReactFlow>
             <Settings
               openShareModal={() => setShowShareModal(true)}

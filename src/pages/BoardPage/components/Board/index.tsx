@@ -35,10 +35,14 @@ import {
   STORAGE_DATA_INDEX_KEY,
   TCustomNode,
 } from '../../configs/constants'
-import { handleDeleteNode, storeInLocal } from '../../configs/helpers'
+import {
+  getNodeOverlapped,
+  handleDeleteNode,
+  storeInLocal,
+} from '../../configs/helpers'
 import ConnexionPreview from './components/ConnexionPreview'
 import CustomEdge from './components/CustomEdge'
-import CustomNode from './components/CustomNode'
+import CustomNode from './components/CustomNode/'
 import DeleteModal from './components/DeleteModal'
 import DraggableGhost from './components/DraggableGhost/index'
 import FitToView from './components/FitToView/index'
@@ -79,19 +83,7 @@ export default function Board({ nodeState, edgeState }: Props) {
   const flowInstance = useReactFlow()
 
   const onNodeDragEnd: NodeDragHandler = (_event, node: TCustomNode) => {
-    const centerX = node.position.x + Number(node.width) * 0.5
-    const centerY = node.position.y + Number(node.height) * 0.5
-
-    const targetNode = nodes
-      .filter((compNode) => compNode.id !== node.id)
-      .find(
-        (n) =>
-          centerX > n.position.x &&
-          centerX < n.position.x + Number(n.width) &&
-          centerY > n.position.y &&
-          centerY < n.position.y + Number(n.height),
-      )
-
+    const targetNode = getNodeOverlapped(node, nodes)
     if (!targetNode) return
 
     // Delete node and add it as a sub

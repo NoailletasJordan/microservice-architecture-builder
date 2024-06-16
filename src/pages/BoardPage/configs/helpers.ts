@@ -9,8 +9,6 @@ import {
   ServiceIdType,
   SubService,
   TCustomNode,
-  defaultEdges,
-  defaultNodes,
   serviceConfig,
 } from './constants'
 
@@ -51,8 +49,7 @@ export const getInitialBoardData = (): ILocalStorage => {
     !!localStorage.getItem(STORAGE_DATA_INDEX_KEY) &&
     JSON.parse(localStorage.getItem(STORAGE_DATA_INDEX_KEY) as string)
 
-  if (!storageReference)
-    return { timestamp: new Date(), nodes: defaultNodes, edges: defaultEdges }
+  if (!storageReference) return { timestamp: new Date(), nodes: [], edges: [] }
 
   return {
     timestamp: new Date(storageReference.timestamp),

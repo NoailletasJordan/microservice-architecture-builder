@@ -77,50 +77,6 @@ export const serviceConfig: Record<ServiceIdType, ServiceConfigValue> = {
   },
 }
 
-export const defaultEdges: TCustomEdge[] = [
-  {
-    id: '123',
-    source: '1',
-    target: '2',
-    sourceHandle: 'r',
-    targetHandle: 'l',
-    type: 'custom',
-    data: {
-      id: '123',
-      connexionType: 'http',
-      direction: 'duplex',
-      note: '',
-    },
-  },
-]
-
-export const defaultNodes: TCustomNode[] = [
-  {
-    id: '1',
-    position: { x: 0, y: 50 },
-    type: 'service',
-    data: {
-      id: '1',
-      serviceIdType: 'frontend',
-      title: serviceConfig['frontend'].defaultLabel,
-      subServices: [],
-      note: '',
-    },
-  },
-  {
-    id: '2',
-    position: { x: 300, y: 50 },
-    data: {
-      id: '2',
-      serviceIdType: 'server',
-      title: serviceConfig['server'].defaultLabel,
-      subServices: [],
-      note: '',
-    },
-    type: 'service',
-  },
-]
-
 export const shareHashTocken = '#json='
 export const STORAGE_DATA_INDEX_KEY = 'board-data-index'
 export const CARD_WIDTH = 210

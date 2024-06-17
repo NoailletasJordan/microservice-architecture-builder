@@ -5,11 +5,10 @@ import {
   ServiceIdType,
   serviceConfig,
 } from '@/pages/BoardPage/configs/constants'
-import { Card, Divider, Group } from '@mantine/core'
+import { Card, SimpleGrid } from '@mantine/core'
 import { useContext } from 'react'
 import { Panel } from 'reactflow'
 import DroppableArea from '../../../../../../components/DroppableArea/index'
-import CommunicationTool from './components/CommunicationTool/index'
 import { DraggableServiceTool } from './components/ServiceTool'
 
 export default function Toolbar() {
@@ -39,11 +38,9 @@ export default function Toolbar() {
         }}
       >
         <Card p="0.3rem" bg="white" shadow="md">
-          <Group gap="0.3rem">
+          <SimpleGrid cols={6} spacing="0.3rem">
             {services}
-            <Divider orientation="vertical" />
-            <CommunicationTool />
-          </Group>
+          </SimpleGrid>
         </Card>
       </DroppableArea>
 

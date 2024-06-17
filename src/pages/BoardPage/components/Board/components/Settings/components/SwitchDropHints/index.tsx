@@ -1,5 +1,7 @@
+import TooltipWrapper from '@/components/TooltipWrapper'
 import { droppableHintsContext } from '@/contexts/DroppableHints/constants'
 import {
+  Box,
   Button,
   FloatingIndicator,
   Group,
@@ -49,17 +51,32 @@ export default function SwitchDropHints() {
   ))
 
   return (
-    <Group px="xs" pos="relative" justify="space-between" ref={setRootRef}>
-      <Text size="sm">Drop hints</Text>
-      <Group gap={0}>{controls}</Group>
-      <FloatingIndicator
-        bg="var(--mantine-primary-color-filled)"
-        target={controlsRefs[active]}
-        parent={rootRef}
-        style={{
-          borderRadius: theme.radius.sm,
-        }}
-      />
-    </Group>
+    <TooltipWrapper
+      label={
+        <Group gap="4">
+          <Text component="span" size="sm">
+            Highlight droppable areas (
+          </Text>
+          <Box h="1rem" w="1rem" style={{ border: '2px dotted white' }} />
+          <Text component="span" size="sm">
+            ) when an element is being dragged
+          </Text>
+        </Group>
+      }
+      position="right"
+    >
+      <Group px="xs" pos="relative" justify="space-between" ref={setRootRef}>
+        <Text size="sm">Drop hints</Text>
+        <Group gap={0}>{controls}</Group>
+        <FloatingIndicator
+          bg="var(--mantine-primary-color-filled)"
+          target={controlsRefs[active]}
+          parent={rootRef}
+          style={{
+            borderRadius: theme.radius.sm,
+          }}
+        />
+      </Group>
+    </TooltipWrapper>
   )
 }

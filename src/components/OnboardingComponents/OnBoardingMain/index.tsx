@@ -25,7 +25,7 @@ export default function Main() {
           px="lg"
           ta="center"
         >
-          Microservices Architecture Builder
+          Microservice Architecture Builder
         </Text>
         <Space h="lg" />
         <Center>

@@ -31,7 +31,7 @@ export type TCustomEdge = Edge<IConnexion>
 
 export interface IConnexion {
   id: string
-  connexionType: IConnexionType
+  connexionType?: IConnexionType
   direction: (typeof connexionDirections)[number]
   note: string
 }

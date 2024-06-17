@@ -12,7 +12,7 @@ export default function Help() {
     >
       <Grid align="end">
         <Grid.Col span="auto">
-          <OnboardingText>Here's a quick guide</OnboardingText>
+          <OnboardingText>Here's a quick demo</OnboardingText>
         </Grid.Col>
         <Grid.Col span="content">
           <img src="/onBoarding/arrow-help.svg" width="70px" alt="" />

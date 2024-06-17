@@ -1,7 +1,12 @@
-import ConnexionLabelItems from '@/components/ConnexionLabelItems'
+import Line from '@/components/Line'
+import { clickCanvaContext } from '@/contexts/ClickCanvaCapture/constants'
+import ConnexionLabelItems from '@/pages/BoardPage/components/Board/components/CustomEdge/components/ConnexionLabelItems'
+import { useDisclosure } from '@mantine/hooks'
+import { useContext, useState } from 'react'
 import { EdgeProps, getSmoothStepPath, useReactFlow } from 'reactflow'
-import { DashedLine, FullLine } from '../../../../../../components/Lines/index'
 import { IConnexion } from '../connexionContants'
+
+const STROKE_WIDTH_FOCUSED = 3
 
 export default function CustomEdge(props: EdgeProps<IConnexion>) {
   const {
@@ -14,6 +19,10 @@ export default function CustomEdge(props: EdgeProps<IConnexion>) {
     targetPosition,
     data,
   } = props
+  const [mouveIsOver, setMouveIsOver] = useState(false)
+  const [configIsOpen, { toggle: toggleMenu, close: closeMenu }] =
+    useDisclosure(false)
+  const { triggerClickCanva } = useContext(clickCanvaContext)
 
   const { setEdges } = useReactFlow()
   const { connexionType, direction } = data!
@@ -26,7 +35,7 @@ export default function CustomEdge(props: EdgeProps<IConnexion>) {
     targetX: sourceX,
     targetY: sourceY,
   })
-  const [bezierPathCenter, labelX, labelY] = getSmoothStepPath({
+  const [bezierPathForward, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
     sourcePosition,
@@ -39,32 +48,71 @@ export default function CustomEdge(props: EdgeProps<IConnexion>) {
     setEdges((edges) => edges.filter((edge) => edge.id !== id))
   }
 
+  // Large invisible line helping catching mouseover and clicks
+  const invisibleInteractionLine = (
+    <Line
+      d={bezierPathForward}
+      stroke="transparent"
+      strokeDasharray=""
+      strokeWidth={14}
+      onClick={() => {
+        triggerClickCanva()
+        setTimeout(() => {
+          toggleMenu()
+        }, 0)
+      }}
+      onMouseMove={() => setMouveIsOver(true)}
+      onMouseLeave={() => setMouveIsOver(false)}
+    />
+  )
+
+  const largeLine = configIsOpen || mouveIsOver
   let lineComponent
   switch (direction) {
-    case 'forward':
-      lineComponent = <DashedLine path={bezierPathCenter} />
+    case 'forward': {
+      const dashedLineProps = {
+        strokeWidth: largeLine ? STROKE_WIDTH_FOCUSED : 1,
+        d: bezierPathForward,
+        animated: true,
+      }
       break
+      lineComponent = <Line {...dashedLineProps} />
+    }
 
-    case 'reverse':
-      lineComponent = <DashedLine path={bezierPathReverse} />
+    case 'reverse': {
+      const dashedLineProps = {
+        strokeWidth: largeLine ? STROKE_WIDTH_FOCUSED : 1,
+        d: bezierPathReverse,
+        animated: true,
+      }
+      lineComponent = <Line {...dashedLineProps} />
       break
+    }
 
-    default:
-      lineComponent = <FullLine path={bezierPathCenter} />
+    default: {
+      const fullLineProps = {
+        strokeWidth: largeLine ? STROKE_WIDTH_FOCUSED : 1,
+        d: bezierPathForward,
+        strokeDasharray: '',
+      }
+      lineComponent = <Line {...fullLineProps} />
       break
+    }
   }
 
   return (
     <>
       {lineComponent}
+      {invisibleInteractionLine}
       <ConnexionLabelItems
         handleDeleteEdge={handleDeleteEdge}
         labelX={labelX}
         labelY={labelY}
-        connexionId={id}
         connexionType={connexionType}
-        previewLineOnly={false}
         connexion={props.data!}
+        toggleMenu={toggleMenu}
+        closeMenu={closeMenu}
+        configIsOpen={configIsOpen}
       />
     </>
   )

@@ -25,6 +25,9 @@ export default function CustomModal({
       opened={opened}
       fullScreen={fullScreen}
       onClose={onClose}
+      overlayProps={{
+        backgroundOpacity: 0.25,
+      }}
       title={
         <Box px={PADDING}>
           <Title>{title}</Title>

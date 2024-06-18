@@ -1,13 +1,11 @@
 import DroppableIndicator from '@/components/DroppableIndicator'
-import OnBoardingHelp from '@/components/OnboardingComponents/OnBoardingHelp'
 import OnBoardingMain from '@/components/OnboardingComponents/OnBoardingMain'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
-import { ActionIcon, Box, useMantineTheme } from '@mantine/core'
-import { useElementSize } from '@mantine/hooks'
-import { IconHelp } from '@tabler/icons-react'
+import { Box, useMantineTheme } from '@mantine/core'
+import { useDisclosure, useElementSize } from '@mantine/hooks'
 import { cloneDeep, omit } from 'lodash'
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo } from 'react'
 import ReactFlow, {
   Background,
   BackgroundVariant,
@@ -16,7 +14,6 @@ import ReactFlow, {
   EdgeTypes,
   NodeDragHandler,
   NodeTypes,
-  Panel,
   addEdge,
   useEdgesState,
   useNodesState,
@@ -27,7 +24,6 @@ import { v4 as uuidv4, v4 } from 'uuid'
 import DroppableArea from '../../../../components/DroppableArea/index'
 import { clickCanvaContext } from '../../../../contexts/ClickCanvaCapture/constants'
 import {
-  ICON_STYLE,
   IService,
   NO_DRAG_REACTFLOW_CLASS,
   NO_PAN_REACTFLOW_CLASS,
@@ -45,6 +41,8 @@ import ConnexionPreview from './components/ConnexionPreview'
 import CustomEdge from './components/CustomEdge'
 import CustomNode from './components/CustomNode/'
 import DeleteModal from './components/DeleteModal'
+import DemoModal from './components/DemoModal'
+import DemoPanel from './components/DemoPanel'
 import DraggableGhost from './components/DraggableGhost/index'
 import FitToView from './components/FitToView/index'
 import LoadUrlBoardModal from './components/LoadUrlBoardModal'
@@ -76,8 +74,10 @@ export default function Board({ nodeState, edgeState }: Props) {
   const { showOnBoarding } = useContext(onBoardingContext)
   const [nodes, setNodes, onNodesChange] = nodeState
   const [edges, setEdges, onEdgesChange] = edgeState
-  const [showResetBoardModal, setShowResetModal] = useState(false)
-  const [showShareModal, setShowShareModal] = useState(false)
+  const [showResetBoardModal, resetModalHandlers] = useDisclosure(false)
+  const [showShareModal, shareModalHanders] = useDisclosure(false)
+  const [showDemoModal, demoModalHandlers] = useDisclosure(false)
+
   const theme = useMantineTheme()
   const { ref, height, width } = useElementSize()
   const flowInstance = useReactFlow<IService, IConnexion>()
@@ -148,6 +148,10 @@ export default function Board({ nodeState, edgeState }: Props) {
     [setEdges, edges],
   )
 
+  // Fiw fitView behavior being triggered when leaving onboarding
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fitView = useMemo(() => !!nodes.length, [])
+
   return (
     <>
       <DroppableHintProvider>
@@ -166,10 +170,11 @@ export default function Board({ nodeState, edgeState }: Props) {
               width={width}
               droppableType={droppableType}
             />
+
             <ReactFlow
               minZoom={1}
               maxZoom={1}
-              fitView={!showOnBoarding}
+              fitView={fitView}
               onConnect={onConnect}
               nodes={nodes}
               edges={edges}
@@ -192,37 +197,27 @@ export default function Board({ nodeState, edgeState }: Props) {
               {!showOnBoarding && (
                 <Background id={v4()} variant={BackgroundVariant.Dots} />
               )}
-
               <Toolbar />
-
               {showOnBoarding && <OnBoardingMain />}
-
-              <Panel position="bottom-right">
-                {showOnBoarding && <OnBoardingHelp />}
-
-                <ActionIcon variant="light" color="gray" size="lg">
-                  <IconHelp style={ICON_STYLE} />
-                </ActionIcon>
-              </Panel>
+              <DemoPanel
+                openDemo={demoModalHandlers.open}
+                showOnBoarding={showOnBoarding}
+              />
             </ReactFlow>
-            <Settings openResetModal={() => setShowResetModal(true)} />
-            <PrimaryActionsPanel
-              openShareModal={() => setShowShareModal(true)}
-            />
+            <Settings openResetModal={resetModalHandlers.open} />
+            <PrimaryActionsPanel openShareModal={shareModalHanders.open} />
             <DraggableGhost />
           </Box>
         </DroppableArea>
       </DroppableHintProvider>
 
       <DeleteModal
-        close={() => setShowResetModal(false)}
+        close={resetModalHandlers.close}
         opened={showResetBoardModal}
       />
-      <ShareModal
-        opened={showShareModal}
-        close={() => setShowShareModal(false)}
-      />
+      <ShareModal opened={showShareModal} close={shareModalHanders.close} />
       <LoadUrlBoardModal />
+      <DemoModal close={demoModalHandlers.close} opened={showDemoModal} />
     </>
   )
 }

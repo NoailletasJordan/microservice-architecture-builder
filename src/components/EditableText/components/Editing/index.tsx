@@ -1,5 +1,6 @@
 import { Autocomplete, AutocompleteProps, Kbd } from '@mantine/core'
 import { getHotkeyHandler, useFocusWithin } from '@mantine/hooks'
+import { useEffect } from 'react'
 
 interface Props {
   onChange: (event: string) => void
@@ -14,28 +15,28 @@ export default function InputEdit({
   onClickValidate,
   options,
 }: Props) {
-  const { ref } = useFocusWithin({
-    onBlur: () => {
-      onClickValidate()
-    },
-  })
+  const { ref } = useFocusWithin()
+
+  useEffect(() => {
+    ref.current && ref.current.select()
+  }, [ref])
 
   return (
-    <div ref={ref}>
-      <Autocomplete
-        autoFocus
-        onChange={onChange}
-        value={value}
-        data={options}
-        size="xs"
-        rightSection={
-          <Kbd size="xs" mr="sm" onClick={onClickValidate}>
-            Enter
-          </Kbd>
-        }
-        aria-label="Endoint"
-        onKeyDown={getHotkeyHandler([['Enter', onClickValidate]])}
-      />
-    </div>
+    <Autocomplete
+      onBlur={onClickValidate}
+      ref={ref}
+      autoFocus
+      onChange={onChange}
+      value={value}
+      data={options}
+      size="xs"
+      rightSection={
+        <Kbd size="xs" mr="sm" onClick={onClickValidate}>
+          Enter
+        </Kbd>
+      }
+      aria-label="Endoint"
+      onKeyDown={getHotkeyHandler([['Enter', onClickValidate]])}
+    />
   )
 }

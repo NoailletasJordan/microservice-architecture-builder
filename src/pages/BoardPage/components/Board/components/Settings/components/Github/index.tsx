@@ -9,7 +9,7 @@ export default function ResetBoard() {
       onClick={() => null}
       rightSection={<IconExternalLink stroke={1} style={ICON_STYLE} />}
       component="a"
-      href="https://github.com/NoailletasJordan/project-a"
+      href="https://github.com/NoailletasJordan/microservice-architecture-builder"
       target="_blank"
     >
       <Text component="span" size="sm">

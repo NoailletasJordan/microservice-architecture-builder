@@ -1,7 +1,7 @@
 import '@mantine/core/styles.css'
 import '@mantine/notifications/styles.css'
 import '@mantine/tiptap/styles.css'
-import './fix.css'
+import './global.css'
 
 import {
   ActionIcon,

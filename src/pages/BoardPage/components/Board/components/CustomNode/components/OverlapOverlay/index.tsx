@@ -3,7 +3,7 @@ import { IconShare3 } from '@tabler/icons-react'
 
 export default function OverlapOverlay() {
   return (
-    <Overlay backgroundOpacity={0.45}>
+    <Overlay backgroundOpacity={0.2}>
       <Flex
         align="center"
         justify="center"

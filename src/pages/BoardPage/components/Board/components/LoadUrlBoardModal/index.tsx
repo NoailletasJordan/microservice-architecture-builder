@@ -64,7 +64,7 @@ export default function LoadLinkBoardModal() {
             Board loaded successfully
           </Text>
         ),
-        color: 'green',
+        color: 'var(--mantine-primary-color-5)',
         autoClose: 7000,
       })
     } catch (error) {

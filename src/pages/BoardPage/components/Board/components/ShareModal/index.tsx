@@ -3,7 +3,7 @@ import {
   ICON_STYLE,
   shareHashTocken,
 } from '@/pages/BoardPage/configs/constants'
-import { Box, Button, Grid, Text, useMantineTheme } from '@mantine/core'
+import { Button, Grid, Text, TextInput, useMantineTheme } from '@mantine/core'
 import { useClipboard, useMediaQuery } from '@mantine/hooks'
 import { notifications } from '@mantine/notifications'
 import { IconCheck, IconCopy } from '@tabler/icons-react'
@@ -51,18 +51,20 @@ export default function SharableModal({ close, opened }: Props) {
     >
       <Grid align="center">
         <Grid.Col span={{ xs: 8 }}>
-          <Box
+          <TextInput
+            variant="unstyled"
+            bg={theme.colors[theme.primaryColor][1]}
+            px="xs"
+            py={3}
             style={{
               border: '1px solid var(--mantine-color-gray-4)',
               borderRadius: 4,
+              fontSize: theme.fontSizes.xs,
             }}
-            p="sm"
-            bg={theme.colors[theme.primaryColor][1]}
-          >
-            <Text truncate="end" size="md">
-              {link}
-            </Text>
-          </Box>
+            readOnly
+            value={link}
+            size="md"
+          />
         </Grid.Col>
         <Grid.Col span={{ xs: 4 }}>
           <Button
@@ -76,7 +78,7 @@ export default function SharableModal({ close, opened }: Props) {
                     Copied to clipboard
                   </Text>
                 ),
-                color: 'green',
+                color: 'var(--mantine-primary-color-5)',
                 autoClose: 3000,
               })
               handleClose()

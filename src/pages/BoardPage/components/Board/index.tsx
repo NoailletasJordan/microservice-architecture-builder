@@ -1,13 +1,12 @@
 import DroppableIndicator from '@/components/DroppableIndicator'
 import OnBoardingHelp from '@/components/OnboardingComponents/OnBoardingHelp'
 import OnBoardingMain from '@/components/OnboardingComponents/OnBoardingMain'
-import { connexionContext } from '@/contexts/Connexion/constants'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
 import { ActionIcon, Box, useMantineTheme } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
 import { IconHelp } from '@tabler/icons-react'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, omit } from 'lodash'
 import { useCallback, useContext, useEffect, useState } from 'react'
 import ReactFlow, {
   Background,
@@ -26,6 +25,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css'
 import { v4 as uuidv4, v4 } from 'uuid'
 import DroppableArea from '../../../../components/DroppableArea/index'
+import { clickCanvaContext } from '../../../../contexts/ClickCanvaCapture/constants'
 import {
   ICON_STYLE,
   IService,
@@ -33,6 +33,7 @@ import {
   NO_PAN_REACTFLOW_CLASS,
   NO_WhEEL_REACTFLOW_CLASS,
   STORAGE_DATA_INDEX_KEY,
+  SubService,
   TCustomNode,
 } from '../../configs/constants'
 import {
@@ -73,22 +74,25 @@ interface Props {
 
 export default function Board({ nodeState, edgeState }: Props) {
   const { showOnBoarding } = useContext(onBoardingContext)
-  const { connexionType } = useContext(connexionContext)
   const [nodes, setNodes, onNodesChange] = nodeState
   const [edges, setEdges, onEdgesChange] = edgeState
   const [showResetBoardModal, setShowResetModal] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
   const theme = useMantineTheme()
   const { ref, height, width } = useElementSize()
-  const flowInstance = useReactFlow()
+  const flowInstance = useReactFlow<IService, IConnexion>()
+  const { triggerClickCanva } = useContext(clickCanvaContext)
 
   const onNodeDragEnd: NodeDragHandler = (_event, node: TCustomNode) => {
     const targetNode = getNodeOverlapped(node, nodes)
     if (!targetNode) return
 
-    // Delete node and add it as a sub
+    // Delete node and add it as a subService
     handleDeleteNode(node.id, flowInstance)
-    const newSubService = { ...node.data, parentId: targetNode.data.id }
+    const newSubService: SubService = {
+      ...omit(node.data, 'subServices'),
+      parentId: targetNode.data.id,
+    }
     targetNode.data.subServices = [
       ...targetNode.data.subServices,
       newSubService,
@@ -125,7 +129,6 @@ export default function Board({ nodeState, edgeState }: Props) {
         type: 'custom',
         data: {
           id,
-          connexionType,
           direction: 'duplex',
           note: '',
         },
@@ -142,7 +145,7 @@ export default function Board({ nodeState, edgeState }: Props) {
 
       setEdges((oldEdges) => addEdge(newEdge, oldEdges))
     },
-    [setEdges, edges, connexionType],
+    [setEdges, edges],
   )
 
   return (
@@ -166,7 +169,7 @@ export default function Board({ nodeState, edgeState }: Props) {
             <ReactFlow
               minZoom={1}
               maxZoom={1}
-              fitView
+              fitView={!showOnBoarding}
               onConnect={onConnect}
               nodes={nodes}
               edges={edges}
@@ -180,11 +183,16 @@ export default function Board({ nodeState, edgeState }: Props) {
               noDragClassName={NO_DRAG_REACTFLOW_CLASS}
               noWheelClassName={NO_WhEEL_REACTFLOW_CLASS}
               noPanClassName={NO_PAN_REACTFLOW_CLASS}
+              proOptions={{
+                hideAttribution: true,
+              }}
+              onPaneClick={triggerClickCanva}
             >
               <FitToView />
               {!showOnBoarding && (
                 <Background id={v4()} variant={BackgroundVariant.Dots} />
               )}
+
               <Toolbar />
 
               {showOnBoarding && <OnBoardingMain />}
@@ -197,10 +205,7 @@ export default function Board({ nodeState, edgeState }: Props) {
                 </ActionIcon>
               </Panel>
             </ReactFlow>
-            <Settings
-              openShareModal={() => setShowShareModal(true)}
-              openResetModal={() => setShowResetModal(true)}
-            />
+            <Settings openResetModal={() => setShowResetModal(true)} />
             <PrimaryActionsPanel
               openShareModal={() => setShowShareModal(true)}
             />

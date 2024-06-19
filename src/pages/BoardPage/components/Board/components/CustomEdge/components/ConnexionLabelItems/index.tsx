@@ -10,7 +10,6 @@ import {
 } from '@/pages/BoardPage/configs/constants'
 import { handleUpdateEdge } from '@/pages/BoardPage/configs/helpers'
 import { ActionIcon, Box } from '@mantine/core'
-import { useClickOutside } from '@mantine/hooks'
 import { IconSettings } from '@tabler/icons-react'
 import { useEditor } from '@tiptap/react'
 import { useContext, useEffect } from 'react'
@@ -49,7 +48,6 @@ export default function ConnexionLabelItems({
   useEffect(() => {
     canvaClickIncrement !== 0 && closeMenu()
   }, [canvaClickIncrement, closeMenu])
-  const ref = useClickOutside(closeMenu)
 
   const editor = useEditor(
     getEditorParams({
@@ -64,10 +62,7 @@ export default function ConnexionLabelItems({
 
   return (
     <EdgeLabelRenderer>
-      <div
-        ref={ref}
-        className={`${NO_DRAG_REACTFLOW_CLASS} ${NO_PAN_REACTFLOW_CLASS}`}
-      >
+      <div className={`${NO_DRAG_REACTFLOW_CLASS} ${NO_PAN_REACTFLOW_CLASS}`}>
         {(configIsOpen || !!connexion.connexionType || !collapseAll) && (
           <ActionIcon
             style={{

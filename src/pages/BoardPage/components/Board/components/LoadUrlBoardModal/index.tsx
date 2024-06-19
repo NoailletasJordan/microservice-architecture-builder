@@ -1,8 +1,7 @@
 import CustomModal from '@/components/CustomModal'
 import {
   ICON_STYLE,
-  ILocalStorage,
-  STORAGE_DATA_INDEX_KEY,
+  TCustomNode,
   shareHashTocken,
 } from '@/pages/BoardPage/configs/constants'
 import {
@@ -13,29 +12,22 @@ import {
   ThemeIcon,
   useMantineTheme,
 } from '@mantine/core'
-import {
-  readLocalStorageValue,
-  useDisclosure,
-  useLocalStorage,
-  useMediaQuery,
-} from '@mantine/hooks'
+import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { notifications } from '@mantine/notifications'
 import { IconAlertTriangle, IconCheck } from '@tabler/icons-react'
-import { useCallback, useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useReactFlow } from 'reactflow'
+import { getNodesBounds, useReactFlow } from 'reactflow'
 
-const getHasNodesInLocalStorage = (): boolean => {
-  const fromStorage = readLocalStorageValue<ILocalStorage | undefined>({
-    key: STORAGE_DATA_INDEX_KEY,
-  })
-  return !!fromStorage?.nodes.length
+interface Props {
+  nodes: TCustomNode[]
 }
 
-export default function LoadLinkBoardModal() {
-  const [currentBoardData] = useLocalStorage<ILocalStorage>({
-    key: STORAGE_DATA_INDEX_KEY,
-  })
+// This components needs to be called after reactFlow initialisation
+// because of "onClickOverwriteRef" function
+// otherwise "fitBounds" / "fitView" etc simply doesnt work
+
+export default function LoadLinkBoardModal({ nodes }: Props) {
   const [opened, modalAction] = useDisclosure(false)
   const theme = useMantineTheme()
   const maxSM = useMediaQuery('(max-width: 768px)')
@@ -44,18 +36,22 @@ export default function LoadLinkBoardModal() {
   const flowInstance = useReactFlow()
   const navigate = useNavigate()
 
-  const handleCloseModal = useCallback(() => {
-    modalAction.close()
-    navigate('/')
-  }, [modalAction, navigate])
+  // Until useEffectEvent shipped
+  // https://react.dev/reference/react/experimental_useEffectEvent
+  const nodesRef = useRef<TCustomNode[]>([])
+  const modalActionRef = useRef(modalAction)
+  const onClickOverwriteRef = useRef<() => void>(() => null)
 
-  const onClickOverwrite = useCallback(() => {
+  nodesRef.current = nodes
+  modalActionRef.current = modalAction
+  onClickOverwriteRef.current = () => {
     try {
-      const loadValue = hash.replace(shareHashTocken, '')
-      const object = JSON.parse(decodeURIComponent(loadValue))
-      flowInstance.setNodes(() => object.nodes)
-      flowInstance.setEdges(() => object.edges)
-      flowInstance.fitView()
+      const objectString = hash.replace(shareHashTocken, '')
+      const loadedValues = JSON.parse(decodeURIComponent(objectString))
+      flowInstance.setNodes(() => loadedValues.nodes)
+      flowInstance.setEdges(() => loadedValues.edges)
+      flowInstance.fitBounds(getNodesBounds(loadedValues.nodes))
+
       notifications.show({
         withBorder: true,
         icon: <IconCheck style={ICON_STYLE} />,
@@ -80,17 +76,21 @@ export default function LoadLinkBoardModal() {
     } finally {
       handleCloseModal()
     }
-  }, [hash, flowInstance, handleCloseModal])
+  }
+
+  const handleCloseModal = () => {
+    modalActionRef.current.close()
+    navigate('/')
+  }
 
   useEffect(() => {
     const isLoadExternalURL = hash.includes(shareHashTocken)
-    if (!isLoadExternalURL) return modalAction.close()
+    if (!isLoadExternalURL) return modalActionRef.current.close()
 
-    const hasNodesInLocalStorage = getHasNodesInLocalStorage()
-    if (hasNodesInLocalStorage) return modalAction.open()
+    if (nodesRef.current.length) return modalActionRef.current.open()
 
-    onClickOverwrite()
-  }, [hash, modalAction, currentBoardData, onClickOverwrite])
+    onClickOverwriteRef.current()
+  }, [hash])
 
   return (
     <CustomModal
@@ -112,7 +112,11 @@ export default function LoadLinkBoardModal() {
             </Text>
           </Grid.Col>
           <Grid.Col span="content">
-            <Button color="pink.6" c="dark" onClick={onClickOverwrite}>
+            <Button
+              color="pink.6"
+              c="dark"
+              onClick={onClickOverwriteRef.current}
+            >
               Replace my content
             </Button>
           </Grid.Col>

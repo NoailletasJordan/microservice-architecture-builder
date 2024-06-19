@@ -18,6 +18,7 @@ import ReactFlow, {
   useEdgesState,
   useNodesState,
   useReactFlow,
+  useStore,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { v4 as uuidv4, v4 } from 'uuid'
@@ -45,7 +46,7 @@ import DemoModal from './components/DemoModal'
 import DemoPanel from './components/DemoPanel'
 import DraggableGhost from './components/DraggableGhost/index'
 import FitToView from './components/FitToView/index'
-import LoadUrlBoardModal from './components/LoadUrlBoardModal'
+import LoadUrlBoardModal from './components/LoadUrlBoardModal/'
 import PrimaryActionsPanel from './components/PrimaryActionsPanel'
 import Settings from './components/Settings/index'
 import ShareModal from './components/ShareModal'
@@ -148,9 +149,10 @@ export default function Board({ nodeState, edgeState }: Props) {
     [setEdges, edges],
   )
 
-  // Fiw fitView behavior being triggered when leaving onboarding
+  // Dirty fix on async loading fitview behavior
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const fitView = useMemo(() => !!nodes.length, [])
+  const loadedWidthNodes = useMemo(() => !!nodes.length, [])
+  const boardInitialized = useStore((state) => !!state.height)
 
   return (
     <>
@@ -174,7 +176,7 @@ export default function Board({ nodeState, edgeState }: Props) {
             <ReactFlow
               minZoom={1}
               maxZoom={1}
-              fitView={fitView}
+              fitView={loadedWidthNodes && boardInitialized}
               onConnect={onConnect}
               nodes={nodes}
               edges={edges}
@@ -215,8 +217,12 @@ export default function Board({ nodeState, edgeState }: Props) {
         close={resetModalHandlers.close}
         opened={showResetBoardModal}
       />
-      <ShareModal opened={showShareModal} close={shareModalHanders.close} />
-      <LoadUrlBoardModal />
+      <ShareModal
+        nodes={nodes}
+        opened={showShareModal}
+        close={shareModalHanders.close}
+      />
+      {boardInitialized && <LoadUrlBoardModal nodes={nodes} />}
       <DemoModal close={demoModalHandlers.close} opened={showDemoModal} />
     </>
   )

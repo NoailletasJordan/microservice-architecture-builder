@@ -6,7 +6,8 @@ understandable interface.
 
 ![image](https://github.com/NoailletasJordan/microservice-architecture-builder/assets/48062996/01a8c4ef-981f-46d5-a19e-96fa6a7139d1)
 
-This project uses React, Vite, and React Flow.
+This project uses React, Vite, and React Flow. Try now
+[live](https://microservice-architecture-builder.com).
 
 ## 🚀 Features
 
@@ -26,7 +27,7 @@ This project uses React, Vite, and React Flow.
 ## 📦 Installation
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 npm run dev
 ```
 

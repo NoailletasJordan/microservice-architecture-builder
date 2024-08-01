@@ -27,7 +27,7 @@ This project uses React, Vite, and React Flow. Try now
 ## 📦 Installation
 
 ```bash
-npm install --legacy-peer-deps
+npm install
 npm run dev
 ```
 

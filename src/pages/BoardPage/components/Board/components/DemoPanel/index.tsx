@@ -15,7 +15,7 @@ export default function DemoPanel({ openDemo, showOnBoarding }: Props) {
     <Panel position="bottom-right">
       {showOnBoarding && <OnBoardingHelp />}
       <TooltipWrapper label="Watch demo">
-        <ActionIcon onClick={openDemo} variant="light" color="gray" size="lg">
+        <ActionIcon onClick={openDemo} variant="subtle" size="lg">
           <IconInfoSquareRounded style={ICON_STYLE} />
         </ActionIcon>
       </TooltipWrapper>

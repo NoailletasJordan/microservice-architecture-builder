@@ -116,18 +116,18 @@ export default function SharableModal({ close, opened, nodes }: Props) {
 }
 
 function Empty() {
-  const theme = useMantineTheme()
-
   return (
-    <Card bg={theme.colors[theme.primaryColor][1]}>
+    <Card
+      bg="background.8"
+      withBorder
+      style={{ border: '1px solid var(--mantine-color-orange-5)' }}
+    >
       <Group>
-        <ThemeIcon variant="light" radius="xl" size="lg">
+        <ThemeIcon variant="transparent" color="orange" radius="xl" size="lg">
           <IconAlertTriangle style={ICON_STYLE} />
         </ThemeIcon>
 
-        <Text size="md" c={theme.colors[theme.primaryColor][8]}>
-          Please add services to your board before sharing.
-        </Text>
+        <Text size="md">Please add services to your board before sharing.</Text>
       </Group>
     </Card>
   )

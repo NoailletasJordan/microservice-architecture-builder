@@ -11,7 +11,7 @@ export default function FitToView() {
   return (
     <Panel position="bottom-left">
       <TooltipWrapper label="Fit into view">
-        <ActionIcon onClick={onClick} variant="default" aria-label="Settings">
+        <ActionIcon onClick={onClick} variant="subtle" aria-label="Settings">
           <IconFocusCentered style={{ width: '90%', height: '90%' }} />
         </ActionIcon>
       </TooltipWrapper>

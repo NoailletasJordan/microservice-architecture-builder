@@ -14,7 +14,7 @@ interface Props {
 
 export function ServiceTool({ serviceIdType, draggableIndicator }: Props) {
   return (
-    <ThemeIcon size="lg" color="gray" variant="default">
+    <ThemeIcon size="lg" variant="default">
       <Image
         h={25}
         w={25}

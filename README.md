@@ -27,7 +27,7 @@ This project uses React, Vite, and React Flow. Try now
 ## 📦 Installation
 
 ```bash
-npm install --legacy-peer-deps
+npm install 
 npm run dev
 ```
 
@@ -35,3 +35,4 @@ npm run dev
 
 Contributions are welcome! If you have any ideas or improvements, feel free to
 open a pull request.
+

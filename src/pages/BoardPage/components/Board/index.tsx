@@ -2,7 +2,7 @@ import DroppableIndicator from '@/components/DroppableIndicator'
 import OnBoardingMain from '@/components/OnboardingComponents/OnBoardingMain'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
-import { Box, useMantineTheme } from '@mantine/core'
+import { Box } from '@mantine/core'
 import { useDisclosure, useElementSize } from '@mantine/hooks'
 import { cloneDeep, omit } from 'lodash'
 import { useCallback, useContext, useEffect, useMemo } from 'react'
@@ -79,7 +79,6 @@ export default function Board({ nodeState, edgeState }: Props) {
   const [showShareModal, shareModalHanders] = useDisclosure(false)
   const [showDemoModal, demoModalHandlers] = useDisclosure(false)
 
-  const theme = useMantineTheme()
   const { ref, height, width } = useElementSize()
   const flowInstance = useReactFlow<IService, IConnexion>()
   const { triggerClickCanva } = useContext(clickCanvaContext)
@@ -162,7 +161,6 @@ export default function Board({ nodeState, edgeState }: Props) {
             w="100%"
             h="100vh"
             style={preventScrollbarOnPan}
-            bg={theme.colors.gray[0]}
             pos="relative"
             ref={ref}
           >

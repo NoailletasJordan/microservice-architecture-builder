@@ -37,7 +37,7 @@ export default function Toolbar() {
           droppableType: 'toolbox',
         }}
       >
-        <Card p="0.3rem" bg="white" shadow="md">
+        <Card p="0.3rem" shadow="md">
           <SimpleGrid cols={6} spacing="0.3rem">
             {services}
           </SimpleGrid>

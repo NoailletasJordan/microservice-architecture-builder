@@ -1,5 +1,5 @@
 import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
-import { ActionIcon, Box, Button } from '@mantine/core'
+import { ActionIcon, Box, Button, Text } from '@mantine/core'
 import { IconLink } from '@tabler/icons-react'
 
 interface Props {
@@ -15,8 +15,14 @@ export default function SharableButton({ onClick, shrink }: Props) {
       </ActionIcon>
     </Box>
   ) : (
-    <Button leftSection={<IconLink style={ICON_STYLE} />} onClick={onClick}>
-      Share
+    <Button
+      // variant="gradient"
+      leftSection={<IconLink style={ICON_STYLE} />}
+      onClick={onClick}
+    >
+      <Text component="span" size="sm">
+        Share
+      </Text>
     </Button>
   )
 }

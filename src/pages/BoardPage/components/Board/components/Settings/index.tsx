@@ -23,7 +23,7 @@ export default function Settings({ openResetModal }: Props) {
 
   const target = (
     <Menu.Target>
-      <ActionIcon onClick={toggle} size="lg" variant="light">
+      <ActionIcon onClick={toggle} size="lg" variant="default">
         <IconMenu2 style={{ width: '50%', height: '50%' }} />
       </ActionIcon>
     </Menu.Target>

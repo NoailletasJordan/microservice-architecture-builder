@@ -70,11 +70,11 @@ export default function SharableModal({ close, opened, nodes }: Props) {
           <Grid.Col span={{ xs: 8 }}>
             <TextInput
               variant="unstyled"
-              bg={theme.colors[theme.primaryColor][1]}
+              bg="background.8"
               px="xs"
               py={3}
               style={{
-                border: '1px solid var(--mantine-color-gray-4)',
+                border: '1px solid var(--mantine-color-background-6)',
                 borderRadius: 4,
                 fontSize: theme.fontSizes.xs,
               }}
@@ -95,7 +95,6 @@ export default function SharableModal({ close, opened, nodes }: Props) {
                       Copied to clipboard
                     </Text>
                   ),
-                  color: 'var(--mantine-primary-color-5)',
                   autoClose: 3000,
                 })
                 handleClose()

@@ -7,7 +7,7 @@ interface Props extends TextProps {
 
 export default function Title({ children, ...props }: Props) {
   return (
-    <Text fw="700" size="lg" c="primary" {...props}>
+    <Text fw="700" size="lg" {...props}>
       {children}
     </Text>
   )

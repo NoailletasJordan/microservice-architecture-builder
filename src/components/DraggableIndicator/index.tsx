@@ -1,14 +1,13 @@
-import { Box, useMantineTheme } from '@mantine/core'
+import { Box } from '@mantine/core'
 
 export default function Indicator() {
-  const theme = useMantineTheme()
   return (
     <Box
       style={{
         clipPath: 'polygon(100% 0, 0 0, 100% 100%)',
         borderRadius: '3px',
       }}
-      bg={theme.colors[theme.primaryColor][3]}
+      bg="primary.4"
       right={0}
       top={0}
       pos="absolute"

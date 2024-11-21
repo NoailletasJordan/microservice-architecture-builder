@@ -45,7 +45,6 @@ import DeleteModal from './components/DeleteModal'
 import DemoModal from './components/DemoModal'
 import DemoPanel from './components/DemoPanel'
 import DraggableGhost from './components/DraggableGhost/index'
-import FitToView from './components/FitToView/index'
 import LoadUrlBoardModal from './components/LoadUrlBoardModal/'
 import PrimaryActionsPanel from './components/PrimaryActionsPanel'
 import Settings from './components/Settings/index'
@@ -193,7 +192,6 @@ export default function Board({ nodeState, edgeState }: Props) {
               }}
               onPaneClick={triggerClickCanva}
             >
-              <FitToView />
               {!showOnBoarding && (
                 <Background id={v4()} variant={BackgroundVariant.Dots} />
               )}

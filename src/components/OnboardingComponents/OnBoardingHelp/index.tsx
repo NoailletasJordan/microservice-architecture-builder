@@ -4,13 +4,12 @@ import OnboardingText from '../OnBoardingText'
 export default function Help() {
   return (
     <Box
-      pos="absolute"
       miw={200}
       style={{
-        transform: 'translate( calc(-100% + 40px),-100%)',
+        transform: 'translateX(7px)',
       }}
     >
-      <Grid align="end">
+      <Grid align="center">
         <Grid.Col span="auto">
           <OnboardingText>Here's a quick demo</OnboardingText>
         </Grid.Col>

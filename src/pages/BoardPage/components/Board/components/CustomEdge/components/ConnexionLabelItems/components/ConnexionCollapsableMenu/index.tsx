@@ -71,8 +71,12 @@ export default function ConnexionCollapsableMenu({
         withBorder
         w={CARD_WIDTH + 12}
         style={{
-          backgroundColor: !configIsOpen ? 'transparent' : '',
-          borderColor: !configIsOpen ? 'transparent' : '',
+          backgroundColor: !configIsOpen
+            ? 'transparent'
+            : 'var(--mantine-color-background-9)',
+          borderColor: !configIsOpen
+            ? 'transparent'
+            : 'var(--mantine-color-background-9)',
         }}
       >
         <Collapse in={configIsOpen}>
@@ -107,11 +111,12 @@ export default function ConnexionCollapsableMenu({
             </Accordion>
             <Divider my="xs" />
             <Select
-              variant="default"
               data={selectData}
               value={connexion.connexionType}
               placeholder="Add connexion type"
               allowDeselect
+              variant="filled"
+              color="orange.2"
               onChange={(newConnexionType) => {
                 handleUpdateEdge(
                   connexion.id,
@@ -125,7 +130,7 @@ export default function ConnexionCollapsableMenu({
                 const { Icon } = connexionConfig[value as IConnexionType]
                 return (
                   <Group gap="xs">
-                    <ThemeIcon size="lg" variant="light">
+                    <ThemeIcon size="lg" color="background.8" variant="">
                       <Icon stroke={1} />
                     </ThemeIcon>
                     <Text fs="initial">{label}</Text>

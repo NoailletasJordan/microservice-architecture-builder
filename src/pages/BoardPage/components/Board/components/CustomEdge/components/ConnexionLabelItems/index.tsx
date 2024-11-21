@@ -74,8 +74,7 @@ export default function ConnexionLabelItems({
             }}
             size="lg"
             radius="md"
-            variant="transparent"
-            bg="gray.0"
+            variant="default"
             onClick={toggleMenu}
           >
             <Icon stroke={1} />

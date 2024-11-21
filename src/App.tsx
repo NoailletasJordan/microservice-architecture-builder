@@ -14,8 +14,9 @@ import {
   MenuDropdown,
   ModalBody,
   ModalHeader,
+  PopoverDropdown,
+  Select,
   Text,
-  ThemeIcon,
   Tooltip,
   createTheme,
 } from '@mantine/core'
@@ -66,19 +67,6 @@ const preventActiveTranslate = {
 
 const theme = createTheme({
   colors: {
-    prim: [
-      '#e9fbf6',
-      '#d3f8ec',
-      '#a8f0d9',
-      '#7ce9c6',
-      '#51e1b4',
-      '#25daa1',
-      '#1eae81',
-      '#168360',
-      '#0f5740',
-      '#072c20',
-      '#041610',
-    ],
     text: [
       '#e9fbf7',
       '#d4f7ee',
@@ -105,7 +93,7 @@ const theme = createTheme({
       '#252934',
       '#0d111d',
     ],
-    secondary: [
+    primary: [
       '#e9eefb',
       '#d3def8',
       '#a8bcf0',
@@ -118,42 +106,39 @@ const theme = createTheme({
       '#07122c',
       '#040916',
     ],
-    accent: [
-      '#ebe9fb',
-      '#d8d3f8',
-      '#b0a8f0',
-      '#897ce9',
-      '#6151e1',
-      '#3a25da',
-      '#2e1eae',
-      '#231683',
-      '#170f57',
-      '#0c072c',
-      '#060416',
-    ],
   },
-  primaryColor: 'secondary',
+  primaryColor: 'primary',
   components: {
     Text: Text.extend({
       defaultProps: {
         size: 'xs',
       },
     }),
-    Button: Button.extend(preventActiveTranslate),
+    Button: Button.extend({
+      ...preventActiveTranslate,
+      defaultProps: {
+        color: 'primary.3',
+        style: {
+          // '--button-hover': 'var(--mantine-color-primary-2)',
+        },
+        c: 'background.10',
+      },
+    }),
     ActionIcon: ActionIcon.extend(preventActiveTranslate),
     CloseButton: CloseButton.extend(preventActiveTranslate),
     MenuDropdown: MenuDropdown.extend({
       defaultProps: {
-        bg: 'background.8',
-        style: { '--menu-item-hover': 'var(--mantine-color-background-7)' },
+        bg: 'background.9',
+        fs: '600',
+        style: { '--menu-item-hover': 'var(--mantine-color-background-8)' },
       },
     }),
     Divider: Divider.extend({ defaultProps: { color: 'background.7' } }),
     ModalHeader: ModalHeader.extend({
-      defaultProps: { bg: 'background' },
+      defaultProps: { bg: 'background.9' },
     }),
     ModalBody: ModalBody.extend({
-      defaultProps: { bg: 'background' },
+      defaultProps: { bg: 'background.9' },
     }),
     Tooltip: Tooltip.extend({
       defaultProps: { color: 'background.8' },
@@ -161,11 +146,14 @@ const theme = createTheme({
     Card: Card.extend({
       defaultProps: { bg: 'background.9' },
     }),
-    ThemeIcon: ThemeIcon.extend({
-      defaultProps: { bg: 'background.6' },
-    }),
     AppShell: AppShell.extend({
       defaultProps: { bg: 'background.10', c: 'text.1' },
+    }),
+    Select: Select.extend({
+      defaultProps: { bg: 'background.9' },
+    }),
+    PopoverDropdown: PopoverDropdown.extend({
+      defaultProps: { bg: 'background.8' },
     }),
   },
 })

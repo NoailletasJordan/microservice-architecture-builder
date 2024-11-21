@@ -20,10 +20,15 @@ export default function DeleteModal({ opened, close }: Props) {
       <Box>
         <Text size="md">This will clear the whole board. Are you sure?</Text>
         <Group justify="flex-end" gap="xs">
-          <Button variant="default" onClick={close}>
+          <Button
+            variant="outline"
+            color="background"
+            onClick={close}
+            c="text.1"
+          >
             Cancel
           </Button>
-          <Button color="pink" onClick={handleReset}>
+          <Button color="red.3" onClick={handleReset}>
             Confirm
           </Button>
         </Group>

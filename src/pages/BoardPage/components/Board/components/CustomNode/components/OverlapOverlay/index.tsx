@@ -11,7 +11,7 @@ export default function OverlapOverlay() {
         pos="absolute"
         top="50%"
         left="50%"
-        bg="indigo.0"
+        bg="background.7"
         opacity={1}
         w="90%"
         p="xs"
@@ -20,13 +20,15 @@ export default function OverlapOverlay() {
           borderRadius: '4px',
         }}
       >
-        <Text size="md">
-          Integrate as an <br />
-          <Text component="span" size="inherit" c="indigo" fw={700}>
-            Internal service
+        <Text size="md" c="primary.0" style={{ textAlign: 'center' }}>
+          Integrate as an
+          <br />
+          <Text component="span" size="inherit" c="primary.0" fw={600}>
+            internal service
           </Text>
+          ?
         </Text>
-        <ThemeIcon variant="transparent" color="gray">
+        <ThemeIcon variant="transparent" color="text.0">
           <IconShare3 />
         </ThemeIcon>
       </Flex>

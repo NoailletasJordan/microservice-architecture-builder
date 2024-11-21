@@ -79,7 +79,7 @@ export default function CustomNode(props: NodeProps<IService>) {
         <Card
           radius="md"
           style={{
-            border: `2px solid ${theme.colors.gray[3]}`,
+            border: '1px solid var(--mantine-color-background-9)',
           }}
           w={CARD_WIDTH}
           pos="relative"
@@ -96,7 +96,7 @@ export default function CustomNode(props: NodeProps<IService>) {
               align="center"
               justify="space-between"
               px="xs"
-              bg={theme.colors.gray[3]}
+              bg="background.9"
               h="2.5rem"
             >
               <TooltipWrapper label="Add a note">
@@ -104,15 +104,15 @@ export default function CustomNode(props: NodeProps<IService>) {
                   <ActionIcon
                     onClick={() => editor?.commands.focus()}
                     className={NO_DRAG_REACTFLOW_CLASS}
-                    variant="subtle"
-                    color="gray"
+                    variant="light"
+                    color="background"
                   >
                     <IconNote style={ICON_STYLE} />
                   </ActionIcon>
                 </Box>
               </TooltipWrapper>
 
-              <ThemeIcon variant="transparent" color="gray">
+              <ThemeIcon variant="transparent" color="text.1">
                 <IconGripHorizontal style={ICON_STYLE} />
               </ThemeIcon>
               <DeleteButton
@@ -127,6 +127,7 @@ export default function CustomNode(props: NodeProps<IService>) {
             pb="xs"
             className={NO_DRAG_REACTFLOW_CLASS}
             style={{ cursor: 'default' }}
+            bg="background.8"
           >
             <Grid gutter="xs" align="center">
               <Grid.Col span="content">

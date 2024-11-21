@@ -9,13 +9,13 @@ export default function CustomHandle({ position, id }: Props) {
   return (
     <Handle
       style={{
-        width: 13,
+        width: 10,
         height: 30,
         clipPath: 'polygon(0 25%, 100% 0, 100% 100%, 0 75%)',
         borderRadius: 0,
         transform,
         transformOrigin: 'center',
-        backgroundColor: 'var(--mantine-primary-color-3)',
+        backgroundColor: 'var(--mantine-color-primary-2)',
       }}
       type="source"
       position={position}

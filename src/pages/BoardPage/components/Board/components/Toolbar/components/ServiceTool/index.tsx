@@ -2,8 +2,8 @@ import DraggableArea from '@/components/DraggableArea'
 import DraggableIndicator from '@/components/DraggableIndicator'
 import {
   DraggableData,
-  ServiceIdType,
   serviceConfig,
+  ServiceIdType,
 } from '@/pages/BoardPage/configs/constants'
 import { Image, ThemeIcon } from '@mantine/core'
 
@@ -14,7 +14,13 @@ interface Props {
 
 export function ServiceTool({ serviceIdType, draggableIndicator }: Props) {
   return (
-    <ThemeIcon size="lg" variant="default">
+    <ThemeIcon
+      size="lg"
+      variant="transparent"
+      style={{
+        border: '1px solid var(--mantine-color-background-6)',
+      }}
+    >
       <Image
         h={25}
         w={25}

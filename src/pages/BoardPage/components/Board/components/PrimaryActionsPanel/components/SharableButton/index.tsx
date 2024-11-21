@@ -1,5 +1,6 @@
+import CustomButtonPrimary from '@/components/CustomButtonPrimary'
 import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
-import { ActionIcon, Box, Button } from '@mantine/core'
+import { ActionIcon, Box } from '@mantine/core'
 import { IconLink } from '@tabler/icons-react'
 
 interface Props {
@@ -11,12 +12,15 @@ export default function SharableButton({ onClick, shrink }: Props) {
   return shrink ? (
     <Box>
       <ActionIcon size="lg" onClick={onClick}>
-        <IconLink style={{ width: '50%', height: '50%' }} />
+        <IconLink style={ICON_STYLE} />
       </ActionIcon>
     </Box>
   ) : (
-    <Button leftSection={<IconLink style={ICON_STYLE} />} onClick={onClick}>
+    <CustomButtonPrimary
+      leftSection={<IconLink style={ICON_STYLE} />}
+      onClick={onClick}
+    >
       Share
-    </Button>
+    </CustomButtonPrimary>
   )
 }

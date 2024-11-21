@@ -15,8 +15,8 @@ export default function NonInput({ value, onClickEdit }: Props) {
       <Box>
         <ActionIcon
           variant="transparent"
-          color="grey" // todo color
           aria-label="Settings"
+          color="background"
           onClick={onClickEdit}
         >
           <IconEdit style={ICON_STYLE} stroke={1.5} />

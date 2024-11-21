@@ -42,6 +42,7 @@ interface Props {
   editor: Editor | null
 }
 
+const background = 'background.8'
 export default function RichEditor({ editor, forceToolsOpen }: Props) {
   const [debouncedIsFocused] = useDebouncedValue(editor?.isFocused, 170)
 
@@ -53,24 +54,32 @@ export default function RichEditor({ editor, forceToolsOpen }: Props) {
       <Collapse
         in={forceToolsOpen || editor?.isFocused || !!debouncedIsFocused}
       >
-        <RichTextEditor.Toolbar style={{ justifyContent: 'center' }}>
+        <RichTextEditor.Toolbar
+          bg="background.9"
+          style={{
+            justifyContent: 'center',
+          }}
+        >
           <RichTextEditor.ControlsGroup>
-            <RichTextEditor.Bold />
+            <RichTextEditor.Bold bg={background} />
           </RichTextEditor.ControlsGroup>
 
           <RichTextEditor.ControlsGroup>
-            <RichTextEditor.AlignLeft />
-            <RichTextEditor.AlignCenter />
+            <RichTextEditor.AlignLeft bg={background} />
+            <RichTextEditor.AlignCenter bg={background} />
           </RichTextEditor.ControlsGroup>
 
           <RichTextEditor.ControlsGroup>
-            <RichTextEditor.TaskList />
-            <RichTextEditor.Hr />
+            <RichTextEditor.TaskList bg={background} />
+            <RichTextEditor.Hr bg={background} />
           </RichTextEditor.ControlsGroup>
         </RichTextEditor.Toolbar>
       </Collapse>
 
-      <RichTextEditor.Content fz="var(--mantine-font-size-sm)" />
+      <RichTextEditor.Content
+        fz="var(--mantine-font-size-sm)"
+        bg={background}
+      />
     </RichTextEditor>
   )
 }

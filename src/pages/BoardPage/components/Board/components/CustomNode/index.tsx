@@ -6,7 +6,6 @@ import {
   Image,
   Space,
   ThemeIcon,
-  useMantineTheme,
 } from '@mantine/core'
 import { NodeProps, Position, useReactFlow } from 'reactflow'
 
@@ -25,7 +24,7 @@ import {
   handleDeleteNode,
   handleUpdateNode,
 } from '@/pages/BoardPage/configs/helpers'
-import { Box } from '@mantine/core'
+import { Box, Divider } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
 import { IconGripHorizontal, IconNote } from '@tabler/icons-react'
 import { useEditor } from '@tiptap/react'
@@ -40,7 +39,6 @@ import SubServiceSection from './components/SubServicesSection'
 
 export default function CustomNode(props: NodeProps<IService>) {
   const flowInstance = useReactFlow()
-  const theme = useMantineTheme()
   const { ref, height, width } = useElementSize()
   const service = props.data
 
@@ -79,7 +77,7 @@ export default function CustomNode(props: NodeProps<IService>) {
         <Card
           radius="md"
           style={{
-            border: `2px solid ${theme.colors.gray[3]}`,
+            border: '1px solid var(--mantine-color-background-9)',
           }}
           w={CARD_WIDTH}
           pos="relative"
@@ -96,7 +94,7 @@ export default function CustomNode(props: NodeProps<IService>) {
               align="center"
               justify="space-between"
               px="xs"
-              bg={theme.colors.gray[3]}
+              bg="background.9"
               h="2.5rem"
             >
               <TooltipWrapper label="Add a note">
@@ -104,15 +102,15 @@ export default function CustomNode(props: NodeProps<IService>) {
                   <ActionIcon
                     onClick={() => editor?.commands.focus()}
                     className={NO_DRAG_REACTFLOW_CLASS}
-                    variant="subtle"
-                    color="gray"
+                    variant="light"
+                    color="background"
                   >
                     <IconNote style={ICON_STYLE} />
                   </ActionIcon>
                 </Box>
               </TooltipWrapper>
 
-              <ThemeIcon variant="transparent" color="gray">
+              <ThemeIcon variant="transparent" color="text.0">
                 <IconGripHorizontal style={ICON_STYLE} />
               </ThemeIcon>
               <DeleteButton
@@ -120,13 +118,19 @@ export default function CustomNode(props: NodeProps<IService>) {
                 onClick={() => handleDeleteNode(props.id, flowInstance)}
               />
             </Group>
+            <Space h="0.2rem" />
             {isOverlapingNode && <OverlapOverlay />}
+          </Card.Section>
+
+          <Card.Section>
+            <Divider />
           </Card.Section>
           <Card.Section
             p="md"
             pb="xs"
             className={NO_DRAG_REACTFLOW_CLASS}
             style={{ cursor: 'default' }}
+            bg="background.9"
           >
             <Grid gutter="xs" align="center">
               <Grid.Col span="content">

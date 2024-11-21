@@ -7,7 +7,7 @@ interface Props extends TextProps {
 
 export default function OnboardingText({ children, ...props }: Props) {
   return (
-    <Text ff="Merienda, cursive" lts="1px" c="gray.5" size="lg" {...props}>
+    <Text ff="Merienda, cursive" lts="1px" size="lg" {...props}>
       {children}
     </Text>
   )

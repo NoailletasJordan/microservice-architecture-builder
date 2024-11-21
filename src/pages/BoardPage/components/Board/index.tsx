@@ -2,7 +2,7 @@ import DroppableIndicator from '@/components/DroppableIndicator'
 import OnBoardingMain from '@/components/OnboardingComponents/OnBoardingMain'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
-import { Box, useMantineTheme } from '@mantine/core'
+import { Box } from '@mantine/core'
 import { useDisclosure, useElementSize } from '@mantine/hooks'
 import { cloneDeep, omit } from 'lodash'
 import { useCallback, useContext, useEffect, useMemo } from 'react'
@@ -45,7 +45,6 @@ import DeleteModal from './components/DeleteModal'
 import DemoModal from './components/DemoModal'
 import DemoPanel from './components/DemoPanel'
 import DraggableGhost from './components/DraggableGhost/index'
-import FitToView from './components/FitToView/index'
 import LoadUrlBoardModal from './components/LoadUrlBoardModal/'
 import PrimaryActionsPanel from './components/PrimaryActionsPanel'
 import Settings from './components/Settings/index'
@@ -79,7 +78,6 @@ export default function Board({ nodeState, edgeState }: Props) {
   const [showShareModal, shareModalHanders] = useDisclosure(false)
   const [showDemoModal, demoModalHandlers] = useDisclosure(false)
 
-  const theme = useMantineTheme()
   const { ref, height, width } = useElementSize()
   const flowInstance = useReactFlow<IService, IConnexion>()
   const { triggerClickCanva } = useContext(clickCanvaContext)
@@ -162,7 +160,6 @@ export default function Board({ nodeState, edgeState }: Props) {
             w="100%"
             h="100vh"
             style={preventScrollbarOnPan}
-            bg={theme.colors.gray[0]}
             pos="relative"
             ref={ref}
           >
@@ -195,7 +192,6 @@ export default function Board({ nodeState, edgeState }: Props) {
               }}
               onPaneClick={triggerClickCanva}
             >
-              <FitToView />
               {!showOnBoarding && (
                 <Background id={v4()} variant={BackgroundVariant.Dots} />
               )}

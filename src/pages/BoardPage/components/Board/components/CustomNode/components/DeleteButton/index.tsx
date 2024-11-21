@@ -76,8 +76,8 @@ function DeleteButton({
           event.stopPropagation()
           onClick()
         }}
-        variant="subtle"
-        color="gray"
+        variant="light"
+        color="background"
         aria-label="Settings"
         className="noDragReactflow"
       >

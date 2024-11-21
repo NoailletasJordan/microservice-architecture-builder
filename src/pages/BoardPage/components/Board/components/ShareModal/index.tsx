@@ -1,3 +1,4 @@
+import CustomButtonPrimary from '@/components/CustomButtonPrimary'
 import CustomModal from '@/components/CustomModal'
 import {
   ICON_STYLE,
@@ -5,7 +6,6 @@ import {
   shareHashTocken,
 } from '@/pages/BoardPage/configs/constants'
 import {
-  Button,
   Card,
   Grid,
   Group,
@@ -16,7 +16,11 @@ import {
 } from '@mantine/core'
 import { useClipboard, useMediaQuery } from '@mantine/hooks'
 import { notifications } from '@mantine/notifications'
-import { IconAlertTriangle, IconCheck, IconCopy } from '@tabler/icons-react'
+import {
+  IconAlertTriangle,
+  IconClipboardCheck,
+  IconCopy,
+} from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { ReactFlowInstance, useReactFlow } from 'reactflow'
 
@@ -70,11 +74,11 @@ export default function SharableModal({ close, opened, nodes }: Props) {
           <Grid.Col span={{ xs: 8 }}>
             <TextInput
               variant="unstyled"
-              bg={theme.colors[theme.primaryColor][1]}
+              bg="background.8"
               px="xs"
               py={3}
               style={{
-                border: '1px solid var(--mantine-color-gray-4)',
+                border: '1px solid var(--mantine-color-background-6)',
                 borderRadius: 4,
                 fontSize: theme.fontSizes.xs,
               }}
@@ -84,18 +88,17 @@ export default function SharableModal({ close, opened, nodes }: Props) {
             />
           </Grid.Col>
           <Grid.Col span={{ xs: 4 }}>
-            <Button
+            <CustomButtonPrimary
               onClick={() => {
                 !clipboard.copied && clipboard.copy(link)
                 notifications.show({
-                  withBorder: true,
-                  icon: <IconCheck style={ICON_STYLE} />,
-                  message: (
-                    <Text fw={700} size="sm">
-                      Copied to clipboard
-                    </Text>
+                  icon: (
+                    <ThemeIcon radius="xl" color="primary.5">
+                      <IconClipboardCheck style={ICON_STYLE} />
+                    </ThemeIcon>
                   ),
-                  color: 'var(--mantine-primary-color-5)',
+                  title: 'Copied to clipboard',
+                  message: '',
                   autoClose: 3000,
                 })
                 handleClose()
@@ -104,10 +107,8 @@ export default function SharableModal({ close, opened, nodes }: Props) {
               size="lg"
               leftSection={<IconCopy style={ICON_STYLE} />}
             >
-              <Text component="span" size="sm">
-                Copy link
-              </Text>
-            </Button>
+              Copy link
+            </CustomButtonPrimary>
           </Grid.Col>
         </Grid>
       )}
@@ -116,18 +117,18 @@ export default function SharableModal({ close, opened, nodes }: Props) {
 }
 
 function Empty() {
-  const theme = useMantineTheme()
-
   return (
-    <Card bg={theme.colors[theme.primaryColor][1]}>
+    <Card
+      bg="background.8"
+      withBorder
+      style={{ border: '1px solid var(--mantine-color-orange-5)' }}
+    >
       <Group>
-        <ThemeIcon variant="light" radius="xl" size="lg">
+        <ThemeIcon variant="transparent" color="orange" radius="xl" size="lg">
           <IconAlertTriangle style={ICON_STYLE} />
         </ThemeIcon>
 
-        <Text size="md" c={theme.colors[theme.primaryColor][8]}>
-          Please add services to your board before sharing.
-        </Text>
+        <Text size="md">Please add services to your board before sharing.</Text>
       </Group>
     </Card>
   )

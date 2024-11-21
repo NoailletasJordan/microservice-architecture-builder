@@ -8,7 +8,7 @@ interface Props {
 }
 
 const TooltipWrapper = ({ children, label, position = 'top' }: Props) => (
-  <Tooltip label={label} position={position} openDelay={150} color="gray">
+  <Tooltip label={label} position={position} openDelay={150}>
     <Group gap="xs">
       <Text component="div">{children}</Text>
     </Group>

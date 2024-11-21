@@ -1,6 +1,8 @@
+import CustomActionIconDefault from '@/components/CustomActionIconDefault'
 import { clickCanvaContext } from '@/contexts/ClickCanvaCapture/constants'
-import { ActionIcon, Divider, Menu } from '@mantine/core'
-import { useClickOutside, useDisclosure } from '@mantine/hooks'
+import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
+import { Divider, Menu } from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
 import { IconMenu2 } from '@tabler/icons-react'
 import { useContext, useEffect } from 'react'
 import { Panel } from 'reactflow'
@@ -15,7 +17,6 @@ interface Props {
 export default function Settings({ openResetModal }: Props) {
   const { canvaClickIncrement } = useContext(clickCanvaContext)
   const [isOpened, { close, toggle }] = useDisclosure(false)
-  const ref = useClickOutside(close)
 
   useEffect(() => {
     canvaClickIncrement !== 0 && close()
@@ -23,9 +24,11 @@ export default function Settings({ openResetModal }: Props) {
 
   const target = (
     <Menu.Target>
-      <ActionIcon onClick={toggle} size="lg" variant="light">
-        <IconMenu2 style={{ width: '50%', height: '50%' }} />
-      </ActionIcon>
+      <div>
+        <CustomActionIconDefault onClick={toggle}>
+          <IconMenu2 style={ICON_STYLE} />
+        </CustomActionIconDefault>
+      </div>
     </Menu.Target>
   )
 
@@ -33,7 +36,7 @@ export default function Settings({ openResetModal }: Props) {
     <Panel position="top-left">
       <Menu shadow="md" opened={isOpened}>
         {target}
-        <Menu.Dropdown p="xs" ref={ref}>
+        <Menu.Dropdown p="xs">
           <ResetBoard openResetModal={openResetModal} />
           <Github />
           <Divider my="xs" />

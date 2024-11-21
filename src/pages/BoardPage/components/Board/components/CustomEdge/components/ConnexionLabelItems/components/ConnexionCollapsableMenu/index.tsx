@@ -10,8 +10,8 @@ import {
 import { CARD_WIDTH } from '@/pages/BoardPage/configs/constants'
 import { handleUpdateEdge } from '@/pages/BoardPage/configs/helpers'
 import {
-  Accordion,
   Box,
+  Button,
   Center,
   Collapse,
   Divider,
@@ -71,8 +71,12 @@ export default function ConnexionCollapsableMenu({
         withBorder
         w={CARD_WIDTH + 12}
         style={{
-          backgroundColor: !configIsOpen ? 'transparent' : '',
-          borderColor: !configIsOpen ? 'transparent' : '',
+          backgroundColor: !configIsOpen
+            ? 'transparent'
+            : 'var(--mantine-color-background-9)',
+          borderColor: !configIsOpen
+            ? 'transparent'
+            : 'var(--mantine-color-background-9)',
         }}
       >
         <Collapse in={configIsOpen}>
@@ -80,34 +84,32 @@ export default function ConnexionCollapsableMenu({
             <DividerWrapper>
               <StrongText>Connexion parameters</StrongText>
             </DividerWrapper>
-            <Accordion chevron={false} defaultValue="Apples">
-              <LineItem
-                Icon={IconArrowsExchange}
-                onClick={() => {
-                  const edge = flowInstance.getEdge(
-                    connexion.id,
-                  ) as Edge<IConnexion>
-                  const nextDirection = getNextDirection(edge.data!.direction)
-                  handleUpdateEdge(
-                    connexion.id,
-                    {
-                      direction: nextDirection,
-                    },
-                    flowInstance,
-                  )
-                }}
-                label="Switch direction"
-              />
 
-              <LineItem
-                Icon={IconTrash}
-                onClick={handleDeleteEdge}
-                label="Remove connexion"
-              />
-            </Accordion>
+            <LineItem
+              label="Switch direction"
+              Icon={IconArrowsExchange}
+              onClick={() => {
+                const edge = flowInstance.getEdge(
+                  connexion.id,
+                ) as Edge<IConnexion>
+                const nextDirection = getNextDirection(edge.data!.direction)
+                handleUpdateEdge(
+                  connexion.id,
+                  {
+                    direction: nextDirection,
+                  },
+                  flowInstance,
+                )
+              }}
+            />
+            <LineItem
+              Icon={IconTrash}
+              onClick={handleDeleteEdge}
+              label="Remove connexion"
+            />
+
             <Divider my="xs" />
             <Select
-              variant="default"
               data={selectData}
               value={connexion.connexionType}
               placeholder="Add connexion type"
@@ -125,7 +127,7 @@ export default function ConnexionCollapsableMenu({
                 const { Icon } = connexionConfig[value as IConnexionType]
                 return (
                   <Group gap="xs">
-                    <ThemeIcon size="lg" variant="light">
+                    <ThemeIcon size="lg" color="background.7">
                       <Icon stroke={1} />
                     </ThemeIcon>
                     <Text fs="initial">{label}</Text>
@@ -153,23 +155,19 @@ function LineItem({
   Icon: ElementType
 }) {
   return (
-    <Accordion.Item
-      h={35}
-      value="1"
-      style={{ border: 'none', borderRadius: 4 }}
+    <Button
       onClick={onClick}
+      leftSection={
+        <ThemeIcon variant="transparent" size="xs" color="text.0">
+          <Icon />
+        </ThemeIcon>
+      }
+      variant="subtle"
+      fullWidth
+      justify="start"
+      c="text.0"
     >
-      <Accordion.Control
-        h={35}
-        pr={0}
-        icon={
-          <ThemeIcon variant="transparent" size="xs" color="gray">
-            <Icon />
-          </ThemeIcon>
-        }
-      >
-        {label}
-      </Accordion.Control>
-    </Accordion.Item>
+      <Text size="sm">{label}</Text>
+    </Button>
   )
 }

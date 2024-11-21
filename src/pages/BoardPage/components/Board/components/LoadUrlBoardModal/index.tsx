@@ -14,7 +14,7 @@ import {
 } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { notifications } from '@mantine/notifications'
-import { IconAlertTriangle, IconCheck } from '@tabler/icons-react'
+import { IconAlertTriangle, IconCheck, IconX } from '@tabler/icons-react'
 import { useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { getNodesBounds, useReactFlow } from 'reactflow'
@@ -53,15 +53,14 @@ export default function LoadLinkBoardModal({ nodes }: Props) {
       flowInstance.fitBounds(getNodesBounds(loadedValues.nodes))
 
       notifications.show({
-        withBorder: true,
-        icon: <IconCheck style={ICON_STYLE} />,
-        message: (
-          <Text fw={700} size="sm">
-            Board loaded successfully
-          </Text>
+        icon: (
+          <ThemeIcon radius="xl" color="primary.5">
+            <IconCheck style={ICON_STYLE} />
+          </ThemeIcon>
         ),
-        color: 'var(--mantine-primary-color-5)',
-        autoClose: 7000,
+        message: '',
+        title: 'Board loaded successfully',
+        autoClose: 6000,
       })
     } catch (error) {
       console.error(error)
@@ -69,9 +68,13 @@ export default function LoadLinkBoardModal({ nodes }: Props) {
         title: 'Error loading url content',
         message:
           'Continuing on existing content, apologies for the inconvenience',
-        color: 'pink',
+
         autoClose: 6000,
-        withBorder: true,
+        icon: (
+          <ThemeIcon radius="xl" color="pink">
+            <IconX style={ICON_STYLE} />
+          </ThemeIcon>
+        ),
       })
     } finally {
       handleCloseModal()

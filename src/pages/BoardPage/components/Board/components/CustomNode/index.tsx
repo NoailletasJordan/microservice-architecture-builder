@@ -25,7 +25,7 @@ import {
   handleDeleteNode,
   handleUpdateNode,
 } from '@/pages/BoardPage/configs/helpers'
-import { Box } from '@mantine/core'
+import { Box, Divider } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
 import { IconGripHorizontal, IconNote } from '@tabler/icons-react'
 import { useEditor } from '@tiptap/react'
@@ -112,7 +112,7 @@ export default function CustomNode(props: NodeProps<IService>) {
                 </Box>
               </TooltipWrapper>
 
-              <ThemeIcon variant="transparent" color="text.1">
+              <ThemeIcon variant="transparent" color="text.0">
                 <IconGripHorizontal style={ICON_STYLE} />
               </ThemeIcon>
               <DeleteButton
@@ -120,14 +120,19 @@ export default function CustomNode(props: NodeProps<IService>) {
                 onClick={() => handleDeleteNode(props.id, flowInstance)}
               />
             </Group>
+            <Space h="0.2rem" />
             {isOverlapingNode && <OverlapOverlay />}
+          </Card.Section>
+
+          <Card.Section>
+            <Divider />
           </Card.Section>
           <Card.Section
             p="md"
             pb="xs"
             className={NO_DRAG_REACTFLOW_CLASS}
             style={{ cursor: 'default' }}
-            bg="background.8"
+            bg="background.9"
           >
             <Grid gutter="xs" align="center">
               <Grid.Col span="content">

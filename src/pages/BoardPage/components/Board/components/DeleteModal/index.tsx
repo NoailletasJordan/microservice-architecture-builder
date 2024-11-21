@@ -24,11 +24,11 @@ export default function DeleteModal({ opened, close }: Props) {
             variant="outline"
             color="background"
             onClick={close}
-            c="text.1"
+            c="text.0"
           >
             Cancel
           </Button>
-          <Button color="red.3" onClick={handleReset}>
+          <Button color="red.6" c="text.0" onClick={handleReset}>
             Confirm
           </Button>
         </Group>

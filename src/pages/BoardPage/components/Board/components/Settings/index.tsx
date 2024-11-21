@@ -1,5 +1,7 @@
+import CustomActionIconDefault from '@/components/CustomActionIconDefault'
 import { clickCanvaContext } from '@/contexts/ClickCanvaCapture/constants'
-import { ActionIcon, Divider, Menu } from '@mantine/core'
+import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
+import { Divider, Menu } from '@mantine/core'
 import { useClickOutside, useDisclosure } from '@mantine/hooks'
 import { IconMenu2 } from '@tabler/icons-react'
 import { useContext, useEffect } from 'react'
@@ -23,9 +25,11 @@ export default function Settings({ openResetModal }: Props) {
 
   const target = (
     <Menu.Target>
-      <ActionIcon onClick={toggle} size="lg" variant="default">
-        <IconMenu2 style={{ width: '50%', height: '50%' }} />
-      </ActionIcon>
+      <div>
+        <CustomActionIconDefault onClick={toggle}>
+          <IconMenu2 style={ICON_STYLE} />
+        </CustomActionIconDefault>
+      </div>
     </Menu.Target>
   )
 

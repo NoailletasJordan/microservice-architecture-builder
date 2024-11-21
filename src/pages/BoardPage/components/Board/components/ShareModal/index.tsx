@@ -1,3 +1,4 @@
+import CustomButtonPrimary from '@/components/CustomButtonPrimary'
 import CustomModal from '@/components/CustomModal'
 import {
   ICON_STYLE,
@@ -5,7 +6,6 @@ import {
   shareHashTocken,
 } from '@/pages/BoardPage/configs/constants'
 import {
-  Button,
   Card,
   Grid,
   Group,
@@ -16,7 +16,11 @@ import {
 } from '@mantine/core'
 import { useClipboard, useMediaQuery } from '@mantine/hooks'
 import { notifications } from '@mantine/notifications'
-import { IconAlertTriangle, IconCheck, IconCopy } from '@tabler/icons-react'
+import {
+  IconAlertTriangle,
+  IconClipboardCheck,
+  IconCopy,
+} from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { ReactFlowInstance, useReactFlow } from 'reactflow'
 
@@ -84,17 +88,17 @@ export default function SharableModal({ close, opened, nodes }: Props) {
             />
           </Grid.Col>
           <Grid.Col span={{ xs: 4 }}>
-            <Button
+            <CustomButtonPrimary
               onClick={() => {
                 !clipboard.copied && clipboard.copy(link)
                 notifications.show({
-                  withBorder: true,
-                  icon: <IconCheck style={ICON_STYLE} />,
-                  message: (
-                    <Text fw={700} size="sm">
-                      Copied to clipboard
-                    </Text>
+                  icon: (
+                    <ThemeIcon radius="xl" color="primary.5">
+                      <IconClipboardCheck style={ICON_STYLE} />
+                    </ThemeIcon>
                   ),
+                  title: 'Copied to clipboard',
+                  message: '',
                   autoClose: 3000,
                 })
                 handleClose()
@@ -103,10 +107,8 @@ export default function SharableModal({ close, opened, nodes }: Props) {
               size="lg"
               leftSection={<IconCopy style={ICON_STYLE} />}
             >
-              <Text component="span" size="sm">
-                Copy link
-              </Text>
-            </Button>
+              Copy link
+            </CustomButtonPrimary>
           </Grid.Col>
         </Grid>
       )}

@@ -8,7 +8,7 @@ interface Props extends ActionIconProps {
 
 export default function CustomActionIconDefault({ children, ...props }: Props) {
   return (
-    <ActionIcon variant="filled" color="background" size="lg" {...props}>
+    <ActionIcon color="gray.5" size="lg" {...props}>
       {children}
     </ActionIcon>
   )

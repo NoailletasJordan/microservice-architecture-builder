@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Card,
+  Divider,
   Grid,
   Group,
   Image,
@@ -12,6 +13,7 @@ import { NodeProps, Position, useReactFlow } from 'reactflow'
 import DroppableIndicator from '@/components/DroppableIndicator'
 import { getEditorParams } from '@/components/RichEditor'
 import TooltipWrapper from '@/components/TooltipWrapper'
+import { CSSVAR } from '@/contants'
 import {
   CARD_WIDTH,
   ICON_STYLE,
@@ -24,7 +26,7 @@ import {
   handleDeleteNode,
   handleUpdateNode,
 } from '@/pages/BoardPage/configs/helpers'
-import { Box, Divider } from '@mantine/core'
+import { Box } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
 import { IconGripHorizontal, IconNote } from '@tabler/icons-react'
 import { useEditor } from '@tiptap/react'
@@ -77,8 +79,9 @@ export default function CustomNode(props: NodeProps<IService>) {
         <Card
           radius="md"
           style={{
-            border: '1px solid var(--mantine-color-background-9)',
+            border: `1px solid ${CSSVAR['--border']}`,
           }}
+          bg={CSSVAR['--surface']}
           w={CARD_WIDTH}
           pos="relative"
         >
@@ -94,7 +97,7 @@ export default function CustomNode(props: NodeProps<IService>) {
               align="center"
               justify="space-between"
               px="xs"
-              bg="background.9"
+              bg={CSSVAR['--surface']}
               h="2.5rem"
             >
               <TooltipWrapper label="Add a note">
@@ -103,14 +106,14 @@ export default function CustomNode(props: NodeProps<IService>) {
                     onClick={() => editor?.commands.focus()}
                     className={NO_DRAG_REACTFLOW_CLASS}
                     variant="light"
-                    color="background"
+                    color="gray.10"
                   >
                     <IconNote style={ICON_STYLE} />
                   </ActionIcon>
                 </Box>
               </TooltipWrapper>
 
-              <ThemeIcon variant="transparent" color="text.0">
+              <ThemeIcon variant="transparent" color="gray">
                 <IconGripHorizontal style={ICON_STYLE} />
               </ThemeIcon>
               <DeleteButton
@@ -122,15 +125,15 @@ export default function CustomNode(props: NodeProps<IService>) {
             {isOverlapingNode && <OverlapOverlay />}
           </Card.Section>
 
-          <Card.Section>
-            <Divider />
+          <Card.Section bg={CSSVAR['--border']}>
+            <Divider bg={CSSVAR['--border']} />
           </Card.Section>
           <Card.Section
             p="md"
             pb="xs"
             className={NO_DRAG_REACTFLOW_CLASS}
             style={{ cursor: 'default' }}
-            bg="background.9"
+            bg={CSSVAR['--surface']}
           >
             <Grid gutter="xs" align="center">
               <Grid.Col span="content">
@@ -141,7 +144,7 @@ export default function CustomNode(props: NodeProps<IService>) {
                 />
               </Grid.Col>
               <Grid.Col span="auto">
-                <Box>
+                <Box c={CSSVAR['--text-strong']}>
                   <EditableTitle service={service} />
                 </Box>
               </Grid.Col>

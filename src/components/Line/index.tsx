@@ -1,4 +1,4 @@
-import { useMantineTheme } from '@mantine/core'
+import { CSSVAR } from '@/contants'
 
 interface ILine {
   d: string
@@ -13,12 +13,10 @@ export default function Line({
   strokeWidth = 1,
   ...pathProps
 }: ILine) {
-  const theme = useMantineTheme()
-  const strokeColor = theme.colors[theme.primaryColor][3]
   return (
     <path
       fill="none"
-      stroke={strokeColor}
+      stroke={CSSVAR['--primary']}
       d={d}
       strokeWidth={strokeWidth}
       strokeDasharray="10,10"

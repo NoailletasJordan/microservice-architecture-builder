@@ -1,13 +1,14 @@
 import DividerWrapper from '@/components/DividerWrapper'
 import RichEditor from '@/components/RichEditor/index'
 import StrongText from '@/components/StrongText'
+import { CSSVAR } from '@/contants'
 import {
   IConnexion,
   IConnexionType,
   connexionConfig,
   connexionDirections,
 } from '@/pages/BoardPage/components/Board/components/connexionContants'
-import { CARD_WIDTH } from '@/pages/BoardPage/configs/constants'
+import { CARD_WIDTH, ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import { handleUpdateEdge } from '@/pages/BoardPage/configs/helpers'
 import {
   Box,
@@ -71,12 +72,10 @@ export default function ConnexionCollapsableMenu({
         withBorder
         w={CARD_WIDTH + 12}
         style={{
-          backgroundColor: !configIsOpen
-            ? 'transparent'
-            : 'var(--mantine-color-background-9)',
-          borderColor: !configIsOpen
-            ? 'transparent'
-            : 'var(--mantine-color-background-9)',
+          backgroundColor: !configIsOpen ? 'transparent' : CSSVAR['--surface'],
+          border: `1px solid ${
+            !configIsOpen ? 'transparent' : CSSVAR['--border']
+          }`,
         }}
       >
         <Collapse in={configIsOpen}>
@@ -158,14 +157,23 @@ function LineItem({
     <Button
       onClick={onClick}
       leftSection={
-        <ThemeIcon variant="transparent" size="xs" color="text.0">
-          <Icon />
+        <ThemeIcon
+          variant="outline"
+          style={{ border: 'none' }}
+          color="gray.10"
+          size="sm"
+        >
+          <Icon style={ICON_STYLE} />
         </ThemeIcon>
       }
+      vars={() => ({
+        root: {
+          '--button-hover': CSSVAR['--surface-strong'],
+        },
+      })}
       variant="subtle"
       fullWidth
       justify="start"
-      c="text.0"
     >
       <Text size="sm">{label}</Text>
     </Button>

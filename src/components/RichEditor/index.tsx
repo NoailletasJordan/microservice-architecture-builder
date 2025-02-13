@@ -1,3 +1,4 @@
+import { CSSVAR } from '@/contants'
 import { CARD_WIDTH } from '@/pages/BoardPage/configs/constants'
 import { Collapse } from '@mantine/core'
 import { useDebouncedValue } from '@mantine/hooks'
@@ -24,7 +25,7 @@ export const getEditorParams = ({
     extensions: [
       StarterKit,
       getTaskListExtension(TipTapTaskList),
-      Placeholder.configure({ placeholder: 'Add note ?' }),
+      Placeholder.configure({ placeholder: 'Add note here' }),
       TaskItem.configure({
         nested: true,
         HTMLAttributes: {
@@ -55,9 +56,10 @@ export default function RichEditor({ editor, forceToolsOpen }: Props) {
         in={forceToolsOpen || editor?.isFocused || !!debouncedIsFocused}
       >
         <RichTextEditor.Toolbar
-          bg="background.9"
+          bg={CSSVAR['--surface']}
           style={{
             justifyContent: 'center',
+            border: `1px solid ${CSSVAR['--border']}`,
           }}
         >
           <RichTextEditor.ControlsGroup>
@@ -76,10 +78,7 @@ export default function RichEditor({ editor, forceToolsOpen }: Props) {
         </RichTextEditor.Toolbar>
       </Collapse>
 
-      <RichTextEditor.Content
-        fz="var(--mantine-font-size-sm)"
-        bg={background}
-      />
+      <RichTextEditor.Content />
     </RichTextEditor>
   )
 }

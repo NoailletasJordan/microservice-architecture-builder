@@ -15,10 +15,10 @@ import {
   Button,
   Center,
   Collapse,
-  Divider,
   Group,
   Paper,
   Select,
+  Space,
   Text,
   ThemeIcon,
 } from '@mantine/core'
@@ -107,11 +107,16 @@ export default function ConnexionCollapsableMenu({
               label="Remove connexion"
             />
 
-            <Divider my="xs" />
+            <Space h="sm" />
             <Select
               data={selectData}
+              label={
+                <Text fw="600" pb="xs" size="sm">
+                  Communication protocol
+                </Text>
+              }
               value={connexion.connexionType}
-              placeholder="Add connexion type"
+              placeholder="Not specified"
               allowDeselect
               onChange={(newConnexionType) => {
                 handleUpdateEdge(
@@ -126,15 +131,19 @@ export default function ConnexionCollapsableMenu({
                 const { Icon } = connexionConfig[value as IConnexionType]
                 return (
                   <Group gap="xs">
-                    <ThemeIcon size="lg" color="background.7">
+                    <ThemeIcon size="lg" color="gray.5">
                       <Icon stroke={1} />
                     </ThemeIcon>
-                    <Text fs="initial">{label}</Text>
+                    <Text size="xs">{label}</Text>
                   </Group>
                 )
               }}
             />
           </Box>
+          <Space h="sm" />
+          <Text pb="xs" pl="xs" fw="600" size="sm">
+            Note
+          </Text>
         </Collapse>
         <Center mb="xs">
           <RichEditor editor={editor} forceToolsOpen={configIsOpen} />

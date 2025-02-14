@@ -14,7 +14,7 @@ body {
 }
 
 .select-input__overwrite::placeholder {
-  color: var(--mantine-color-gray-11);
+  color: var(--mantine-color-gray-9);
 }
 
 .select-group-label__overwrite::after {
@@ -34,4 +34,8 @@ body {
 .richtext-control-button_overwrite[data-active='true'] {
   background-color: var(--mantine-color-primary-10);
   color:  var(--mantine-color-gray-1);
+}
+
+.notification_overwrite * {
+  color : white;
 }

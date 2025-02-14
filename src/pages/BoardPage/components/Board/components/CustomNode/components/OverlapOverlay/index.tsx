@@ -1,9 +1,10 @@
+import { CSSVAR } from '@/contants'
 import { Flex, Overlay, Text, ThemeIcon } from '@mantine/core'
 import { IconShare3 } from '@tabler/icons-react'
 
 export default function OverlapOverlay() {
   return (
-    <Overlay backgroundOpacity={0.2}>
+    <Overlay backgroundOpacity={0.5}>
       <Flex
         align="center"
         justify="center"
@@ -11,25 +12,37 @@ export default function OverlapOverlay() {
         pos="absolute"
         top="50%"
         left="50%"
-        bg="background.7"
+        bg={CSSVAR['--surface']}
         opacity={1}
         w="90%"
         p="xs"
         style={{
+          border: `1px solid ${CSSVAR['--border-strong']}`,
           transform: 'translate(-50%, -50%)',
           borderRadius: '4px',
         }}
       >
-        <Text size="md" c="primary.0" style={{ textAlign: 'center' }}>
+        <Text size="md" c={CSSVAR['--text-strong']}>
           Integrate as an
           <br />
-          <Text component="span" size="inherit" c="primary.0" fw={600}>
+          <Text
+            component="span"
+            c={CSSVAR['--text-primary']}
+            size="inherit"
+            fw={600}
+          >
             internal service
-          </Text>
+          </Text>{' '}
           ?
         </Text>
-        <ThemeIcon variant="transparent" color="text.0">
-          <IconShare3 />
+        <ThemeIcon
+          style={{
+            border: 'none',
+          }}
+          variant="outline"
+          color="gray.12"
+        >
+          <IconShare3 stroke={1} />
         </ThemeIcon>
       </Flex>
     </Overlay>

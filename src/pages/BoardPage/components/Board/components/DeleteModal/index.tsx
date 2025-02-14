@@ -1,5 +1,6 @@
 import CustomModal from '@/components/CustomModal'
-import { Box, Button, Group, Text } from '@mantine/core'
+import { CSSVAR } from '@/contants'
+import { Button, Group, Stack, Text } from '@mantine/core'
 import { useReactFlow } from 'reactflow'
 
 interface Props {
@@ -16,23 +17,24 @@ export default function DeleteModal({ opened, close }: Props) {
   }
 
   return (
-    <CustomModal opened={opened} onClose={close} title="Shareable link">
-      <Box>
-        <Text size="md">This will clear the whole board. Are you sure?</Text>
+    <CustomModal opened={opened} onClose={close} title="Warning">
+      <Stack>
+        <Text>
+          This operation will{' '}
+          <Text component="span" c={CSSVAR['--text-strong']}>
+            erase your current work
+          </Text>
+          . Would you still like to proceed ?
+        </Text>
         <Group justify="flex-end" gap="xs">
-          <Button
-            variant="outline"
-            color="background"
-            onClick={close}
-            c="text.0"
-          >
+          <Button variant="outline" color="gray.11" onClick={close}>
             Cancel
           </Button>
-          <Button color="red.6" c="text.0" onClick={handleReset}>
-            Confirm
+          <Button color="red.9" onClick={handleReset}>
+            Yes, reset the board
           </Button>
         </Group>
-      </Box>
+      </Stack>
     </CustomModal>
   )
 }

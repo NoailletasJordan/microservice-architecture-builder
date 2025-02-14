@@ -7,6 +7,7 @@ import {
   ActionIcon,
   Button,
   CloseButton,
+  Divider,
   MantineProvider,
   Menu,
   Select,
@@ -15,7 +16,7 @@ import {
 } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
 import { RichTextEditor } from '@mantine/tiptap'
-import { CSSProperties, StrictMode } from 'react'
+import { StrictMode, useEffect } from 'react'
 import {
   Route,
   RouterProvider,
@@ -42,12 +43,19 @@ const router = createBrowserRouter(
 )
 
 export default function App() {
+  useEffect(() => {
+    // Inject css colors in root
+    Object.entries(themeDarkColorVariables).map(([key, value]) => {
+      document.documentElement.style.setProperty(key, value)
+    })
+  }, [])
+
   return (
     <StrictMode>
       <div
         style={{
-          ...(themeDarkColorVariables as CSSProperties),
           background: CSSVAR['--background'],
+          color: CSSVAR['--text'],
         }}
       >
         <MantineProvider theme={theme}>
@@ -73,16 +81,16 @@ const theme = createTheme({
   colors: customColors as any,
   components: {
     RichTextEditor: RichTextEditor.extend({
-      styles: (theme) => ({
+      styles: (_theme) => ({
         controlsGroup: {
-          backgroundColor: theme.other.customColors['--surface'],
+          backgroundColor: CSSVAR['--surface'],
         },
         control: {
-          border: `1px solid ${theme.other.customColors['--border']}`,
+          border: `1px solid ${CSSVAR['--border']}`,
         },
         content: {
-          color: theme.other.customColors['--text'],
-          backgroundColor: theme.other.customColors['--surface'],
+          color: CSSVAR['--text'],
+          backgroundColor: CSSVAR['--surface'],
           border: `1px solid ${CSSVAR['--border']}`,
           fontSize: 'var(--mantine-font-size-sm)',
         },
@@ -105,14 +113,17 @@ const theme = createTheme({
         input: 'select-input__overwrite',
         groupLabel: 'select-group-label__overwrite',
       },
-      styles: (theme) => ({
+      styles: (_theme) => ({
         groupLabel: {
-          color: theme.other.customColors['--text'],
+          color: CSSVAR['--text'],
+        },
+        section: {
+          color: CSSVAR['--text'],
         },
         dropdown: {
-          backgroundColor: theme.other.customColors['--surface'],
-          border: `1px solid ${theme.other.customColors['--border']}`,
-          color: theme.other.customColors['--text-strong'],
+          backgroundColor: CSSVAR['--surface'],
+          border: `1px solid ${CSSVAR['--border']}`,
+          color: CSSVAR['--text-strong'],
         },
         input: {
           background: CSSVAR['--surface'],
@@ -121,14 +132,31 @@ const theme = createTheme({
         },
       }),
     }),
+    Divider: Divider.extend({
+      defaultProps: {
+        color: CSSVAR['--border'],
+      },
+    }),
+    Notifications: Notifications.extend({
+      styles: {
+        notification: {
+          backgroundColor: CSSVAR['--surface'],
+          border: `1px solid ${CSSVAR['--border-strong']}`,
+          text: CSSVAR['--text-strong'],
+        },
+      },
+      classNames: {
+        notification: 'notification_overwrite',
+      },
+    }),
     Menu: Menu.extend({
-      styles: (theme) => ({
+      styles: (_theme) => ({
         dropdown: {
-          background: theme.other.customColors['--surface'],
-          color: theme.other.customColors['--text'],
+          background: CSSVAR['--surface'],
+          color: CSSVAR['--text'],
         },
         item: {
-          color: theme.other.customColors['--text'],
+          color: CSSVAR['--text'],
         },
       }),
       classNames: {
@@ -137,6 +165,6 @@ const theme = createTheme({
     }),
   },
   other: {
-    customColors: themeDarkColorVariables,
+    customColors: CSSVAR,
   },
 })

@@ -79,7 +79,7 @@ export default function DroppableIndicator({
     droppableHintsChecked,
   ])
 
-  const color = theme.colors[theme.primaryColor][2]
+  const color = theme.colors.primary[8]
 
   return (
     <div

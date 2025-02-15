@@ -1,5 +1,6 @@
 import DraggableArea from '@/components/DraggableArea'
 import DraggableIndicator from '@/components/DraggableIndicator'
+import { CSSVAR } from '@/contants'
 import {
   DraggableData,
   serviceConfig,
@@ -15,10 +16,10 @@ interface Props {
 export function ServiceTool({ serviceIdType, draggableIndicator }: Props) {
   return (
     <ThemeIcon
-      size="lg"
+      size="xl"
       variant="transparent"
       style={{
-        border: '1px solid var(--mantine-color-background-6)',
+        border: `1px solid ${CSSVAR['--border']}`,
       }}
     >
       <Image

@@ -1,3 +1,4 @@
+import { CSSVAR } from '@/contants'
 import { Handle, HandleProps, Position } from 'reactflow'
 
 type Props = Pick<HandleProps, 'position' | 'id'>
@@ -15,7 +16,7 @@ export default function CustomHandle({ position, id }: Props) {
         borderRadius: 0,
         transform,
         transformOrigin: 'center',
-        backgroundColor: 'var(--mantine-color-primary-2)',
+        backgroundColor: CSSVAR['--text'],
       }}
       type="source"
       position={position}

@@ -1,4 +1,5 @@
 import { getEditorParams } from '@/components/RichEditor'
+import { CSSVAR } from '@/contants'
 import { clickCanvaContext } from '@/contexts/ClickCanvaCapture/constants'
 import {
   IConnexion,
@@ -74,7 +75,9 @@ export default function ConnexionLabelItems({
             }}
             size="lg"
             radius="md"
-            variant="default"
+            variant="outline"
+            color="gray.10"
+            bg={CSSVAR['--surface']}
             onClick={toggleMenu}
           >
             <Icon stroke={1} />

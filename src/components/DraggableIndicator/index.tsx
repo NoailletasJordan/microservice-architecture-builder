@@ -1,3 +1,4 @@
+import { CSSVAR } from '@/contants'
 import { Box } from '@mantine/core'
 
 export default function Indicator() {
@@ -7,7 +8,7 @@ export default function Indicator() {
         clipPath: 'polygon(100% 0, 0 0, 100% 100%)',
         borderRadius: '3px',
       }}
-      bg="primary.4"
+      bg={CSSVAR['--text']}
       right={0}
       top={0}
       pos="absolute"

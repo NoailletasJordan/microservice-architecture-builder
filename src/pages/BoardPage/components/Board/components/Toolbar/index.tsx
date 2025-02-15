@@ -1,5 +1,6 @@
 import OnBoardingToolbar from '@/components/OnboardingComponents/OnBoardingToolbar'
 import TooltipWrapper from '@/components/TooltipWrapper'
+import { CSSVAR } from '@/contants'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
 import {
   ServiceIdType,
@@ -11,33 +12,33 @@ import { Panel } from 'reactflow'
 import DroppableArea from '../../../../../../components/DroppableArea/index'
 import { DraggableServiceTool } from './components/ServiceTool'
 
+const services = Object.entries(serviceConfig).map(([serviceIdType]) => (
+  <TooltipWrapper
+    label={serviceConfig[serviceIdType as ServiceIdType].defaultLabel}
+    position="bottom"
+    key={serviceIdType}
+  >
+    <DraggableServiceTool
+      key={serviceIdType}
+      draggableIndicator
+      serviceIdType={serviceIdType as ServiceIdType}
+    />
+  </TooltipWrapper>
+))
+
 export default function Toolbar() {
   const { showOnBoarding } = useContext(onBoardingContext)
 
-  const services = Object.entries(serviceConfig).map(([serviceIdType]) => (
-    <TooltipWrapper
-      label={serviceConfig[serviceIdType as ServiceIdType].defaultLabel}
-      position="bottom"
-      key={serviceIdType}
-    >
-      <DraggableServiceTool
-        key={serviceIdType}
-        draggableIndicator
-        serviceIdType={serviceIdType as ServiceIdType}
-      />
-    </TooltipWrapper>
-  ))
-
   return (
     <Panel position="top-center">
-      {/* catch drops before it falls on board, not doing anything with it tho */}
+      {/* Prevent from dropping on the board throught the toolbar */}
       <DroppableArea
         id="toolbox"
         data={{
           droppableType: 'toolbox',
         }}
       >
-        <Card bg="background.9" p="0.4rem" shadow="md">
+        <Card bg={CSSVAR['--surface']} px="sm" py="xs" shadow="md">
           <SimpleGrid cols={6} spacing="0.3rem">
             {services}
           </SimpleGrid>

@@ -5,24 +5,18 @@ import './global.css'
 
 import {
   ActionIcon,
-  AppShell,
   Button,
-  Card,
   CloseButton,
   Divider,
   MantineProvider,
-  MenuDropdown,
-  ModalBody,
-  ModalHeader,
-  Notification,
-  PopoverDropdown,
+  Menu,
   Select,
   Text,
-  Tooltip,
   createTheme,
 } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
-import { StrictMode } from 'react'
+import { RichTextEditor } from '@mantine/tiptap'
+import { StrictMode, useEffect } from 'react'
 import {
   Route,
   RouterProvider,
@@ -30,6 +24,7 @@ import {
   createRoutesFromElements,
 } from 'react-router-dom'
 import { ReactFlowProvider } from 'reactflow'
+import { CSSVAR, customColors, themeDarkColorVariables } from './contants'
 import BoardPage from './pages/BoardPage'
 
 const router = createBrowserRouter(
@@ -48,12 +43,26 @@ const router = createBrowserRouter(
 )
 
 export default function App() {
+  useEffect(() => {
+    // Inject css colors in root
+    Object.entries(themeDarkColorVariables).map(([key, value]) => {
+      document.documentElement.style.setProperty(key, value)
+    })
+  }, [])
+
   return (
     <StrictMode>
-      <MantineProvider theme={theme} forceColorScheme="dark">
-        <RouterProvider router={router} />
-        <Notifications />
-      </MantineProvider>
+      <div
+        style={{
+          background: CSSVAR['--background'],
+          color: CSSVAR['--text'],
+        }}
+      >
+        <MantineProvider theme={theme}>
+          <RouterProvider router={router} />
+          <Notifications />
+        </MantineProvider>
+      </div>
     </StrictMode>
   )
 }
@@ -66,107 +75,96 @@ const preventActiveTranslate = {
   },
 }
 
-const darkBackground = [
-  '#ffffff',
-  '#e7e7e8',
-  '#cfcfd2',
-  '#b6b8bb',
-  '#9ea0a5',
-  '#86888e',
-  '#6e7077',
-  '#565861',
-  '#3d414a',
-  '#252934',
-  '#0d111d',
-] as const
-
 const theme = createTheme({
-  colors: {
-    text: [
-      '#e9fbf7',
-      '#d4f7ee',
-      '#a8f0de',
-      '#7de8cd',
-      '#52e0bd',
-      '#26d9ac',
-      '#1fad8a',
-      '#178267',
-      '#0f5745',
-      '#082b22',
-      '#041611',
-    ],
-    primary: [
-      '#e9eefb',
-      '#d3def8',
-      '#a8bcf0',
-      '#7c9be9',
-      '#517ae1',
-      '#2558da',
-      '#1e47ae',
-      '#163583',
-      '#0f2357',
-      '#07122c',
-      '#040916',
-    ],
-    background: darkBackground,
-    dark: darkBackground,
-  },
+  primaryShade: 9,
   primaryColor: 'primary',
+  colors: customColors as any,
   components: {
-    AppShell: AppShell.extend({
-      defaultProps: {
-        bg: 'background.10',
-        style: { '--text-color': 'var(--mantine-color-text-0)' },
-      },
-    }),
-    Text: Text.extend({
-      defaultProps: {
-        size: 'xs',
-        c: 'inherit',
+    RichTextEditor: RichTextEditor.extend({
+      styles: (_theme) => ({
+        controlsGroup: {
+          backgroundColor: CSSVAR['--surface'],
+        },
+        control: {
+          border: `1px solid ${CSSVAR['--border']}`,
+        },
+        content: {
+          color: CSSVAR['--text'],
+          backgroundColor: CSSVAR['--surface'],
+          border: `1px solid ${CSSVAR['--border']}`,
+          fontSize: 'var(--mantine-font-size-sm)',
+        },
+      }),
+      vars: (theme) => ({
+        content: {
+          '--mantine-color-placeholder': theme.colors.gray[9],
+        },
+      }),
+      classNames: {
+        control: 'richtext-control-button_overwrite',
       },
     }),
     Button: Button.extend(preventActiveTranslate),
     ActionIcon: ActionIcon.extend(preventActiveTranslate),
     CloseButton: CloseButton.extend(preventActiveTranslate),
-    MenuDropdown: MenuDropdown.extend({
-      defaultProps: {
-        bg: 'background.9',
-        fs: '600',
-        style: {
-          border: 'none',
-          '--menu-item-hover': 'var(--mantine-color-background-8)',
-        },
-      },
-    }),
-    Divider: Divider.extend({ defaultProps: { color: 'background.7' } }),
-    ModalHeader: ModalHeader.extend({
-      defaultProps: { bg: 'background.9' },
-    }),
-    ModalBody: ModalBody.extend({
-      defaultProps: { bg: 'background.9' },
-    }),
-    Tooltip: Tooltip.extend({
-      defaultProps: { color: 'background.8' },
-    }),
-    Card: Card.extend({
-      defaultProps: { bg: 'background.9' },
-    }),
+    Text: Text.extend({ defaultProps: { c: CSSVAR['--text'] } }),
     Select: Select.extend({
-      styles: {
-        input: {
-          background: 'var(--mantine-color-background-8)',
-          border: 'none',
+      classNames: {
+        input: 'select-input__overwrite',
+        groupLabel: 'select-group-label__overwrite',
+      },
+      styles: (_theme) => ({
+        groupLabel: {
+          color: CSSVAR['--text'],
+        },
+        section: {
+          color: CSSVAR['--text'],
         },
         dropdown: {
-          border: 'none',
+          backgroundColor: CSSVAR['--surface'],
+          border: `1px solid ${CSSVAR['--border']}`,
+          color: CSSVAR['--text-strong'],
         },
+        input: {
+          background: CSSVAR['--surface'],
+          border: `1px solid ${CSSVAR['--border']}`,
+          color: CSSVAR['--text'],
+        },
+      }),
+    }),
+    Divider: Divider.extend({
+      defaultProps: {
+        color: CSSVAR['--border'],
       },
     }),
-    PopoverDropdown: PopoverDropdown.extend({
-      defaultProps: { bg: 'background.8' },
+    Notifications: Notifications.extend({
+      styles: {
+        notification: {
+          backgroundColor: CSSVAR['--surface'],
+          border: `1px solid ${CSSVAR['--border-strong']}`,
+          text: CSSVAR['--text-strong'],
+        },
+      },
+      classNames: {
+        notification: 'notification_overwrite',
+      },
     }),
-    Notification: Notification.extend({
-      defaultProps: { bg: 'background.9' },
+    Menu: Menu.extend({
+      styles: (_theme) => ({
+        dropdown: {
+          background: CSSVAR['--surface'],
+          color: CSSVAR['--text'],
+        },
+        item: {
+          color: CSSVAR['--text'],
+        },
+      }),
+      classNames: {
+        item: 'menu-item__overwrite',
+      },
     }),
+  },
+  other: {
+    customColors: CSSVAR,
   },
 })

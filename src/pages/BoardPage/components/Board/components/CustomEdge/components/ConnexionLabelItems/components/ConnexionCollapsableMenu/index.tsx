@@ -1,23 +1,24 @@
 import DividerWrapper from '@/components/DividerWrapper'
 import RichEditor from '@/components/RichEditor/index'
 import StrongText from '@/components/StrongText'
+import { CSSVAR } from '@/contants'
 import {
   IConnexion,
   IConnexionType,
   connexionConfig,
   connexionDirections,
 } from '@/pages/BoardPage/components/Board/components/connexionContants'
-import { CARD_WIDTH } from '@/pages/BoardPage/configs/constants'
+import { CARD_WIDTH, ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import { handleUpdateEdge } from '@/pages/BoardPage/configs/helpers'
 import {
   Box,
   Button,
   Center,
   Collapse,
-  Divider,
   Group,
   Paper,
   Select,
+  Space,
   Text,
   ThemeIcon,
 } from '@mantine/core'
@@ -71,12 +72,10 @@ export default function ConnexionCollapsableMenu({
         withBorder
         w={CARD_WIDTH + 12}
         style={{
-          backgroundColor: !configIsOpen
-            ? 'transparent'
-            : 'var(--mantine-color-background-9)',
-          borderColor: !configIsOpen
-            ? 'transparent'
-            : 'var(--mantine-color-background-9)',
+          backgroundColor: !configIsOpen ? 'transparent' : CSSVAR['--surface'],
+          border: `1px solid ${
+            !configIsOpen ? 'transparent' : CSSVAR['--border']
+          }`,
         }}
       >
         <Collapse in={configIsOpen}>
@@ -108,11 +107,16 @@ export default function ConnexionCollapsableMenu({
               label="Remove connexion"
             />
 
-            <Divider my="xs" />
+            <Space h="sm" />
             <Select
               data={selectData}
+              label={
+                <Text fw="600" pb="xs" size="sm">
+                  Communication protocol
+                </Text>
+              }
               value={connexion.connexionType}
-              placeholder="Add connexion type"
+              placeholder="Not specified"
               allowDeselect
               onChange={(newConnexionType) => {
                 handleUpdateEdge(
@@ -127,15 +131,19 @@ export default function ConnexionCollapsableMenu({
                 const { Icon } = connexionConfig[value as IConnexionType]
                 return (
                   <Group gap="xs">
-                    <ThemeIcon size="lg" color="background.7">
+                    <ThemeIcon size="lg" color="gray.5">
                       <Icon stroke={1} />
                     </ThemeIcon>
-                    <Text fs="initial">{label}</Text>
+                    <Text size="xs">{label}</Text>
                   </Group>
                 )
               }}
             />
           </Box>
+          <Space h="sm" />
+          <Text pb="xs" pl="xs" fw="600" size="sm">
+            Note
+          </Text>
         </Collapse>
         <Center mb="xs">
           <RichEditor editor={editor} forceToolsOpen={configIsOpen} />
@@ -158,14 +166,23 @@ function LineItem({
     <Button
       onClick={onClick}
       leftSection={
-        <ThemeIcon variant="transparent" size="xs" color="text.0">
-          <Icon />
+        <ThemeIcon
+          variant="outline"
+          style={{ border: 'none' }}
+          color="gray.10"
+          size="sm"
+        >
+          <Icon style={ICON_STYLE} />
         </ThemeIcon>
       }
+      vars={() => ({
+        root: {
+          '--button-hover': CSSVAR['--surface-strong'],
+        },
+      })}
       variant="subtle"
       fullWidth
       justify="start"
-      c="text.0"
     >
       <Text size="sm">{label}</Text>
     </Button>

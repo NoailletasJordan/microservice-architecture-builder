@@ -5,9 +5,10 @@ import {
   shareHashTocken,
 } from '@/pages/BoardPage/configs/constants'
 import {
-  Box,
   Button,
   Grid,
+  Group,
+  Space,
   Text,
   ThemeIcon,
   useMantineTheme,
@@ -54,7 +55,7 @@ export default function LoadLinkBoardModal({ nodes }: Props) {
 
       notifications.show({
         icon: (
-          <ThemeIcon radius="xl" color="primary.5">
+          <ThemeIcon radius="xl" color="primary.10" variant="outline">
             <IconCheck style={ICON_STYLE} />
           </ThemeIcon>
         ),
@@ -71,7 +72,7 @@ export default function LoadLinkBoardModal({ nodes }: Props) {
 
         autoClose: 6000,
         icon: (
-          <ThemeIcon radius="xl" color="pink">
+          <ThemeIcon radius="xl" variant="outline" color="pink">
             <IconX style={ICON_STYLE} />
           </ThemeIcon>
         ),
@@ -100,31 +101,34 @@ export default function LoadLinkBoardModal({ nodes }: Props) {
       fullScreen={maxSM}
       opened={opened}
       onClose={handleCloseModal}
-      title="Load from link"
+      title="Warning: Load board from URL"
     >
-      <Box bg="red.0" p="lg" style={{ borderRadius: theme.radius.md }}>
-        <Grid align="center" justify="center">
-          <Grid.Col span="content">
-            <ThemeIcon size="lg" variant="transparent" color="pink">
-              <IconAlertTriangle />
-            </ThemeIcon>
-          </Grid.Col>
-          <Grid.Col span="auto">
-            <Text size="md" c="red.9" miw="8rem">
-              Loading an external board will replace your existing content.
+      <Grid align="center" justify="center">
+        <Grid.Col span="content">
+          <ThemeIcon size="lg" variant="outline" color="pink">
+            <IconAlertTriangle />
+          </ThemeIcon>
+        </Grid.Col>
+        <Grid.Col span="auto">
+          <Text size="md" miw="8rem">
+            Loading external board{' '}
+            <Text component="span" fw="bold">
+              {' '}
+              will overwrite your current work
             </Text>
-          </Grid.Col>
-          <Grid.Col span="content">
-            <Button
-              color="pink.6"
-              c="dark"
-              onClick={onClickOverwriteRef.current}
-            >
-              Replace my content
-            </Button>
-          </Grid.Col>
-        </Grid>
-      </Box>
+            . Do you still you want to proceed?
+          </Text>
+        </Grid.Col>
+      </Grid>
+      <Space h="md" />
+      <Group justify="end">
+        <Button variant="outline" color="gray.11" onClick={handleCloseModal}>
+          Cancel
+        </Button>
+        <Button color="red.9" onClick={onClickOverwriteRef.current}>
+          Load external board
+        </Button>
+      </Group>
     </CustomModal>
   )
 }

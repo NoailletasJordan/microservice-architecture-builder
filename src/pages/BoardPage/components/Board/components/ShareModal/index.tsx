@@ -1,5 +1,6 @@
 import CustomButtonPrimary from '@/components/CustomButtonPrimary'
 import CustomModal from '@/components/CustomModal'
+import { themeDarkColorVariables } from '@/contants'
 import {
   ICON_STYLE,
   TCustomNode,
@@ -70,18 +71,23 @@ export default function SharableModal({ close, opened, nodes }: Props) {
       {emptyNodes ? (
         <Empty />
       ) : (
-        <Grid align="center">
+        <Grid py="xs" align="center">
           <Grid.Col span={{ xs: 8 }}>
             <TextInput
               variant="unstyled"
-              bg="background.8"
               px="xs"
               py={3}
+              styles={{
+                input: {
+                  color: themeDarkColorVariables['--text'],
+                },
+              }}
               style={{
-                border: '1px solid var(--mantine-color-background-6)',
                 borderRadius: 4,
                 fontSize: theme.fontSizes.xs,
+                border: `1px solid ${themeDarkColorVariables['--border']}`,
               }}
+              bg={themeDarkColorVariables['--surface-strong']}
               readOnly
               value={link}
               size="md"
@@ -93,7 +99,7 @@ export default function SharableModal({ close, opened, nodes }: Props) {
                 !clipboard.copied && clipboard.copy(link)
                 notifications.show({
                   icon: (
-                    <ThemeIcon radius="xl" color="primary.5">
+                    <ThemeIcon radius="xl" color="primary.10" variant="outline">
                       <IconClipboardCheck style={ICON_STYLE} />
                     </ThemeIcon>
                   ),

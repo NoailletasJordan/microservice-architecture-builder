@@ -14,11 +14,10 @@ export default function Line({
   ...pathProps
 }: ILine) {
   const theme = useMantineTheme()
-  const strokeColor = theme.colors[theme.primaryColor][3]
   return (
     <path
       fill="none"
-      stroke={strokeColor}
+      stroke={theme.colors.gray[12]}
       d={d}
       strokeWidth={strokeWidth}
       strokeDasharray="10,10"

@@ -1,4 +1,5 @@
 import Title from '@/components/Title'
+import { themeDarkColorVariables } from '@/contants'
 import { Box, Modal } from '@mantine/core'
 import { ReactNode } from 'react'
 
@@ -22,19 +23,38 @@ export default function CustomModal({
     <Modal
       centered
       size="lg"
+      radius="lg"
+      styles={{
+        root: { color: themeDarkColorVariables['--text'] },
+        header: {
+          background: themeDarkColorVariables['--surface'],
+          borderBottom: `1px solid ${themeDarkColorVariables['--border']}`,
+        },
+        close: {
+          color: themeDarkColorVariables['--text'],
+        },
+        content: {
+          color: themeDarkColorVariables['--text'],
+          background: themeDarkColorVariables['--surface'],
+          border: `1px solid ${themeDarkColorVariables['--border']}`,
+        },
+      }}
       opened={opened}
       fullScreen={fullScreen}
       onClose={onClose}
       overlayProps={{
         backgroundOpacity: 0.25,
       }}
+      bg="blue"
       title={
         <Box px={PADDING}>
           <Title>{title}</Title>
         </Box>
       }
     >
-      <Box p={PADDING}>{children}</Box>
+      <Box p={PADDING} pb={0}>
+        {children}
+      </Box>
     </Modal>
   )
 }

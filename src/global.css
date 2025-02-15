@@ -8,3 +8,34 @@
 body {
   overflow: hidden;
 }
+
+.menu-item__overwrite:hover {
+  background-color: var(--mantine-color-gray-5);
+}
+
+.select-input__overwrite::placeholder {
+  color: var(--mantine-color-gray-9);
+}
+
+.select-group-label__overwrite::after {
+  background-color: var(--mantine-color-gray-10);
+}
+
+.richtext-control-button_overwrite {
+  background-color: var(--mantine-color-gray-3);
+  color:  var(--mantine-color-gray-11);
+}
+
+.richtext-control-button_overwrite:hover {
+  background-color: var(--mantine-color-primary-9);
+  color:  var(--mantine-color-gray-12);
+}
+
+.richtext-control-button_overwrite[data-active='true'] {
+  background-color: var(--mantine-color-primary-10);
+  color:  var(--mantine-color-gray-1);
+}
+
+.notification_overwrite * {
+  color : white;
+}

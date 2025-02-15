@@ -1,8 +1,7 @@
-import CustomActionIconDefault from '@/components/CustomActionIconDefault'
 import OnBoardingHelp from '@/components/OnboardingComponents/OnBoardingHelp'
 import TooltipWrapper from '@/components/TooltipWrapper'
 import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
-import { Group, Space } from '@mantine/core'
+import { ActionIcon, Group, Space } from '@mantine/core'
 import { IconFocusCentered, IconInfoSquareRounded } from '@tabler/icons-react'
 import { Panel, useReactFlow } from 'reactflow'
 
@@ -22,14 +21,14 @@ export default function DemoPanel({ openDemo, showOnBoarding }: Props) {
       <Space h="xs" />
       <Group justify="flex-end">
         <TooltipWrapper label="Fit into view">
-          <CustomActionIconDefault onClick={onClick} aria-label="Fit to view">
+          <ActionIcon onClick={onClick} aria-label="Fit to view">
             <IconFocusCentered style={ICON_STYLE} />
-          </CustomActionIconDefault>
+          </ActionIcon>
         </TooltipWrapper>
         <TooltipWrapper label="Watch demo">
-          <CustomActionIconDefault aria-label="Watch demo" onClick={openDemo}>
+          <ActionIcon aria-label="Watch demo" onClick={openDemo}>
             <IconInfoSquareRounded style={ICON_STYLE} />
-          </CustomActionIconDefault>
+          </ActionIcon>
         </TooltipWrapper>
       </Group>
     </Panel>

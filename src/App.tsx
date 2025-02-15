@@ -105,9 +105,15 @@ const theme = createTheme({
       },
     }),
     Button: Button.extend(preventActiveTranslate),
-    ActionIcon: ActionIcon.extend(preventActiveTranslate),
     CloseButton: CloseButton.extend(preventActiveTranslate),
     Text: Text.extend({ defaultProps: { c: CSSVAR['--text'] } }),
+    ActionIcon: ActionIcon.extend({
+      ...preventActiveTranslate,
+      defaultProps: {
+        color: 'gray.5',
+        size: 'lg',
+      },
+    }),
     Select: Select.extend({
       classNames: {
         input: 'select-input__overwrite',

@@ -1,12 +1,13 @@
 import DroppableArea from '@/components/DroppableArea'
 import DroppableIndicator from '@/components/DroppableIndicator'
-import { DraggableData, ICON_STYLE } from '@/pages/BoardPage/configs/constants'
+import TooltipWrapper from '@/components/TooltipWrapper'
+import { CSSVAR } from '@/contants'
+import { DraggableData } from '@/pages/BoardPage/configs/constants'
 import { useDndContext } from '@dnd-kit/core'
-import { ActionIcon, Box } from '@mantine/core'
+import { ActionIcon, Box, Center } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
 import { IconTrash } from '@tabler/icons-react'
 import { CSSProperties } from 'react'
-import TooltipWrapper from '../../../../../../../../components/TooltipWrapper/index'
 
 interface Props {
   onClick: () => void
@@ -24,7 +25,7 @@ export default function DeleteButtonWithIndicator(props: Props) {
   const { ref, height, width } = useElementSize()
   const droppableType = 'delete'
   return (
-    <Box ref={ref} pos="relative">
+    <Box ref={ref} style={{ position: 'relative' }}>
       <TooltipWrapper label="Remove service" position="top">
         <DroppableIndicator
           droppableType={droppableType}
@@ -70,19 +71,26 @@ function DeleteButton({
   }
 
   return (
-    <div style={{ ...style, transition: 'all 0.3s ease' }}>
+    <Center
+      style={{
+        ...style,
+        transition: 'all 0.3s ease',
+      }}
+    >
       <ActionIcon
         onClick={(event) => {
           event.stopPropagation()
           onClick()
         }}
-        variant="light"
-        color="background"
+        size="md"
+        variant="outline"
+        color={CSSVAR['--text']}
+        style={{ border: 'none' }}
         aria-label="Settings"
         className="noDragReactflow"
       >
-        <IconTrash style={ICON_STYLE} />
+        <IconTrash stroke={1.5} />
       </ActionIcon>
-    </div>
+    </Center>
   )
 }

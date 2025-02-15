@@ -5,13 +5,16 @@ import './global.css'
 
 import {
   ActionIcon,
+  Autocomplete,
   Button,
   CloseButton,
   Divider,
+  Kbd,
   MantineProvider,
   Menu,
   Select,
   Text,
+  ThemeIcon,
   createTheme,
 } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
@@ -107,10 +110,17 @@ const theme = createTheme({
     Button: Button.extend(preventActiveTranslate),
     CloseButton: CloseButton.extend(preventActiveTranslate),
     Text: Text.extend({ defaultProps: { c: CSSVAR['--text'] } }),
+    ThemeIcon: ThemeIcon.extend({
+      ...preventActiveTranslate,
+      defaultProps: {
+        color: CSSVAR['--surface-strong'],
+        size: 'lg',
+      },
+    }),
     ActionIcon: ActionIcon.extend({
       ...preventActiveTranslate,
       defaultProps: {
-        color: 'gray.5',
+        color: CSSVAR['--surface-strong'],
         size: 'lg',
       },
     }),
@@ -137,6 +147,23 @@ const theme = createTheme({
           color: CSSVAR['--text'],
         },
       }),
+    }),
+    Autocomplete: Autocomplete.extend({
+      styles: {
+        input: {
+          backgroundColor: CSSVAR['--surface-strong'],
+          color: CSSVAR['--text'],
+          borderColor: CSSVAR['--border'],
+        },
+      },
+    }),
+    Kbd: Kbd.extend({
+      styles: {
+        root: {
+          backgroundColor: CSSVAR['--surface-strong'],
+          color: CSSVAR['--text'],
+        },
+      },
     }),
     Divider: Divider.extend({
       defaultProps: {

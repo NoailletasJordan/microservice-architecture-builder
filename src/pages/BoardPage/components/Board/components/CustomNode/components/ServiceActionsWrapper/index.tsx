@@ -5,7 +5,7 @@ import { handleDeleteNode } from '@/pages/BoardPage/configs/helpers'
 import { ActionIcon, Group } from '@mantine/core'
 import { IconNote } from '@tabler/icons-react'
 import { motion, Variants } from 'motion/react'
-import { ReactNode, useState } from 'react'
+import { ReactNode } from 'react'
 import { NodeToolbar, ReactFlowInstance } from 'reactflow'
 import DeleteButton from '../DeleteButton'
 
@@ -13,15 +13,17 @@ interface Props {
   parentId: string
   children: ReactNode
   flowInstance: ReactFlowInstance<any, any>
+  isHovered: boolean
+  setIsHovered: (hovered: boolean) => void
 }
 
 export default function ServiceActionsWrapper({
   flowInstance,
   parentId,
   children,
+  isHovered,
+  setIsHovered,
 }: Props) {
-  const [isHovered, setSetIsHovered] = useState(false)
-
   const variants: Variants = {
     hidden: {
       opacity: 0,
@@ -45,8 +47,8 @@ export default function ServiceActionsWrapper({
           className={NO_DRAG_REACTFLOW_CLASS}
         >
           <Group
-            onMouseEnter={() => setSetIsHovered(true)}
-            onMouseLeave={() => setSetIsHovered(false)}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             px="0.4rem"
             py="0.2rem"
             gap="sm"
@@ -73,12 +75,7 @@ export default function ServiceActionsWrapper({
           </Group>
         </motion.div>
       </NodeToolbar>
-      <div
-        onMouseEnter={() => setSetIsHovered(true)}
-        onMouseLeave={() => setSetIsHovered(false)}
-      >
-        {children}
-      </div>
+      {children}
     </>
   )
 }

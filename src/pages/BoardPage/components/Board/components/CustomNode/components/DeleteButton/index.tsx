@@ -63,6 +63,7 @@ function DeleteButton({
     const elementIsFromSameService =
       'parentId' in current.draggedContent &&
       current.draggedContent.parentId === parentId
+
     style.transform = elementIsOverDeleteButton
       ? TRANSFORM_STYLE.isDraggedOver
       : elementIsFromSameService

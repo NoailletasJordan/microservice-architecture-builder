@@ -1,22 +1,11 @@
-import {
-  Card,
-  Divider,
-  Grid,
-  Group,
-  Image,
-  Space,
-  ThemeIcon,
-} from '@mantine/core'
+import { Card, Grid, Image, Space } from '@mantine/core'
 import { NodeProps, Position, useReactFlow } from 'reactflow'
 
-import DroppableIndicator from '@/components/DroppableIndicator'
 import { getEditorParams } from '@/components/RichEditor'
 import { CSSVAR } from '@/contants'
 import {
   CARD_WIDTH,
-  ICON_STYLE,
   IService,
-  NO_DRAG_REACTFLOW_CLASS,
   serviceConfig,
 } from '@/pages/BoardPage/configs/constants'
 import {
@@ -25,11 +14,10 @@ import {
 } from '@/pages/BoardPage/configs/helpers'
 import { Box } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
-import { IconGripHorizontal } from '@tabler/icons-react'
 import { useEditor } from '@tiptap/react'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import DroppableArea from '../../../../../../components/DroppableArea/index'
-import CustomHandle from './components/CustomHandle/index'
+import CustomHandle from './components/CustomHandle'
 import EditableTitle from './components/EditableTitle'
 import NoteSection from './components/NoteSection/index'
 import OverlapOverlay from './components/OverlapOverlay'
@@ -40,6 +28,7 @@ export default function CustomNode(props: NodeProps<IService>) {
   const flowInstance = useReactFlow()
   const { ref, height, width } = useElementSize()
   const service = props.data
+  const [isHovered, setIsHovered] = useState(false)
 
   const isOverlapingNode = useMemo(
     () =>
@@ -66,55 +55,38 @@ export default function CustomNode(props: NodeProps<IService>) {
   )
 
   return (
-    <ServiceActionsWrapper flowInstance={flowInstance} parentId={props.id}>
+    <ServiceActionsWrapper
+      isHovered={isHovered}
+      setIsHovered={(bool: boolean) => setIsHovered(bool)}
+      flowInstance={flowInstance}
+      parentId={props.id}
+    >
       <DroppableArea
         id={props.id}
         data={{
           droppableType,
         }}
       >
-        <Box ref={ref}>
+        <Box
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          ref={ref}
+        >
           <Card
             radius="md"
             style={{
-              border: `1px solid ${CSSVAR['--border']}`,
+              outlineColor: isHovered
+                ? CSSVAR['--border-strong']
+                : CSSVAR['--border'],
+              outlineWidth: isHovered ? 2 : 1,
+              outlineStyle: 'solid',
             }}
             bg={CSSVAR['--surface']}
             w={CARD_WIDTH}
             pos="relative"
           >
-            <Card.Section>
-              <DroppableIndicator
-                height={height}
-                width={width}
-                padding={5}
-                droppableType={droppableType}
-                serviceId={service.id}
-              />
-              <Group
-                align="center"
-                justify="space-between"
-                px="xs"
-                bg={CSSVAR['--surface']}
-                h="2.5rem"
-              >
-                <ThemeIcon variant="transparent" color="gray">
-                  <IconGripHorizontal style={ICON_STYLE} />
-                </ThemeIcon>
-              </Group>
-              <Space h="0.2rem" />
+            <Card.Section p="md" bg={CSSVAR['--surface']}>
               {isOverlapingNode && <OverlapOverlay />}
-            </Card.Section>
-            <Card.Section bg={CSSVAR['--border']}>
-              <Divider bg={CSSVAR['--border']} />
-            </Card.Section>
-            <Card.Section
-              p="md"
-              pb="xs"
-              className={NO_DRAG_REACTFLOW_CLASS}
-              style={{ cursor: 'default' }}
-              bg={CSSVAR['--surface']}
-            >
               <Grid gutter="xs" align="center">
                 <Grid.Col span="content">
                   <Image
@@ -129,15 +101,20 @@ export default function CustomNode(props: NodeProps<IService>) {
                   </Box>
                 </Grid.Col>
               </Grid>
-              <Space h="md" />
               {!!service.subServices.length && (
-                <SubServiceSection subServices={service.subServices} />
+                <>
+                  <Space h="md" />
+                  <SubServiceSection
+                    parentId={props.id}
+                    subServices={service.subServices}
+                  />
+                </>
               )}
-              <CustomHandle position={Position.Left} id="l" />
-              <CustomHandle position={Position.Right} id="r" />
             </Card.Section>
             <NoteSection editor={editor} />
           </Card>
+          <CustomHandle position={Position.Left} id="l" />
+          <CustomHandle position={Position.Right} id="r" />
         </Box>
       </DroppableArea>
     </ServiceActionsWrapper>

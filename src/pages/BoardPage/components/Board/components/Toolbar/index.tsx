@@ -38,7 +38,7 @@ export default function Toolbar() {
           droppableType: 'toolbox',
         }}
       >
-        <Card bg={CSSVAR['--surface']} px="sm" py="xs" shadow="md">
+        <Card bg={CSSVAR['--surface']} px="xs" py={8} shadow="md">
           <SimpleGrid cols={6} spacing="0.3rem">
             {services}
           </SimpleGrid>

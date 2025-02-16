@@ -4,15 +4,7 @@ import {
   TCustomNode,
   shareHashTocken,
 } from '@/pages/BoardPage/configs/constants'
-import {
-  Button,
-  Grid,
-  Group,
-  Space,
-  Text,
-  ThemeIcon,
-  useMantineTheme,
-} from '@mantine/core'
+import { Button, Grid, Group, Space, Text, ThemeIcon } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { notifications } from '@mantine/notifications'
 import { IconAlertTriangle, IconCheck, IconX } from '@tabler/icons-react'
@@ -30,7 +22,6 @@ interface Props {
 
 export default function LoadLinkBoardModal({ nodes }: Props) {
   const [opened, modalAction] = useDisclosure(false)
-  const theme = useMantineTheme()
   const maxSM = useMediaQuery('(max-width: 768px)')
   const location = useLocation()
   const { hash } = location

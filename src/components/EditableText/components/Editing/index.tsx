@@ -1,3 +1,4 @@
+import { NO_DRAG_REACTFLOW_CLASS } from '@/pages/BoardPage/configs/constants'
 import { Autocomplete, AutocompleteProps, Kbd } from '@mantine/core'
 import { getHotkeyHandler, useFocusWithin } from '@mantine/hooks'
 import { useEffect } from 'react'
@@ -23,6 +24,7 @@ export default function InputEdit({
 
   return (
     <Autocomplete
+      className={NO_DRAG_REACTFLOW_CLASS}
       onBlur={onClickValidate}
       ref={ref}
       autoFocus
@@ -31,7 +33,7 @@ export default function InputEdit({
       data={options}
       size="xs"
       rightSection={
-        <Kbd size="xs" mr="sm" onClick={onClickValidate}>
+        <Kbd color="blue" size="xs" mr="sm" onClick={onClickValidate}>
           Enter
         </Kbd>
       }

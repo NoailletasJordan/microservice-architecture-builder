@@ -21,9 +21,10 @@ export default function CustomModal({
 }: Props) {
   return (
     <Modal
+      transitionProps={{ transition: 'fade' }}
       centered
       size="lg"
-      radius="lg"
+      radius="md"
       styles={{
         root: { color: themeDarkColorVariables['--text'] },
         header: {
@@ -45,7 +46,6 @@ export default function CustomModal({
       overlayProps={{
         backgroundOpacity: 0.25,
       }}
-      bg="blue"
       title={
         <Box px={PADDING}>
           <Title>{title}</Title>

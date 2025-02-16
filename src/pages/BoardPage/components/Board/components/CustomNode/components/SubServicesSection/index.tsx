@@ -1,21 +1,21 @@
-import DividerWrapper from '@/components/DividerWrapper'
 import { SubService } from '@/pages/BoardPage/configs/constants'
-import { Box, SimpleGrid, Text } from '@mantine/core'
+import { Box, SimpleGrid } from '@mantine/core'
+import { LayoutGroup } from 'motion/react'
 import { v4 } from 'uuid'
 import { DraggableSubServiceComponent } from './components/SubServiceComponent'
+import SubServicesHeader from './components/SubServicesHeader'
 
 interface Props {
   subServices: SubService[]
+  parentId: string
 }
 
-export default function SubServiceSection({ subServices }: Props) {
+export default function SubServiceSection({ subServices, parentId }: Props) {
   return (
     <Box>
-      <DividerWrapper>
-        <Text fw="600" size="sm">
-          Internal Services
-        </Text>
-      </DividerWrapper>
+      <LayoutGroup>
+        <SubServicesHeader parentId={parentId} />
+      </LayoutGroup>
 
       <SimpleGrid cols={4} verticalSpacing="xs">
         {subServices.map((subService: SubService) => (

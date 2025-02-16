@@ -1,4 +1,5 @@
-import { FloatingPosition, Group, Text, Tooltip } from '@mantine/core'
+import { CSSVAR } from '@/contants'
+import { Center, FloatingPosition, Tooltip } from '@mantine/core'
 import { ReactNode } from 'react'
 
 interface Props {
@@ -8,10 +9,13 @@ interface Props {
 }
 
 const TooltipWrapper = ({ children, label, position = 'top' }: Props) => (
-  <Tooltip label={label} bg="gray.5" position={position} openDelay={150}>
-    <Group gap="xs">
-      <Text component="div">{children}</Text>
-    </Group>
+  <Tooltip
+    label={label}
+    bg={CSSVAR['--surface-strong']}
+    position={position}
+    openDelay={150}
+  >
+    <Center>{children}</Center>
   </Tooltip>
 )
 

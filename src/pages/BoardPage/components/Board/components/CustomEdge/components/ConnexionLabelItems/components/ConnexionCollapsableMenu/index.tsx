@@ -111,7 +111,7 @@ export default function ConnexionCollapsableMenu({
             <Select
               data={selectData}
               label={
-                <Text fw="600" pb="xs" size="sm">
+                <Text fw="600" pb="xs" c={CSSVAR['--text-strong']} size="sm">
                   Communication protocol
                 </Text>
               }
@@ -141,7 +141,7 @@ export default function ConnexionCollapsableMenu({
             />
           </Box>
           <Space h="sm" />
-          <Text pb="xs" pl="xs" fw="600" size="sm">
+          <Text c={CSSVAR['--text-strong']} pb="xs" pl="xs" fw="600" size="sm">
             Note
           </Text>
         </Collapse>

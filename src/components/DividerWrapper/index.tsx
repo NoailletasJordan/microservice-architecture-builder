@@ -11,7 +11,7 @@ export default function DividerWrapper({ children }: Props) {
     <Grid align="center">
       <Grid.Col span="content">{children}</Grid.Col>
       <Grid.Col span="auto">
-        <Divider h="md" color={CSSVAR['--border']} />
+        <Divider color={CSSVAR['--border']} />
       </Grid.Col>
     </Grid>
   )

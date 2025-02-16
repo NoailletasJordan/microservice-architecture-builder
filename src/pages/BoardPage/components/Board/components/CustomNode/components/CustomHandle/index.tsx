@@ -7,7 +7,7 @@ type Props = Pick<HandleProps, 'position' | 'id'>
 export default function CustomHandle({ position, id }: Props) {
   const transform = `translateY(-50%) ${
     position === Position.Left ? 'rotateY(0deg)' : 'rotate(180deg) '
-  } translateX(-5px)`
+  } translateX(-4px)`
 
   return (
     <Handle
@@ -20,7 +20,7 @@ export default function CustomHandle({ position, id }: Props) {
         borderRadius: 0,
         transform,
         transformOrigin: 'center',
-        backgroundColor: CSSVAR['--text'],
+        backgroundColor: CSSVAR['--border'],
         border: 'none',
       }}
       type="source"

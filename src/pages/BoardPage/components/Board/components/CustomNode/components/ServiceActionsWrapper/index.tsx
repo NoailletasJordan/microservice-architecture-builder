@@ -14,6 +14,7 @@ interface Props {
   flowInstance: ReactFlowInstance<any, any>
   isHovered: boolean
   setIsHovered: (hovered: boolean) => void
+  handleActionClick: () => void
 }
 
 export default function ServiceActionsWrapper({
@@ -22,6 +23,7 @@ export default function ServiceActionsWrapper({
   children,
   isHovered,
   setIsHovered,
+  handleActionClick,
 }: Props) {
   const variants: Variants = {
     hidden: {
@@ -60,6 +62,7 @@ export default function ServiceActionsWrapper({
           >
             <TooltipWrapper label="Add a note">
               <ActionIcon
+                onClick={handleActionClick}
                 variant="outline"
                 style={{ border: 'none' }}
                 color={CSSVAR['--text']}

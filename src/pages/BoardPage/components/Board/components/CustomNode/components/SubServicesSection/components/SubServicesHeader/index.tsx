@@ -32,7 +32,9 @@ export default function SubServicesHeader({ parentId }: Props) {
           flexShrink: 0,
         }}
       >
-        <Text fw="600">Internal Services</Text>
+        <Text fw="600" size="sm">
+          Internal Services
+        </Text>
         <Delete parentId={parentId} />
       </Box>
       {divider}

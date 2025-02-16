@@ -1,6 +1,7 @@
 import { Card, Grid, Image, Space } from '@mantine/core'
 import { NodeProps, Position, useReactFlow } from 'reactflow'
 
+import DroppableIndicator from '@/components/DroppableIndicator'
 import { getEditorParams } from '@/components/RichEditor'
 import { CSSVAR } from '@/contants'
 import {
@@ -26,10 +27,9 @@ import SubServiceSection from './components/SubServicesSection'
 
 export default function CustomNode(props: NodeProps<IService>) {
   const flowInstance = useReactFlow()
-  const { ref, height, width } = useElementSize()
   const service = props.data
   const [isHovered, setIsHovered] = useState(false)
-
+  const { ref, height, width } = useElementSize()
   const isOverlapingNode = useMemo(
     () =>
       !!getNodeOverlapped(
@@ -60,19 +60,18 @@ export default function CustomNode(props: NodeProps<IService>) {
       setIsHovered={(bool: boolean) => setIsHovered(bool)}
       flowInstance={flowInstance}
       parentId={props.id}
+      handleActionClick={() => editor?.view.focus()}
     >
-      <DroppableArea
-        id={props.id}
-        data={{
-          droppableType,
-        }}
-      >
-        <Box
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          ref={ref}
+      <Box ref={ref}>
+        <DroppableArea
+          id={props.id}
+          data={{
+            droppableType,
+          }}
         >
           <Card
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             radius="md"
             style={{
               outlineColor: isHovered
@@ -83,7 +82,6 @@ export default function CustomNode(props: NodeProps<IService>) {
             }}
             bg={CSSVAR['--surface']}
             w={CARD_WIDTH}
-            pos="relative"
           >
             <Card.Section p="md" bg={CSSVAR['--surface']}>
               {isOverlapingNode && <OverlapOverlay />}
@@ -115,8 +113,15 @@ export default function CustomNode(props: NodeProps<IService>) {
           </Card>
           <CustomHandle position={Position.Left} id="l" />
           <CustomHandle position={Position.Right} id="r" />
-        </Box>
-      </DroppableArea>
+        </DroppableArea>
+        <DroppableIndicator
+          height={height}
+          width={width}
+          padding={5}
+          droppableType={droppableType}
+          serviceId={service.id}
+        />
+      </Box>
     </ServiceActionsWrapper>
   )
 }

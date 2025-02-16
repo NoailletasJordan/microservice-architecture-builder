@@ -3,11 +3,10 @@ import { CSSVAR } from '@/contants'
 import { NO_DRAG_REACTFLOW_CLASS } from '@/pages/BoardPage/configs/constants'
 import { handleDeleteNode } from '@/pages/BoardPage/configs/helpers'
 import { ActionIcon, Group } from '@mantine/core'
-import { IconNote } from '@tabler/icons-react'
+import { IconNote, IconTrash } from '@tabler/icons-react'
 import { motion, Variants } from 'motion/react'
 import { ReactNode } from 'react'
 import { NodeToolbar, ReactFlowInstance } from 'reactflow'
-import DeleteButton from '../DeleteButton'
 
 interface Props {
   parentId: string
@@ -57,6 +56,7 @@ export default function ServiceActionsWrapper({
             })}
             align="center"
             bg={CSSVAR['--surface']}
+            color={CSSVAR['--text']}
           >
             <TooltipWrapper label="Add a note">
               <ActionIcon
@@ -68,10 +68,17 @@ export default function ServiceActionsWrapper({
                 <IconNote stroke={1.5} />
               </ActionIcon>
             </TooltipWrapper>
-            <DeleteButton
-              parentId={parentId}
-              onClick={() => handleDeleteNode(parentId, flowInstance)}
-            />
+            <TooltipWrapper label="Delete the service">
+              <ActionIcon
+                size="md"
+                variant="outline"
+                style={{ border: 'none' }}
+                color={CSSVAR['--text']}
+                onClick={() => handleDeleteNode(parentId, flowInstance)}
+              >
+                <IconTrash stroke={1.5} />
+              </ActionIcon>
+            </TooltipWrapper>
           </Group>
         </motion.div>
       </NodeToolbar>

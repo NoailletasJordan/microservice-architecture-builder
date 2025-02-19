@@ -17,8 +17,8 @@ export default function Main() {
           fw={700}
           variant="gradient"
           gradient={{
-            from: theme.colors[theme.primaryColor][4],
-            to: theme.colors[theme.primaryColor][6],
+            from: theme.colors[theme.primaryColor][9],
+            to: theme.colors[theme.primaryColor][11],
             deg: 90,
           }}
           w="100vw"

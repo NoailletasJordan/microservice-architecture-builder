@@ -71,52 +71,61 @@ export default function SharableModal({ close, opened, nodes }: Props) {
       {emptyNodes ? (
         <Empty />
       ) : (
-        <Grid py="xs" align="center">
-          <Grid.Col span={{ xs: 8 }}>
-            <TextInput
-              variant="unstyled"
-              px="xs"
-              py={3}
-              styles={{
-                input: {
-                  color: themeDarkColorVariables['--text'],
-                },
-              }}
-              style={{
-                borderRadius: 4,
-                fontSize: theme.fontSizes.xs,
-                border: `1px solid ${themeDarkColorVariables['--border']}`,
-              }}
-              bg={themeDarkColorVariables['--surface-strong']}
-              readOnly
-              value={link}
-              size="md"
-            />
-          </Grid.Col>
-          <Grid.Col span={{ xs: 4 }}>
-            <CustomButtonPrimary
-              onClick={() => {
-                !clipboard.copied && clipboard.copy(link)
-                notifications.show({
-                  icon: (
-                    <ThemeIcon radius="xl" color="primary.10" variant="outline">
-                      <IconClipboardCheck style={ICON_STYLE} />
-                    </ThemeIcon>
-                  ),
-                  title: 'Copied to clipboard',
-                  message: '',
-                  autoClose: 3000,
-                })
-                handleClose()
-              }}
-              fullWidth
-              size="lg"
-              leftSection={<IconCopy style={ICON_STYLE} />}
-            >
-              Copy link
-            </CustomButtonPrimary>
-          </Grid.Col>
-        </Grid>
+        <div>
+          <Grid py="xs" align="center">
+            <Grid.Col span={{ xs: 8 }}>
+              <TextInput
+                variant="unstyled"
+                px="xs"
+                py={3}
+                styles={{
+                  input: {
+                    color: themeDarkColorVariables['--text'],
+                  },
+                }}
+                style={{
+                  borderRadius: 4,
+                  fontSize: theme.fontSizes.xs,
+                  border: `1px solid ${themeDarkColorVariables['--border']}`,
+                }}
+                bg={themeDarkColorVariables['--surface-strong']}
+                readOnly
+                value={link}
+                size="md"
+              />
+            </Grid.Col>
+            <Grid.Col span={{ xs: 4 }}>
+              <CustomButtonPrimary
+                onClick={() => {
+                  !clipboard.copied && clipboard.copy(link)
+                  notifications.show({
+                    icon: (
+                      <ThemeIcon
+                        radius="xl"
+                        color="primary.10"
+                        variant="outline"
+                      >
+                        <IconClipboardCheck style={ICON_STYLE} />
+                      </ThemeIcon>
+                    ),
+                    title: 'Copied to clipboard',
+                    message: '',
+                    autoClose: 3000,
+                  })
+                  handleClose()
+                }}
+                fullWidth
+                size="lg"
+                leftSection={<IconCopy style={ICON_STYLE} />}
+              >
+                Copy link
+              </CustomButtonPrimary>
+            </Grid.Col>
+          </Grid>
+          <Text size="sm">
+            This link captures the data at the this exact moment
+          </Text>
+        </div>
       )}
     </CustomModal>
   )

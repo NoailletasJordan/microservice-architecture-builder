@@ -18,8 +18,8 @@ export default function Service({
     >
       <path
         d="M10.5713 12.1191H17.238"
-        stroke-width="1.5"
-        stroke-linecap="round"
+        strokeWidth="1.5"
+        strokeLinecap="round"
       />
       <rect
         x="5.5"
@@ -30,7 +30,7 @@ export default function Service({
         fill={currentColor}
         stroke="none"
       />
-      <rect x="3" y="8" width="18" height="8" rx="1" stroke-width="2" />
+      <rect x="3" y="8" width="18" height="8" rx="1" strokeWidth="2" />
     </svg>
   )
 }

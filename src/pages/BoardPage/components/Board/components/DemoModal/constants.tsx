@@ -1,5 +1,6 @@
 import Connexion from '@/components/Icons/Connexion'
 import Service from '@/components/Icons/Service'
+import Share from '@/components/Icons/Share'
 import Welcome from '@/components/Icons/Welcome'
 import { Box } from '@mantine/core'
 import Highlight from './components/Highlight'
@@ -55,7 +56,7 @@ export const SECTIONS = [
   },
   {
     title: 'Sharing',
-    Icon: Welcome,
+    Icon: Share,
     content: (
       <>
         <Box>

@@ -10,6 +10,7 @@ import {
   Card,
   Grid,
   Group,
+  Space,
   Text,
   TextInput,
   ThemeIcon,
@@ -122,8 +123,10 @@ export default function SharableModal({ close, opened, nodes }: Props) {
               </CustomButtonPrimary>
             </Grid.Col>
           </Grid>
+          <Space h="xs" />
           <Text size="sm">
-            This link captures the data at the this exact moment
+            *This link captures the data at this exact moment, not including
+            further changes.
           </Text>
         </div>
       )}

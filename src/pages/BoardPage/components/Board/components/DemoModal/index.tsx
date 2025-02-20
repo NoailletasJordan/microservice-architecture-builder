@@ -1,8 +1,10 @@
 import CustomModal from '@/components/CustomModal'
 import { CSSVAR } from '@/contants'
-import { Avatar, Box, Button, Grid, Group, Space, Stack } from '@mantine/core'
+import { Box, Button, Grid, Group, Space, Stack } from '@mantine/core'
 import { AnimatePresence, motion } from 'motion/react'
 import { useMemo, useRef, useState } from 'react'
+import Canva from './components/Canva'
+import NavigationItem from './components/NavigationItem'
 import Timeline from './components/Timeline'
 import { SECTIONS } from './constants'
 
@@ -106,9 +108,12 @@ export default function DemoModal({ opened, close }: Props) {
               style={{
                 aspectRatio: '2/1',
                 borderRadius: 12,
+                overflow: 'hidden',
               }}
               bg={CSSVAR['--surface-strong']}
-            ></Box>
+            >
+              <Canva />
+            </Box>
             <Space h="md" />
             <AnimatePresence mode="wait">
               <motion.div
@@ -135,52 +140,5 @@ export default function DemoModal({ opened, close }: Props) {
           : buttonPrimary}
       </Group>
     </CustomModal>
-  )
-}
-
-function NavigationItem({
-  onClick,
-  title,
-  active,
-  Icon,
-}: {
-  title: string
-  onClick: () => void
-  active?: boolean
-  Icon: ({
-    currentColor,
-    ...svgProps
-  }: {
-    currentColor: string
-  } & React.SVGProps<SVGSVGElement>) => JSX.Element
-}) {
-  return (
-    <Group
-      onClick={onClick}
-      px="sm"
-      py="xs"
-      style={{
-        cursor: 'pointer',
-      }}
-      gap="xs"
-      align="center"
-    >
-      <Box
-        c={active ? CSSVAR['--text-strong'] : CSSVAR['--text']}
-        style={{ transition: 'color 0.4s' }}
-      >
-        {title}
-      </Box>
-      <Avatar
-        style={{ transition: 'background-color 0.4s' }}
-        bg={active ? CSSVAR['--text-primary'] : CSSVAR['--surface-strong']}
-        p={3}
-      >
-        <Icon
-          strokeWidth={2}
-          currentColor={active ? CSSVAR['--background'] : CSSVAR['--text']}
-        />
-      </Avatar>
-    </Group>
   )
 }

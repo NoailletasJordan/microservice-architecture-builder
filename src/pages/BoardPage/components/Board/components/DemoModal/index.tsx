@@ -1,6 +1,6 @@
 import CustomModal from '@/components/CustomModal'
-import { CSSVAR } from '@/contants'
-import { Box, Button, Grid, Group, Space, Stack } from '@mantine/core'
+import { CSSVAR, themeDarkColorVariables } from '@/contants'
+import { Box, Button, Group, Space, Stack } from '@mantine/core'
 import { AnimatePresence, motion } from 'motion/react'
 import { useMemo, useRef, useState } from 'react'
 import Canva from './components/Canva'
@@ -16,6 +16,11 @@ interface Props {
 export default function DemoModal({ opened, close }: Props) {
   const [selectedIndex, setSelectedIndex] = useState(0)
 
+  const handleClose = () => {
+    close()
+    setTimeout(() => setSelectedIndex(0), 200)
+  }
+
   const setNextIndex = () => {
     setSelectedIndex((prev) => Math.min(prev + 1, SECTIONS.length - 1))
   }
@@ -23,8 +28,8 @@ export default function DemoModal({ opened, close }: Props) {
     setSelectedIndex((prev) => Math.max(prev - 1, 0))
   }
 
-  const closeRef = useRef(close)
-  closeRef.current = close
+  const closeRef = useRef(handleClose)
+  closeRef.current = handleClose
 
   const buttonSecondary = useMemo(
     () => (
@@ -39,7 +44,7 @@ export default function DemoModal({ opened, close }: Props) {
     () => (
       <Button
         onClick={setNextIndex}
-        color="primary.10"
+        color={themeDarkColorVariables['--text-primary']}
         c={CSSVAR['--background']}
       >
         Next Step
@@ -50,7 +55,11 @@ export default function DemoModal({ opened, close }: Props) {
 
   const buttonIntroSecondary = useMemo(
     () => (
-      <Button onClick={closeRef.current} variant="outline" color="gray.11">
+      <Button
+        onClick={closeRef.current}
+        variant="outline"
+        color={themeDarkColorVariables['--text']}
+      >
         I will figure it out
       </Button>
     ),
@@ -84,52 +93,54 @@ export default function DemoModal({ opened, close }: Props) {
   )
 
   return (
-    <CustomModal onClose={close} opened={opened} opened title="Onboarding">
-      <Grid gutter="xl">
-        <Grid.Col span="content">
-          <Group gap={0}>
-            <Stack p="xs" gap="xs" style={{ borderRadius: 8 }} align="end">
-              {SECTIONS.map((section, index) => (
-                <NavigationItem
-                  active={index === selectedIndex}
-                  key={index}
-                  title={section.title}
-                  Icon={section.Icon}
-                  onClick={() => setSelectedIndex(index)}
-                />
-              ))}
-            </Stack>
-            <Timeline selectedIndex={selectedIndex} />
-          </Group>
-        </Grid.Col>
-        <Grid.Col span="auto">
-          <Box>
-            <Box
-              style={{
-                aspectRatio: '2/1',
-                borderRadius: 12,
-                overflow: 'hidden',
-              }}
-              bg={CSSVAR['--surface-strong']}
-            >
-              <Canva />
-            </Box>
-            <Space h="md" />
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`selected-${selectedIndex}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
-                style={{ display: 'grid', gap: 10 }}
-              >
-                {SECTIONS[selectedIndex].content}
-              </motion.div>
-            </AnimatePresence>
+    <CustomModal onClose={close} opened={opened} title="Onboarding">
+      <Box
+        style={(theme) => ({
+          display: 'grid',
+          gridTemplateColumns: 'max-content 1fr',
+          gap: theme.spacing.xl,
+        })}
+      >
+        <Group gap={0}>
+          <Stack p="xs" gap="xs" style={{ borderRadius: 8 }} align="end">
+            {SECTIONS.map((section, index) => (
+              <NavigationItem
+                active={index === selectedIndex}
+                key={index}
+                title={section.title}
+                Icon={section.Icon}
+                onClick={() => setSelectedIndex(index)}
+              />
+            ))}
+          </Stack>
+          <Timeline selectedIndex={selectedIndex} />
+        </Group>
+        <Box>
+          <Box
+            style={{
+              aspectRatio: '2/1',
+              borderRadius: 12,
+              overflow: 'hidden',
+            }}
+            bg={CSSVAR['--surface-strong']}
+          >
+            <Canva artboard={SECTIONS[selectedIndex].artboard} />
           </Box>
-        </Grid.Col>
-      </Grid>
+          <Space h="md" />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`selected-${selectedIndex}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              style={{ display: 'grid', gap: 10 }}
+            >
+              {SECTIONS[selectedIndex].content}
+            </motion.div>
+          </AnimatePresence>
+        </Box>
+      </Box>
       <Space h="lg" />
       <Group justify="end">
         {selectedIndex === 0 ? buttonIntroSecondary : buttonSecondary}

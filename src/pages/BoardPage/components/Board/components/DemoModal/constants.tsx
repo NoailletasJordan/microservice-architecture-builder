@@ -9,6 +9,7 @@ export const SECTIONS = [
   {
     title: 'Welcome',
     Icon: Welcome,
+    artboard: 'welcome',
     content: (
       <>
         <Box>
@@ -24,6 +25,7 @@ export const SECTIONS = [
   },
   {
     title: 'Services',
+    artboard: 'service',
     Icon: Service,
     content: (
       <>
@@ -33,13 +35,19 @@ export const SECTIONS = [
         </Box>
         <Box>
           They can be <Highlight>dragged, renamed, and connected</Highlight> to
-          each other using the handles on their sides.
+          each other using the <Highlight> connectors </Highlight> on their
+          sides.
+        </Box>
+        <Box>
+          An <Highlight> action menu </Highlight> will appear at the top when
+          the mouse is hovered over the service.
         </Box>
       </>
     ),
   },
   {
     title: 'Connections',
+    artboard: 'connexion',
     Icon: Connexion,
     content: (
       <>
@@ -56,6 +64,7 @@ export const SECTIONS = [
   },
   {
     title: 'Sharing',
+    artboard: 'share',
     Icon: Share,
     content: (
       <>

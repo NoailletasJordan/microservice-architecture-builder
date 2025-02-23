@@ -23,6 +23,7 @@ export default function Timeline({ selectedIndex }: { selectedIndex: number }) {
       />
       {SECTIONS.map((_, index) => (
         <Dot
+          key={index}
           active={index === selectedIndex}
           verticalPercent={index * (1 / (SECTIONS.length - 1)) * 100}
           passed={index < selectedIndex}

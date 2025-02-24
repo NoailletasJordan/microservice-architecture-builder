@@ -1,5 +1,5 @@
 import DroppableIndicator from '@/components/DroppableIndicator'
-import OnBoardingMain from '@/components/OnboardingComponents/OnBoardingMain'
+import GuidanceTextsMain from '@/components/GuidanceTextsComponents/GuidanceTextsMain'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
 import { Box } from '@mantine/core'
@@ -42,10 +42,10 @@ import ConnexionPreview from './components/ConnexionPreview'
 import CustomEdge from './components/CustomEdge'
 import CustomNode from './components/CustomNode/'
 import DeleteModal from './components/DeleteModal'
-import DemoModal from './components/DemoModal'
 import DemoPanel from './components/DemoPanel'
 import DraggableGhost from './components/DraggableGhost/index'
 import LoadUrlBoardModal from './components/LoadUrlBoardModal/'
+import DemoModal from './components/OnboardingModal'
 import PrimaryActionsPanel from './components/PrimaryActionsPanel'
 import Settings from './components/Settings/index'
 import ShareModal from './components/ShareModal'
@@ -68,15 +68,20 @@ const droppableType = 'board'
 interface Props {
   nodeState: ReturnType<typeof useNodesState<IService>>
   edgeState: ReturnType<typeof useEdgesState<IConnexion>>
+  showInitialLoader: boolean
 }
 
-export default function Board({ nodeState, edgeState }: Props) {
-  const { showOnBoarding } = useContext(onBoardingContext)
+export default function Board({
+  showInitialLoader,
+  nodeState,
+  edgeState,
+}: Props) {
+  const { showGuidanceTexts, showOnboarding, updateShowOnboarding } =
+    useContext(onBoardingContext)
   const [nodes, setNodes, onNodesChange] = nodeState
   const [edges, setEdges, onEdgesChange] = edgeState
   const [showResetBoardModal, resetModalHandlers] = useDisclosure(false)
   const [showShareModal, shareModalHanders] = useDisclosure(false)
-  const [showDemoModal, demoModalHandlers] = useDisclosure(false)
 
   const { ref, height, width } = useElementSize()
   const flowInstance = useReactFlow<IService, IConnexion>()
@@ -192,14 +197,14 @@ export default function Board({ nodeState, edgeState }: Props) {
               }}
               onPaneClick={triggerClickCanva}
             >
-              {!showOnBoarding && (
+              {!showGuidanceTexts && !showOnboarding && (
                 <Background id={v4()} variant={BackgroundVariant.Dots} />
               )}
               <Toolbar />
-              {showOnBoarding && <OnBoardingMain />}
+              {showGuidanceTexts && <GuidanceTextsMain />}
               <DemoPanel
-                openDemo={demoModalHandlers.open}
-                showOnBoarding={showOnBoarding}
+                openOnboarding={() => updateShowOnboarding(true)}
+                showGuidanceTexts={showGuidanceTexts}
               />
             </ReactFlow>
             <Settings openResetModal={resetModalHandlers.open} />
@@ -219,7 +224,11 @@ export default function Board({ nodeState, edgeState }: Props) {
         close={shareModalHanders.close}
       />
       {boardInitialized && <LoadUrlBoardModal nodes={nodes} />}
-      <DemoModal close={demoModalHandlers.close} opened={showDemoModal} />
+      <DemoModal
+        showInitialLoader={showInitialLoader}
+        close={() => updateShowOnboarding(false)}
+        opened={showOnboarding}
+      />
     </>
   )
 }

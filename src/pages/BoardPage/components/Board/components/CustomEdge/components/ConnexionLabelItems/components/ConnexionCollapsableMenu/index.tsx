@@ -85,7 +85,7 @@ export default function ConnexionCollapsableMenu({
             </DividerWrapper>
 
             <LineItem
-              label="Switch direction"
+              label="Toggle direction"
               Icon={IconArrowsExchange}
               onClick={() => {
                 const edge = flowInstance.getEdge(

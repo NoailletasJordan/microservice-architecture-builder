@@ -14,14 +14,12 @@ export const SECTIONS = [
       <>
         <Box>
           <Highlight> Welcome! </Highlight> This app that allows you to
-          represent{' '}
-          <Highlight>
-            application's distributed architecture in no time.
-          </Highlight>
+          represent application's
+          <Highlight> distributed architecture in no time.</Highlight>
         </Box>
         <Box>
-          If you're new here, here's a quick introduction to help you get
-          started.
+          If you're new here, here's a
+          <Highlight> quick introduction </Highlight> to help you get started.
         </Box>
       </>
     ),

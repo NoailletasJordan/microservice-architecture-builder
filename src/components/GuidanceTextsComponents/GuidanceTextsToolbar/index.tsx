@@ -1,6 +1,6 @@
 import { CSSVAR } from '@/contants'
 import { Box, Text } from '@mantine/core'
-import OnboardingText from '../OnBoardingText'
+import GuidanceText from '../GuidanceText'
 
 export default function OnBoardingToolbar() {
   return (
@@ -14,13 +14,13 @@ export default function OnBoardingToolbar() {
       >
         <img width={40} src="/onBoarding/arrow-toolbar.svg" />
         <Box mt="xl">
-          <OnboardingText w={150}>
+          <GuidanceText w={150}>
             Start dragging{' '}
             <Text component="span" c={CSSVAR['--text-strong']}>
               services
             </Text>{' '}
             into the board
-          </OnboardingText>
+          </GuidanceText>
         </Box>
       </Box>
     </Box>

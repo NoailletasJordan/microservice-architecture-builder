@@ -1,5 +1,5 @@
 import { Box, Center, Space, Text, useMantineTheme } from '@mantine/core'
-import OnboardingText from '../OnBoardingText'
+import GuidanceText from '../GuidanceText'
 
 export default function Main() {
   const theme = useMantineTheme()
@@ -29,9 +29,9 @@ export default function Main() {
         </Text>
         <Space h="lg" />
         <Center>
-          <OnboardingText>
+          <GuidanceText>
             All your data is saved locally in your browser
-          </OnboardingText>
+          </GuidanceText>
         </Center>
       </Box>
     </Box>

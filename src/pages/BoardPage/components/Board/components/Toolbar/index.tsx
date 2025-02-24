@@ -1,4 +1,4 @@
-import OnBoardingToolbar from '@/components/OnboardingComponents/OnBoardingToolbar'
+import GuidanceTextsToolbar from '@/components/GuidanceTextsComponents/GuidanceTextsToolbar'
 import TooltipWrapper from '@/components/TooltipWrapper'
 import { CSSVAR } from '@/contants'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
@@ -27,7 +27,7 @@ const services = Object.entries(serviceConfig).map(([serviceIdType]) => (
 ))
 
 export default function Toolbar() {
-  const { showOnBoarding } = useContext(onBoardingContext)
+  const { showGuidanceTexts } = useContext(onBoardingContext)
 
   return (
     <Panel position="top-center">
@@ -45,7 +45,7 @@ export default function Toolbar() {
         </Card>
       </DroppableArea>
 
-      {showOnBoarding && <OnBoardingToolbar />}
+      {showGuidanceTexts && <GuidanceTextsToolbar />}
     </Panel>
   )
 }

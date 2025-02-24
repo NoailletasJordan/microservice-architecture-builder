@@ -1,4 +1,4 @@
-import OnBoardingHelp from '@/components/OnboardingComponents/OnBoardingHelp'
+import GuidanceTextsOnboarding from '@/components/GuidanceTextsComponents/GuidanceTextsOnboarding'
 import TooltipWrapper from '@/components/TooltipWrapper'
 import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import { ActionIcon, Group, Space } from '@mantine/core'
@@ -6,18 +6,21 @@ import { IconFocusCentered, IconInfoSquareRounded } from '@tabler/icons-react'
 import { Panel, useReactFlow } from 'reactflow'
 
 interface Props {
-  showOnBoarding: boolean
-  openDemo: () => void
+  showGuidanceTexts: boolean
+  openOnboarding: () => void
 }
 
-export default function DemoPanel({ openDemo, showOnBoarding }: Props) {
+export default function DemoPanel({
+  openOnboarding,
+  showGuidanceTexts,
+}: Props) {
   const { fitView } = useReactFlow()
 
   const onClick = () => fitView({ duration: 700 })
 
   return (
     <Panel position="bottom-right">
-      {showOnBoarding && <OnBoardingHelp />}
+      {showGuidanceTexts && <GuidanceTextsOnboarding />}
       <Space h="xs" />
       <Group justify="flex-end">
         <TooltipWrapper label="Fit into view">
@@ -26,7 +29,7 @@ export default function DemoPanel({ openDemo, showOnBoarding }: Props) {
           </ActionIcon>
         </TooltipWrapper>
         <TooltipWrapper label="Watch demo">
-          <ActionIcon aria-label="Watch demo" onClick={openDemo}>
+          <ActionIcon aria-label="Watch demo" onClick={openOnboarding}>
             <IconInfoSquareRounded style={ICON_STYLE} />
           </ActionIcon>
         </TooltipWrapper>

@@ -12,9 +12,14 @@ import { SECTIONS } from './constants'
 interface Props {
   opened: boolean
   close: () => void
+  showInitialLoader: boolean
 }
 
-export default function DemoModal({ opened, close }: Props) {
+export default function OnboardingModal({
+  showInitialLoader,
+  opened,
+  close,
+}: Props) {
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   const handleClose = () => {
@@ -39,7 +44,7 @@ export default function DemoModal({ opened, close }: Props) {
         variant="outline"
         color={themeDarkColorVariables['--text']}
       >
-        Back
+        Previous
       </Button>
     ),
     [],
@@ -65,7 +70,7 @@ export default function DemoModal({ opened, close }: Props) {
         variant="outline"
         color={themeDarkColorVariables['--text']}
       >
-        I will figure it out
+        No thanks, I will figure it out
       </Button>
     ),
     [],
@@ -98,7 +103,7 @@ export default function DemoModal({ opened, close }: Props) {
   )
 
   const { ref: contentRef, height: contentHeight } = useElementSize()
-  const [debouncedHeight] = useDebouncedValue(contentHeight, 50)
+  const [debouncedHeight] = useDebouncedValue(contentHeight, 100)
 
   return (
     <CustomModal size="xl" onClose={close} opened={opened} title="Onboarding">
@@ -132,7 +137,10 @@ export default function DemoModal({ opened, close }: Props) {
             }}
             bg={CSSVAR['--surface-strong']}
           >
-            <Canva artboard={SECTIONS[selectedIndex].artboard} />
+            <Canva
+              showInitialLoader={showInitialLoader}
+              artboard={SECTIONS[selectedIndex].artboard}
+            />
           </Box>
           <Space h="md" />
           <motion.div
@@ -145,7 +153,7 @@ export default function DemoModal({ opened, close }: Props) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
-              style={{ display: 'grid', gap: 10 }}
+              style={{ display: 'grid', gap: 10, fontSize: 20 }}
             >
               {SECTIONS[selectedIndex].content}
             </motion.div>

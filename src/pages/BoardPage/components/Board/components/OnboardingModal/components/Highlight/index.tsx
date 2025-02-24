@@ -4,7 +4,7 @@ import { ReactNode } from 'react'
 
 export default function Highlight({ children }: { children: ReactNode }) {
   return (
-    <Box component="span" c={CSSVAR['--text-strong']}>
+    <Box component="span" c={CSSVAR['--text-primary']}>
       {children}
     </Box>
   )

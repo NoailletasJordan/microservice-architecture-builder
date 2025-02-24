@@ -12,13 +12,7 @@ export default function CustomButtonPrimary({
   ...props
 }: Props) {
   return (
-    <Button
-      c="primary.2"
-      color="primary.10"
-      fw="normal"
-      {...props}
-      style={style}
-    >
+    <Button c="primary.2" color="primary.10" {...props} style={style}>
       {children}
     </Button>
   )

@@ -1,9 +1,8 @@
 import CustomModal from '@/components/CustomModal'
 import { CSSVAR, themeDarkColorVariables } from '@/contants'
 import { Box, Button, Group, Space, Stack } from '@mantine/core'
-import { useDebouncedValue, useElementSize } from '@mantine/hooks'
 import { motion } from 'motion/react'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Canva from './components/Canva'
 import NavigationItem from './components/NavigationItem'
 import Timeline from './components/Timeline'
@@ -34,9 +33,13 @@ export default function OnboardingModal({
     setSelectedIndex((prev) => Math.max(prev - 1, 0))
   }
 
+  const { contentHeight, setElementStateRef } = useContentHeight({
+    opened,
+    selectedIndex,
+  })
+
   const closeRef = useRef(handleClose)
   closeRef.current = handleClose
-
   const buttonSecondary = useMemo(
     () => (
       <Button
@@ -83,7 +86,7 @@ export default function OnboardingModal({
         c={CSSVAR['--background']}
         onClick={closeRef.current}
       >
-        Close and start Building
+        Close and Start Building
       </Button>
     ),
     [],
@@ -101,9 +104,6 @@ export default function OnboardingModal({
     ),
     [],
   )
-
-  const { ref: contentRef, height: contentHeight } = useElementSize()
-  const [debouncedHeight] = useDebouncedValue(contentHeight, 100)
 
   return (
     <CustomModal size="xl" onClose={close} opened={opened} title="Onboarding">
@@ -145,14 +145,14 @@ export default function OnboardingModal({
           <Space h="md" />
           <motion.div
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            animate={{ height: debouncedHeight }}
+            animate={{ height: contentHeight }}
           >
             <motion.div
-              ref={contentRef}
+              ref={setElementStateRef}
               key={selectedIndex}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
               style={{ display: 'grid', gap: 10, fontSize: 20 }}
             >
               {SECTIONS[selectedIndex].content}
@@ -171,4 +171,32 @@ export default function OnboardingModal({
       </Group>
     </CustomModal>
   )
+}
+
+function useContentHeight({
+  opened,
+  selectedIndex,
+}: {
+  opened: boolean
+  selectedIndex: number
+}) {
+  const [elementStateRef, setElementStateRef] = useState<HTMLElement | null>(
+    null,
+  )
+  const [height, setHeight] = useState(0)
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout
+    if (elementStateRef) {
+      interval = setTimeout(() => {
+        setHeight(elementStateRef.clientHeight)
+      }, 50)
+    }
+
+    return () => {
+      if (interval) clearTimeout(interval)
+    }
+  }, [elementStateRef, selectedIndex, opened])
+
+  return { contentHeight: height, setElementStateRef }
 }

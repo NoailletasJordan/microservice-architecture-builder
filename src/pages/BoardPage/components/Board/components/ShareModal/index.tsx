@@ -117,7 +117,7 @@ export default function SharableModal({ close, opened, nodes }: Props) {
                 }}
                 fullWidth
                 size="lg"
-                leftSection={<IconCopy style={ICON_STYLE} />}
+                leftSection={<IconCopy />}
               >
                 Copy link
               </CustomButtonPrimary>
@@ -137,12 +137,12 @@ export default function SharableModal({ close, opened, nodes }: Props) {
 function Empty() {
   return (
     <Card
-      bg="background.8"
+      bg={themeDarkColorVariables['--surface']}
       withBorder
-      style={{ border: '1px solid var(--mantine-color-orange-5)' }}
+      style={{ border: '1px solid orange' }}
     >
       <Group>
-        <ThemeIcon variant="transparent" color="orange" radius="xl" size="lg">
+        <ThemeIcon variant="transparent" color="orange.7" radius="xl" size="lg">
           <IconAlertTriangle style={ICON_STYLE} />
         </ThemeIcon>
 

@@ -1,5 +1,4 @@
 import { clickCanvaContext } from '@/contexts/ClickCanvaCapture/constants'
-import { onBoardingContext } from '@/contexts/Onboarding/constants'
 import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import { ActionIcon, Divider, Menu } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
@@ -17,7 +16,6 @@ interface Props {
 export default function Settings({ openResetModal }: Props) {
   const { canvaClickIncrement } = useContext(clickCanvaContext)
   const [isOpened, { close, toggle }] = useDisclosure(false)
-  const { showGuidanceTexts } = useContext(onBoardingContext)
 
   useEffect(() => {
     canvaClickIncrement !== 0 && close()

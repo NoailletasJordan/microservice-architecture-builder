@@ -23,7 +23,7 @@ export default function OverlapOverlay() {
         }}
       >
         <Text size="md" c={CSSVAR['--text-strong']}>
-          Integrate as an
+          Integrate as
           <br />
           <Text
             component="span"
@@ -32,7 +32,7 @@ export default function OverlapOverlay() {
             fw={600}
           >
             internal service
-          </Text>{' '}
+          </Text>
           ?
         </Text>
         <ThemeIcon

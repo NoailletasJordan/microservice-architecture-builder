@@ -1,7 +1,7 @@
 import { Box, Grid } from '@mantine/core'
-import OnboardingText from '../OnBoardingText'
+import GuidanceText from '../GuidanceText'
 
-export default function Help() {
+export default function GuidanceTextsOnboarding() {
   return (
     <Box
       miw={200}
@@ -11,10 +11,10 @@ export default function Help() {
     >
       <Grid align="center">
         <Grid.Col span="auto">
-          <OnboardingText>Here's a quick demo</OnboardingText>
+          <GuidanceText>Short introduction to the tool</GuidanceText>
         </Grid.Col>
         <Grid.Col span="content">
-          <img src="/onBoarding/arrow-help.svg" width="70px" alt="" />
+          <img src="/onBoarding/arrow-help.svg" width="70px" alt="arrowDown" />
         </Grid.Col>
       </Grid>
     </Box>

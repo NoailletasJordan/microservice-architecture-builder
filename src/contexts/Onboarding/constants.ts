@@ -1,9 +1,13 @@
 import { createContext } from 'react'
 
 export interface IOnboardingContext {
-  showOnBoarding: boolean
+  showGuidanceTexts: boolean
+  showOnboarding: boolean
+  updateShowOnboarding: (show: boolean) => void
 }
 
 export const onBoardingContext = createContext<IOnboardingContext>({
-  showOnBoarding: true,
+  showGuidanceTexts: true,
+  showOnboarding: false,
+  updateShowOnboarding: () => {},
 })

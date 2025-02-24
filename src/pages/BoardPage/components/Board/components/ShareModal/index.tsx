@@ -10,6 +10,7 @@ import {
   Card,
   Grid,
   Group,
+  Space,
   Text,
   TextInput,
   ThemeIcon,
@@ -71,52 +72,63 @@ export default function SharableModal({ close, opened, nodes }: Props) {
       {emptyNodes ? (
         <Empty />
       ) : (
-        <Grid py="xs" align="center">
-          <Grid.Col span={{ xs: 8 }}>
-            <TextInput
-              variant="unstyled"
-              px="xs"
-              py={3}
-              styles={{
-                input: {
-                  color: themeDarkColorVariables['--text'],
-                },
-              }}
-              style={{
-                borderRadius: 4,
-                fontSize: theme.fontSizes.xs,
-                border: `1px solid ${themeDarkColorVariables['--border']}`,
-              }}
-              bg={themeDarkColorVariables['--surface-strong']}
-              readOnly
-              value={link}
-              size="md"
-            />
-          </Grid.Col>
-          <Grid.Col span={{ xs: 4 }}>
-            <CustomButtonPrimary
-              onClick={() => {
-                !clipboard.copied && clipboard.copy(link)
-                notifications.show({
-                  icon: (
-                    <ThemeIcon radius="xl" color="primary.10" variant="outline">
-                      <IconClipboardCheck style={ICON_STYLE} />
-                    </ThemeIcon>
-                  ),
-                  title: 'Copied to clipboard',
-                  message: '',
-                  autoClose: 3000,
-                })
-                handleClose()
-              }}
-              fullWidth
-              size="lg"
-              leftSection={<IconCopy style={ICON_STYLE} />}
-            >
-              Copy link
-            </CustomButtonPrimary>
-          </Grid.Col>
-        </Grid>
+        <div>
+          <Grid py="xs" align="center">
+            <Grid.Col span={{ xs: 8 }}>
+              <TextInput
+                variant="unstyled"
+                px="xs"
+                py={3}
+                styles={{
+                  input: {
+                    color: themeDarkColorVariables['--text'],
+                  },
+                }}
+                style={{
+                  borderRadius: 4,
+                  fontSize: theme.fontSizes.xs,
+                  border: `1px solid ${themeDarkColorVariables['--border']}`,
+                }}
+                bg={themeDarkColorVariables['--surface-strong']}
+                readOnly
+                value={link}
+                size="md"
+              />
+            </Grid.Col>
+            <Grid.Col span={{ xs: 4 }}>
+              <CustomButtonPrimary
+                onClick={() => {
+                  !clipboard.copied && clipboard.copy(link)
+                  notifications.show({
+                    icon: (
+                      <ThemeIcon
+                        radius="xl"
+                        color="primary.10"
+                        variant="outline"
+                      >
+                        <IconClipboardCheck style={ICON_STYLE} />
+                      </ThemeIcon>
+                    ),
+                    title: 'Copied to clipboard',
+                    message: '',
+                    autoClose: 3000,
+                  })
+                  handleClose()
+                }}
+                fullWidth
+                size="lg"
+                leftSection={<IconCopy />}
+              >
+                Copy link
+              </CustomButtonPrimary>
+            </Grid.Col>
+          </Grid>
+          <Space h="xs" />
+          <Text size="sm">
+            *This link captures the data at this exact moment, not including
+            further changes.
+          </Text>
+        </div>
       )}
     </CustomModal>
   )
@@ -125,12 +137,12 @@ export default function SharableModal({ close, opened, nodes }: Props) {
 function Empty() {
   return (
     <Card
-      bg="background.8"
+      bg={themeDarkColorVariables['--surface']}
       withBorder
-      style={{ border: '1px solid var(--mantine-color-orange-5)' }}
+      style={{ border: '1px solid orange' }}
     >
       <Group>
-        <ThemeIcon variant="transparent" color="orange" radius="xl" size="lg">
+        <ThemeIcon variant="transparent" color="orange.7" radius="xl" size="lg">
           <IconAlertTriangle style={ICON_STYLE} />
         </ThemeIcon>
 

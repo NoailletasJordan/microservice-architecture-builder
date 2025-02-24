@@ -1,9 +1,9 @@
 import Title from '@/components/Title'
 import { themeDarkColorVariables } from '@/contants'
-import { Box, Modal } from '@mantine/core'
+import { Box, Modal, ModalProps } from '@mantine/core'
 import { ReactNode } from 'react'
 
-interface Props {
+interface Props extends ModalProps {
   opened: boolean
   onClose: () => void
   children: ReactNode
@@ -18,6 +18,7 @@ export default function CustomModal({
   title,
   children,
   fullScreen,
+  ...props
 }: Props) {
   return (
     <Modal
@@ -51,6 +52,7 @@ export default function CustomModal({
           <Title>{title}</Title>
         </Box>
       }
+      {...props}
     >
       <Box p={PADDING} pb={0}>
         {children}

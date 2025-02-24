@@ -1,5 +1,5 @@
 import { Box, Center, Space, Text, useMantineTheme } from '@mantine/core'
-import OnboardingText from '../OnBoardingText'
+import GuidanceText from '../GuidanceText'
 
 export default function Main() {
   const theme = useMantineTheme()
@@ -17,8 +17,8 @@ export default function Main() {
           fw={700}
           variant="gradient"
           gradient={{
-            from: theme.colors[theme.primaryColor][4],
-            to: theme.colors[theme.primaryColor][6],
+            from: theme.colors[theme.primaryColor][9],
+            to: theme.colors[theme.primaryColor][11],
             deg: 90,
           }}
           w="100vw"
@@ -29,9 +29,9 @@ export default function Main() {
         </Text>
         <Space h="lg" />
         <Center>
-          <OnboardingText>
+          <GuidanceText>
             All your data is saved locally in your browser
-          </OnboardingText>
+          </GuidanceText>
         </Center>
       </Box>
     </Box>

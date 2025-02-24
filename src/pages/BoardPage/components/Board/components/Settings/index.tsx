@@ -23,11 +23,9 @@ export default function Settings({ openResetModal }: Props) {
 
   const target = (
     <Menu.Target>
-      <div>
-        <ActionIcon onClick={toggle}>
-          <IconMenu2 style={ICON_STYLE} />
-        </ActionIcon>
-      </div>
+      <ActionIcon onClick={toggle}>
+        <IconMenu2 style={ICON_STYLE} />
+      </ActionIcon>
     </Menu.Target>
   )
 
@@ -35,6 +33,7 @@ export default function Settings({ openResetModal }: Props) {
     <Panel position="top-left">
       <Menu shadow="md" opened={isOpened}>
         {target}
+
         <Menu.Dropdown p="xs">
           <ResetBoard openResetModal={openResetModal} />
           <Github />

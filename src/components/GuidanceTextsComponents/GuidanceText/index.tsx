@@ -5,7 +5,7 @@ interface Props extends TextProps {
   children: ReactNode
 }
 
-export default function OnboardingText({ children, ...props }: Props) {
+export default function GuidanceText({ children, ...props }: Props) {
   return (
     <Text ff="Merienda, cursive" lts="1px" size="lg" {...props}>
       {children}

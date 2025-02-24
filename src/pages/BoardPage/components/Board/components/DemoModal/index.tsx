@@ -1,7 +1,8 @@
 import CustomModal from '@/components/CustomModal'
 import { CSSVAR, themeDarkColorVariables } from '@/contants'
 import { Box, Button, Group, Space, Stack } from '@mantine/core'
-import { AnimatePresence, motion } from 'motion/react'
+import { useDebouncedValue, useElementSize } from '@mantine/hooks'
+import { motion } from 'motion/react'
 import { useMemo, useRef, useState } from 'react'
 import Canva from './components/Canva'
 import NavigationItem from './components/NavigationItem'
@@ -33,7 +34,11 @@ export default function DemoModal({ opened, close }: Props) {
 
   const buttonSecondary = useMemo(
     () => (
-      <Button onClick={setPreviousIndex} variant="outline" color="gray.11">
+      <Button
+        onClick={setPreviousIndex}
+        variant="outline"
+        color={themeDarkColorVariables['--text']}
+      >
         Back
       </Button>
     ),
@@ -73,7 +78,7 @@ export default function DemoModal({ opened, close }: Props) {
         c={CSSVAR['--background']}
         onClick={closeRef.current}
       >
-        Start Building
+        Close and start Building
       </Button>
     ),
     [],
@@ -92,8 +97,11 @@ export default function DemoModal({ opened, close }: Props) {
     [],
   )
 
+  const { ref: contentRef, height: contentHeight } = useElementSize()
+  const [debouncedHeight] = useDebouncedValue(contentHeight, 50)
+
   return (
-    <CustomModal onClose={close} opened={opened} title="Onboarding">
+    <CustomModal size="xl" onClose={close} opened={opened} title="Onboarding">
       <Box
         style={(theme) => ({
           display: 'grid',
@@ -127,18 +135,21 @@ export default function DemoModal({ opened, close }: Props) {
             <Canva artboard={SECTIONS[selectedIndex].artboard} />
           </Box>
           <Space h="md" />
-          <AnimatePresence mode="wait">
+          <motion.div
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            animate={{ height: debouncedHeight }}
+          >
             <motion.div
-              key={`selected-${selectedIndex}`}
+              ref={contentRef}
+              key={selectedIndex}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
               style={{ display: 'grid', gap: 10 }}
             >
               {SECTIONS[selectedIndex].content}
             </motion.div>
-          </AnimatePresence>
+          </motion.div>
         </Box>
       </Box>
       <Space h="lg" />

@@ -26,34 +26,36 @@ export default function Settings({ openResetModal }: Props) {
 
   const target = (
     <Menu.Target>
-      <div style={{ position: 'relative' }}>
-        <ActionIcon onClick={toggle}>
-          <IconMenu2 style={ICON_STYLE} />
-        </ActionIcon>
-        {showOnBoarding && (
-          <div
-            style={{
-              top: 'calc(100% + 10px)',
-              left: '10px',
-            }}
-          >
-            <img width={50} src="/onBoarding/arrow-settings.svg" />
-            <OnBoardingText
-              style={{ transform: 'translateX(0px) translateY(0px)' }}
-              w={150}
-            >
-              Reset board and settings
-            </OnBoardingText>
-          </div>
-        )}
-      </div>
+      <ActionIcon onClick={toggle}>
+        <IconMenu2 style={ICON_STYLE} />
+      </ActionIcon>
     </Menu.Target>
   )
 
   return (
     <Panel position="top-left">
       <Menu shadow="md" opened={isOpened}>
-        {target}
+        <div style={{ position: 'relative' }}>
+          {target}
+          {showOnBoarding && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 'calc(100% + 10px)',
+                left: '10px',
+              }}
+            >
+              <img width={50} src="/onBoarding/arrow-settings.svg" />
+              <OnBoardingText
+                style={{ transform: 'translateX(0px) translateY(0px)' }}
+                w={150}
+              >
+                Reset board and settings
+              </OnBoardingText>
+            </div>
+          )}
+        </div>
+
         <Menu.Dropdown p="xs">
           <ResetBoard openResetModal={openResetModal} />
           <Github />

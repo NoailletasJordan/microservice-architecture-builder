@@ -11,6 +11,7 @@ interface Props {
 export default function OnboardingContextProvider({ children, nodes }: Props) {
   const [showOnBoarding, setShowOnboarding] = useState<boolean>(!nodes.length)
   const [hadNodesBefore, sethadNodesBefore] = useState(!!nodes.length)
+  const [firstTimeVisiting, setFirstTimeVisiting] = useState(false) // temp
   const location = useLocation()
   const hasHash = !!location.hash
 
@@ -24,7 +25,12 @@ export default function OnboardingContextProvider({ children, nodes }: Props) {
   }, [nodes, showOnBoarding, hadNodesBefore, sethadNodesBefore, hasHash])
 
   return (
-    <onBoardingContext.Provider value={{ showOnBoarding }}>
+    <onBoardingContext.Provider
+      value={{
+        showOnBoarding,
+        updateShowOnBoarding: (bool) => setShowOnboarding(bool),
+      }}
+    >
       {children}
     </onBoardingContext.Provider>
   )

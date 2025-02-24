@@ -13,8 +13,11 @@ export const SECTIONS = [
     content: (
       <>
         <Box>
-          Welcome! This app that allows you to present your application's
-          architecture in no time.
+          <Highlight> Welcome! </Highlight> This app that allows you to
+          represent{' '}
+          <Highlight>
+            application's distributed architecture in no time.
+          </Highlight>
         </Box>
         <Box>
           If you're new here, here's a quick introduction to help you get
@@ -30,7 +33,7 @@ export const SECTIONS = [
     content: (
       <>
         <Box>
-          <Highlight>Services</Highlight> represent different parts of your
+          <Highlight>Services </Highlight> represent different parts of your
           application.
         </Box>
         <Box>
@@ -52,12 +55,12 @@ export const SECTIONS = [
     content: (
       <>
         <Box>
-          The links between services indicate the communication protocols they
-          use to interact.
+          <Highlight> Links </Highlight> between services represent a
+          <Highlight> communication channel</Highlight>.
         </Box>
         <Box>
-          Clicking on a link opens a menu where you can specify additional
-          details if needed.
+          Clicking on those links will <Highlight> open a menu </Highlight> that
+          is used to add specifications about the communication protocol.
         </Box>
       </>
     ),

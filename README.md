@@ -4,7 +4,7 @@ A drag-and-drop web app that helps developers **design**, **visualize** and
 **share distributed application architectures** with a purpose-driven,
 understandable interface.
 
-![image](https://github.com/NoailletasJordan/microservice-architecture-builder/assets/48062996/01a8c4ef-981f-46d5-a19e-96fa6a7139d1)
+![Image](https://github.com/user-attachments/assets/142c7b0a-2db5-46ce-af50-ba330f11a81a)
 
 This project uses React, Vite, and React Flow. Try now
 [live](https://microservice-architecture-builder.com).
@@ -22,7 +22,7 @@ This project uses React, Vite, and React Flow. Try now
 
 ## 🎥 Quick Demo
 
-![Animation](https://github.com/NoailletasJordan/microservice-architecture-builder/assets/48062996/45e2b5ae-a803-44e2-a95f-192cc344ac09)
+https://github.com/user-attachments/assets/4dd64fdf-ea4c-44de-acde-d45bebc63073
 
 ## 📦 Installation
 

@@ -3,7 +3,7 @@ import OnboardingContextProvider from '@/contexts/Onboarding/OnboardingProvider'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { AppShell, Modal, Space, Text } from '@mantine/core'
 import { motion, Transition } from 'framer-motion'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useEdgesState, useNodesState, useReactFlow } from 'reactflow'
 import ClickCanvaProvider from '../../contexts/ClickCanvaCapture/ClickCanvaProvider'
 import Board from './components/Board'
@@ -13,7 +13,10 @@ import { getInitialBoardData } from './configs/helpers'
 
 export default function BoardPage() {
   const flowInstance = useReactFlow()
-  const { nodes: initialnodes, edges: initialEdges } = getInitialBoardData()
+  const { nodes: initialnodes, edges: initialEdges } = useMemo(
+    () => getInitialBoardData(),
+    [],
+  )
   const nodeState = useNodesState(initialnodes)
   const edgeState = useEdgesState(initialEdges)
 

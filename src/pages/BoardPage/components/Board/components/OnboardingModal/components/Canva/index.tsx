@@ -1,5 +1,6 @@
+import { Loader } from '@mantine/core'
 import { Fit, Layout, useRive } from '@rive-app/react-canvas'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface Props {
   artboard: string
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export default function Canva({ showInitialLoader, artboard }: Props) {
+  const [isRiveLoading, setIsRiveLoading] = useState(true)
   const { rive, RiveComponent } = useRive({
     src: '/onBoarding/mas.riv',
     stateMachines: 'main',
@@ -17,13 +19,31 @@ export default function Canva({ showInitialLoader, artboard }: Props) {
   useEffect(() => {
     if (rive) {
       if (showInitialLoader) rive.pause()
-      else rive.play()
+      else {
+        rive.play()
+        setIsRiveLoading(false)
+      }
     }
   }, [rive, showInitialLoader])
 
   return (
-    <div key={artboard} style={{ width: '100%', height: '100%' }}>
-      <RiveComponent />
-    </div>
+    <>
+      {isRiveLoading && (
+        <div>
+          <Loader color="gray" type="dots" />
+        </div>
+      )}
+
+      <div
+        key={artboard}
+        style={{
+          display: isRiveLoading ? 'none' : 'block',
+          width: '100%',
+          height: '100%',
+        }}
+      >
+        <RiveComponent />
+      </div>
+    </>
   )
 }

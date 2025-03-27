@@ -153,7 +153,6 @@ export default function Board({
   )
 
   // Dirty fix on async loading fitview behavior
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadedWidthNodes = useMemo(() => !!nodes.length, [])
   const boardInitialized = useStore((state) => !!state.height)
 

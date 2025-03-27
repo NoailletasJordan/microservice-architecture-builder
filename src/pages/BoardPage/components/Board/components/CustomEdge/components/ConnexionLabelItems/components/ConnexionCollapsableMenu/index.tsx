@@ -1,18 +1,17 @@
-import DividerWrapper from '@/components/DividerWrapper'
 import RichEditor from '@/components/RichEditor/index'
 import StrongText from '@/components/StrongText'
+import TooltipWrapper from '@/components/TooltipWrapper'
 import { CSSVAR } from '@/contants'
 import {
   IConnexion,
   IConnexionType,
   connexionConfig,
-  connexionDirections,
 } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { CARD_WIDTH, ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import { handleUpdateEdge } from '@/pages/BoardPage/configs/helpers'
 import {
+  ActionIcon,
   Box,
-  Button,
   Center,
   Collapse,
   Group,
@@ -22,11 +21,10 @@ import {
   Text,
   ThemeIcon,
 } from '@mantine/core'
-import { IconArrowsExchange, IconTrash } from '@tabler/icons-react'
+import { IconTrash } from '@tabler/icons-react'
 import { Editor } from '@tiptap/react'
 import { groupBy } from 'lodash'
-import { ElementType } from 'react'
-import { Edge, useReactFlow } from 'reactflow'
+import { useReactFlow } from 'reactflow'
 
 interface Props {
   handleDeleteEdge: () => void
@@ -34,14 +32,6 @@ interface Props {
   connexion: IConnexion
   editor: Editor | null
   collapseAll: boolean
-}
-
-function getNextDirection(
-  currentColor: IConnexion['direction'],
-): IConnexion['direction'] {
-  const currentIndex = connexionDirections.indexOf(currentColor)
-  const nextIndex = (currentIndex + 1) % connexionDirections.length
-  return connexionDirections[nextIndex]
 }
 
 const connexionsByGroup = groupBy(connexionConfig, 'group')
@@ -80,33 +70,47 @@ export default function ConnexionCollapsableMenu({
       >
         <Collapse in={configIsOpen}>
           <Box p="xs" pt={0}>
-            <DividerWrapper>
-              <StrongText>Connexion parameters</StrongText>
-            </DividerWrapper>
+            <Group pt="xs" justify="space-between">
+              <StrongText>Parameters</StrongText>
+              <TooltipWrapper label="Delete the connexion">
+                <ActionIcon
+                  onClick={handleDeleteEdge}
+                  size="md"
+                  color="red"
+                  variant="outline"
+                >
+                  <IconTrash style={ICON_STYLE} />
+                </ActionIcon>
+              </TooltipWrapper>
+            </Group>
 
-            <LineItem
-              label="Toggle direction"
-              Icon={IconArrowsExchange}
-              onClick={() => {
-                const edge = flowInstance.getEdge(
-                  connexion.id,
-                ) as Edge<IConnexion>
-                const nextDirection = getNextDirection(edge.data!.direction)
+            <Space h="lg" />
+
+            <Select
+              data={[
+                { value: 'duplex', label: 'Bi-directionnal / Not specified' },
+                { value: 'forward', label: 'Direction 1' },
+                { value: 'reverse', label: 'Direction 2' },
+              ]}
+              renderOption={({ option: { label } }) => {
+                return <Text size="xs">{label}</Text>
+              }}
+              label={
+                <Text fw="600" pb="xs" c={CSSVAR['--text-strong']} size="sm">
+                  Communication direction
+                </Text>
+              }
+              value={connexion.direction}
+              onChange={(nextDirection) => {
                 handleUpdateEdge(
                   connexion.id,
                   {
-                    direction: nextDirection,
+                    direction: nextDirection as IConnexion['direction'],
                   },
                   flowInstance,
                 )
               }}
             />
-            <LineItem
-              Icon={IconTrash}
-              onClick={handleDeleteEdge}
-              label="Remove connexion"
-            />
-
             <Space h="sm" />
             <Select
               data={selectData}
@@ -150,41 +154,5 @@ export default function ConnexionCollapsableMenu({
         </Center>
       </Paper>
     </Collapse>
-  )
-}
-
-function LineItem({
-  Icon,
-  label,
-  onClick,
-}: {
-  onClick: () => void
-  label: string
-  Icon: ElementType
-}) {
-  return (
-    <Button
-      onClick={onClick}
-      leftSection={
-        <ThemeIcon
-          variant="outline"
-          style={{ border: 'none' }}
-          color="gray.10"
-          size="sm"
-        >
-          <Icon style={ICON_STYLE} />
-        </ThemeIcon>
-      }
-      vars={() => ({
-        root: {
-          '--button-hover': CSSVAR['--surface-strong'],
-        },
-      })}
-      variant="subtle"
-      fullWidth
-      justify="start"
-    >
-      <Text size="sm">{label}</Text>
-    </Button>
   )
 }

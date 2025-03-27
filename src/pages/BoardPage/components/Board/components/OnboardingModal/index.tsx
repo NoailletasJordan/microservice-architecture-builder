@@ -1,6 +1,6 @@
 import CustomModal from '@/components/CustomModal'
 import { CSSVAR, themeDarkColorVariables } from '@/contants'
-import { Box, Button, Group, Space, Stack } from '@mantine/core'
+import { Box, Button, Center, Group, Space, Stack } from '@mantine/core'
 import { motion } from 'motion/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Canva from './components/Canva'
@@ -73,7 +73,7 @@ export default function OnboardingModal({
         variant="outline"
         color={themeDarkColorVariables['--text']}
       >
-        No thanks, I will figure it out
+        Close
       </Button>
     ),
     [],
@@ -99,7 +99,7 @@ export default function OnboardingModal({
         color={CSSVAR['--text-primary']}
         c={CSSVAR['--background']}
       >
-        Quick Introduction
+        See introduction
       </Button>
     ),
     [],
@@ -129,7 +129,7 @@ export default function OnboardingModal({
           <Timeline selectedIndex={selectedIndex} />
         </Group>
         <Box>
-          <Box
+          <Center
             style={{
               aspectRatio: '2/1',
               borderRadius: 12,
@@ -141,7 +141,7 @@ export default function OnboardingModal({
               showInitialLoader={showInitialLoader}
               artboard={SECTIONS[selectedIndex].artboard}
             />
-          </Box>
+          </Center>
           <Space h="md" />
           <motion.div
             transition={{ duration: 0.3, ease: 'easeOut' }}

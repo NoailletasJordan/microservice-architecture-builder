@@ -19,7 +19,8 @@ import {
 } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
 import { RichTextEditor } from '@mantine/tiptap'
-import { StrictMode, useEffect } from 'react'
+import { PostHogProvider } from 'posthog-js/react'
+import { useEffect } from 'react'
 import {
   Route,
   RouterProvider,
@@ -29,6 +30,23 @@ import {
 import { ReactFlowProvider } from 'reactflow'
 import { CSSVAR, customColors, themeDarkColorVariables } from './contants'
 import BoardPage from './pages/BoardPage'
+
+const accessEnvVariable = (
+  key:
+    | 'VITE_POSTHOG_REVERSE_PROXY_URL'
+    | 'VITE_POSTHOG_HOST'
+    | 'VITE_POSTHOG_KEY',
+) => {
+  const fullEnvVar = import.meta.env[key]
+  if (!fullEnvVar) throw new Error(`Environnement variable not set : ${key}`)
+
+  return fullEnvVar
+}
+
+const options = {
+  api_host: accessEnvVariable('VITE_POSTHOG_REVERSE_PROXY_URL'),
+  ui_host: accessEnvVariable('VITE_POSTHOG_HOST'),
+}
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -54,19 +72,24 @@ export default function App() {
   }, [])
 
   return (
-    <StrictMode>
-      <div
-        style={{
-          background: CSSVAR['--background'],
-          color: CSSVAR['--text'],
-        }}
+    <>
+      <PostHogProvider
+        apiKey={accessEnvVariable('VITE_POSTHOG_KEY')}
+        options={options}
       >
-        <MantineProvider theme={theme}>
-          <RouterProvider router={router} />
-          <Notifications />
-        </MantineProvider>
-      </div>
-    </StrictMode>
+        <div
+          style={{
+            background: CSSVAR['--background'],
+            color: CSSVAR['--text'],
+          }}
+        >
+          <MantineProvider theme={theme}>
+            <RouterProvider router={router} />
+            <Notifications />
+          </MantineProvider>
+        </div>
+      </PostHogProvider>
+    </>
   )
 }
 

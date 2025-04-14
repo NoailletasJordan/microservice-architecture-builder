@@ -31,6 +31,14 @@ npm install
 npm run dev
 ```
 
+## 🔑 Environment Variables
+
+```bash
+VITE_POSTHOG_KEY=
+VITE_POSTHOG_HOST=
+VITE_POSTHOG_REVERSE_PROXY_URL=
+```
+
 ## 🤝 Contributing
 
 Contributions are welcome! If you have any ideas or improvements, feel free to

@@ -62,7 +62,7 @@ export default function CustomNode(props: NodeProps<IService>) {
       parentId={props.id}
       handleActionClick={() => editor?.view.focus()}
     >
-      <Box ref={ref}>
+      <Box aria-label={`node-type-${service.serviceIdType}`} ref={ref}>
         <DroppableArea
           id={props.id}
           data={{

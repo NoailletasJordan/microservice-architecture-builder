@@ -12,6 +12,7 @@ export default function CustomHandle({ position, id }: Props) {
   return (
     <Handle
       className={NO_DRAG_REACTFLOW_CLASS}
+      data-testid={id}
       style={{
         msTransformOrigin: 'center',
         width: 8,

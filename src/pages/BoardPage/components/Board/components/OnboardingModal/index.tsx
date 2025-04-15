@@ -44,6 +44,7 @@ export default function OnboardingModal({
     () => (
       <Button
         onClick={setPreviousIndex}
+        aria-label="secondary-action"
         variant="outline"
         color={themeDarkColorVariables['--text']}
       >
@@ -57,6 +58,7 @@ export default function OnboardingModal({
     () => (
       <Button
         onClick={setNextIndex}
+        aria-label="primary-action"
         color={themeDarkColorVariables['--text-primary']}
         c={CSSVAR['--background']}
       >
@@ -71,6 +73,7 @@ export default function OnboardingModal({
       <Button
         onClick={closeRef.current}
         variant="outline"
+        aria-label="secondary-action"
         color={themeDarkColorVariables['--text']}
       >
         Close
@@ -83,6 +86,7 @@ export default function OnboardingModal({
     () => (
       <Button
         color={CSSVAR['--text-primary']}
+        aria-label="primary-action"
         c={CSSVAR['--background']}
         onClick={closeRef.current}
       >
@@ -96,6 +100,7 @@ export default function OnboardingModal({
     () => (
       <Button
         onClick={setNextIndex}
+        aria-label="primary-action"
         color={CSSVAR['--text-primary']}
         c={CSSVAR['--background']}
       >
@@ -106,7 +111,13 @@ export default function OnboardingModal({
   )
 
   return (
-    <CustomModal size="xl" onClose={close} opened={opened} title="Onboarding">
+    <CustomModal
+      aria-label="onboarding-modal"
+      size="xl"
+      onClose={close}
+      opened={opened}
+      title="Onboarding"
+    >
       <Box
         style={(theme) => ({
           display: 'grid',

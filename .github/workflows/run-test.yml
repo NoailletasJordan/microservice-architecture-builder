@@ -1,0 +1,15 @@
+name: Run test
+on:
+  push:
+    branches:
+      - 'master'
+    paths-ignore:
+      - './README.md'
+
+jobs:
+  job-tests:
+    runs-on:
+      - ubuntu-latest
+    container: node:20-alpine
+    steps:
+      -

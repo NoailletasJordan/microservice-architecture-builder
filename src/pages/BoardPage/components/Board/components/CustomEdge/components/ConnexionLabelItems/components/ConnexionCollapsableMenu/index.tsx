@@ -75,6 +75,7 @@ export default function ConnexionCollapsableMenu({
               <TooltipWrapper label="Delete the connexion">
                 <ActionIcon
                   onClick={handleDeleteEdge}
+                  data-testid={`delete-edge-${connexion.id}`}
                   size="md"
                   color="red"
                   variant="outline"

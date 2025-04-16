@@ -1,14 +1,13 @@
 import { Locator, Page, expect } from '@playwright/test'
 
+interface DragParameters {
+  coordonate: [number, number]
+  locator: Locator
+}
+
 export const grabElementTo = async (
   page: Page,
-  {
-    coordonate,
-    locator,
-  }: {
-    coordonate: [number, number]
-    locator: Locator
-  },
+  { coordonate, locator }: DragParameters,
 ) => {
   await locator.hover()
   await page.mouse.down()
@@ -16,36 +15,50 @@ export const grabElementTo = async (
   await page.mouse.up()
 }
 
-export const initialTwoNodesSetup = async ({ page }: { page: Page }) => {
-  const iconDraggableFrontend = await page.locator('#icon-draggable-frontend')
-  expect(iconDraggableFrontend).toBeVisible()
+interface NodeSetupOptions {
+  page: Page
+}
+
+export const initialTwoNodesSetup = async ({ page }: NodeSetupOptions) => {
+  // Create 'frontend' node
+  const frontendIcon = page.locator('#icon-draggable-frontend')
+  await expect(frontendIcon).toBeVisible()
   await grabElementTo(page, {
     coordonate: [300, 300],
-    locator: iconDraggableFrontend,
+    locator: frontendIcon,
   })
 
-  const iconDraggableServer = await page.locator('#icon-draggable-server')
-
+  // Create 'server' node
+  const serverIcon = page.locator('#icon-draggable-server')
+  await expect(serverIcon).toBeVisible()
   await grabElementTo(page, {
     coordonate: [600, 300],
-    locator: iconDraggableServer,
+    locator: serverIcon,
   })
 
-  const nodeFrontend = await page.getByLabel('node-type-frontend')
-  const handleFrontend = await nodeFrontend.getByTestId('r')
+  // Get node elements and their handles
+  const frontendNode = page.getByLabel('node-type-frontend')
+  const serverNode = page.getByLabel('node-type-server')
 
-  const nodeServer = await page.getByLabel('node-type-server')
-  const handleServer = await nodeServer.getByTestId('l')
+  await expect(frontendNode).toBeVisible()
+  await expect(serverNode).toBeVisible()
 
-  await expect(handleFrontend).toBeVisible()
+  const frontendHandle = frontendNode.getByTestId('r')
+  const serverHandle = serverNode.getByTestId('l')
 
-  await handleFrontend.hover()
+  await expect(frontendHandle).toBeVisible()
+  await expect(serverHandle).toBeVisible()
+
+  // Create connection between nodes
+  await frontendHandle.hover()
   await page.mouse.down()
-  await handleServer.hover()
+  await serverHandle.hover()
   await page.mouse.up()
+
   await checkInitialSetup({ page })
 }
 
-export const checkInitialSetup = async ({ page }: { page: Page }) => {
-  return await expect(await page.getByLabel('edge').count()).toBeTruthy()
+export const checkInitialSetup = async ({ page }: NodeSetupOptions) => {
+  const edge = page.getByLabel('edge').first()
+  await expect(edge).toHaveCount(1)
 }

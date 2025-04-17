@@ -1,10 +1,5 @@
 on:
   workflow_call:
-    inputs:
-      tests-result:
-        required: true
-        type: string
-        description: 'Status of the tests job'
     secrets:
       RAN_ON_GITHUB:
         required: true
@@ -19,7 +14,6 @@ jobs:
       RAN_ON_GITHUB: ${{ secrets.RAN_ON_GITHUB }}
     steps:
       - name: Trigger Netlify deploy
-        if:
-          ${{ env.RAN_ON_GITHUB == 'true' && inputs.tests-result == 'success' }}
+        if: ${{ env.RAN_ON_GITHUB == 'true'  }}
         run: |
           curl -X POST ${{ secrets.NETLIFY_BUILD_HOOK_URL }}

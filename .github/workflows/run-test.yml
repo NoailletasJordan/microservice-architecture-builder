@@ -4,6 +4,10 @@ on:
     branches:
       - master
       - feat-55-test-suite
+  pull_request:
+    branches:
+      - master
+      - feat-55-test-suite
   workflow_dispatch:
     inputs:
       environment:
@@ -29,8 +33,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-      - name: FAIL
-        run: exit 1
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
       - name: Install Playwright browsers
@@ -49,8 +51,6 @@ jobs:
     name: Call Deploy job
     needs: tests
     uses: ./.github/workflows/callable-deploy.yml
-    with:
-      tests-result: ${{ needs.tests.result }}
     secrets: inherit
 
   notifyMe:

@@ -1,5 +1,10 @@
 on:
   workflow_call:
+    secrets:
+      RAN_ON_GITHUB:
+        required: true
+      NETLIFY_BUILD_HOOK_URL:
+        required: true
 
 jobs:
   trigger_deploy:
@@ -11,5 +16,4 @@ jobs:
       - name: Trigger Netlify deploy
         if: ${{ env.RAN_ON_GITHUB  == 'true' && success() }}
         run: |
-          echo "Secret value: ${{ secrets.NETLIFY_BUILD_HOOK_URL }} env secres ${{ env.RAN_ON_GITHUB }}"
           curl -X POST ${{ secrets.NETLIFY_BUILD_HOOK_URL }}

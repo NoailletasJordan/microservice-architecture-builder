@@ -29,6 +29,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
+      - name: FAIL
+        run: exit 1
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
       - name: Install Playwright browsers
@@ -57,8 +59,8 @@ jobs:
     needs: tests
     steps:
       - name: Notify on failure
-        if: ${{ env.RAN_ON_GITHUB == 'true' && success() }}
+        if: ${{ env.RAN_ON_GITHUB == 'true' && !success() }}
         run: curl -X POST ${{ secrets.N8N_FAILURE_NOTIFICATION_URL }}
       - name: Notify on success
-        if: ${{ env.RAN_ON_GITHUB == 'true' && !success() }}
+        if: ${{ env.RAN_ON_GITHUB == 'true' && success() }}
         run: curl -X POST ${{ secrets.N8N_SUCCESS_NOTIFICATION_URL }}

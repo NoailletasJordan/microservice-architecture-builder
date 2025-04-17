@@ -10,4 +10,6 @@ jobs:
     steps:
       - name: Trigger Netlify deploy
         if: ${{ env.RAN_ON_GITHUB  == 'true' && success() }}
-        run: curl -X POST ${{ secrets.NETLIFY_BUILD_HOOK_URL }}
+        run: |
+          echo "Secret value: ${{ secrets.NETLIFY_BUILD_HOOK_URL }}"
+          curl -X POST ${{ secrets.NETLIFY_BUILD_HOOK_URL }}

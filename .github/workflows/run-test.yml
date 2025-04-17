@@ -19,6 +19,8 @@ jobs:
   tests:
     name: Run E2E Tests
     timeout-minutes: 60
+    env:
+      RAN_ON_GITHUB: ${{ secrets.RAN_ON_GITHUB }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -34,7 +36,7 @@ jobs:
       - name: Run Playwright tests
         run: npx playwright test
       - name: Upload test report
-        if: ${{ secrets.RAN_ON_GITHUB == 'true' && !cancelled() }}
+        if: ${{ env.RAN_ON_GITHUB == 'true' && !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
@@ -43,18 +45,20 @@ jobs:
 
   triggerDeploy:
     name: Trigger Netlify Deploy
+    runs-on: ubuntu-latest
     needs: tests
-    if: ${{ secrets.RAN_ON_GITHUB  == 'true' && success() }}
     uses: ./.github/workflows/callable-deploy.yml
 
   notifyMe:
+    env:
+      RAN_ON_GITHUB: ${{ secrets.RAN_ON_GITHUB }}
     name: Send Deployment Notifications
     runs-on: ubuntu-latest
     needs: tests
     steps:
       - name: Notify on failure
-        if: ${{ secrets.RAN_ON_GITHUB  == 'true' && !success() }}
+        if: ${{ env.RAN_ON_GITHUB == 'true' && !success() }}
         run: curl -X POST ${{ secrets.N8N_FAILURE_NOTIFICATION_URL }}
       - name: Notify on success
-        if: ${{ secrets.RAN_ON_GITHUB  == 'true' && success() }}
+        if: ${{ env.RAN_ON_GITHUB == 'true' && success() }}
         run: curl -X POST ${{ secrets.N8N_SUCCESS_NOTIFICATION_URL }}

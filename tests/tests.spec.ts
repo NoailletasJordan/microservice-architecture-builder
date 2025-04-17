@@ -36,7 +36,12 @@ test.describe('Board State - With Nodes', () => {
     await initialTwoNodesSetup({ page })
   })
 
-  test('should persist board state after page reload', async ({ context }) => {
+  test('should persist board state after page reload', async ({
+    page,
+    browser,
+  }) => {
+    await page.close()
+    const context = await browser.newContext()
     const initialPage = await context.newPage()
     await initialPage.goto('/')
     await initialTwoNodesSetup({ page: initialPage })

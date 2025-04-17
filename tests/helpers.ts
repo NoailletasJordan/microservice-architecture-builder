@@ -36,18 +36,20 @@ export const initialTwoNodesSetup = async ({ page }: NodeSetupOptions) => {
     locator: serverIcon,
   })
 
+  await page.waitForTimeout(1000)
+
   // Get node elements and their handles
   const frontendNode = page.getByLabel('node-type-frontend')
   const serverNode = page.getByLabel('node-type-server')
 
-  await expect(frontendNode).toBeVisible()
-  await expect(serverNode).toBeVisible()
+  await frontendNode.waitFor({ state: 'visible', timeout: 10000 })
+  await serverNode.waitFor({ state: 'visible', timeout: 10000 })
 
   const frontendHandle = frontendNode.getByTestId('r')
   const serverHandle = serverNode.getByTestId('l')
 
-  await expect(frontendHandle).toBeVisible()
-  await expect(serverHandle).toBeVisible()
+  await frontendHandle.waitFor({ state: 'visible', timeout: 10000 })
+  await serverHandle.waitFor({ state: 'visible', timeout: 10000 })
 
   // Create connection between nodes
   await frontendHandle.hover()

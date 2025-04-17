@@ -51,17 +51,25 @@ jobs:
     uses: ./.github/workflows/callable-deploy.yml
     secrets: inherit
 
-  notifyMe:
-    if: always()
+  notifyMeSuccess:
     env:
       RAN_ON_GITHUB: ${{ secrets.RAN_ON_GITHUB }}
     name: Send Deployment Notifications
     runs-on: ubuntu-latest
     needs: tests
     steps:
-      - name: Notify on failure
-        if: ${{ env.RAN_ON_GITHUB == 'true' && !success() }}
-        run: curl -X POST ${{ secrets.N8N_FAILURE_NOTIFICATION_URL }}
       - name: Notify on success
         if: ${{ env.RAN_ON_GITHUB == 'true' && success() }}
         run: curl -X POST ${{ secrets.N8N_SUCCESS_NOTIFICATION_URL }}
+
+  notifyMeFail:
+    env:
+      RAN_ON_GITHUB: ${{ secrets.RAN_ON_GITHUB }}
+    name: Send Deployment Notifications
+    if: cancelled()
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - name: Notify on failure
+        if: ${{ env.RAN_ON_GITHUB == 'true' && !success() }}
+        run: curl -X POST ${{ secrets.N8N_FAILURE_NOTIFICATION_URL }}

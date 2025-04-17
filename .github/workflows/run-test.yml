@@ -34,7 +34,7 @@ jobs:
       - name: Run Playwright tests
         run: npx playwright test
       - name: Upload test report
-        if: ${{ vars.RAN_ON_GITHUB == 'true' && !cancelled() }}
+        if: ${{ secrets.RAN_ON_GITHUB == 'true' && !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
@@ -44,7 +44,7 @@ jobs:
   triggerDeploy:
     name: Trigger Netlify Deploy
     needs: tests
-    if: ${{ vars.RAN_ON_GITHUB == 'true' && success() }}
+    if: ${{ secrets.RAN_ON_GITHUB  == 'true' && success() }}
     uses: ./.github/workflows/callable-deploy.yml
 
   notifyMe:
@@ -53,8 +53,8 @@ jobs:
     needs: tests
     steps:
       - name: Notify on failure
-        if: ${{ vars.RAN_ON_GITHUB == 'true' && !success() }}
+        if: ${{ secrets.RAN_ON_GITHUB  == 'true' && !success() }}
         run: curl -X POST ${{ secrets.N8N_FAILURE_NOTIFICATION_URL }}
       - name: Notify on success
-        if: ${{ vars.RAN_ON_GITHUB == 'true' && success() }}
+        if: ${{ secrets.RAN_ON_GITHUB  == 'true' && success() }}
         run: curl -X POST ${{ secrets.N8N_SUCCESS_NOTIFICATION_URL }}

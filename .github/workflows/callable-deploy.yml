@@ -1,0 +1,10 @@
+on:
+  workflow_call:
+
+jobs:
+  trigger_deploy:
+    name: Trigger deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Netlify deploy
+        run: curl -X POST ${{ secrets.NETLIFY_BUILD_HOOK_URL }}

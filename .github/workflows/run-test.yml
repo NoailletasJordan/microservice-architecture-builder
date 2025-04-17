@@ -47,7 +47,10 @@ jobs:
     name: Trigger Netlify Deploy
     runs-on: ubuntu-latest
     needs: tests
-    uses: ./.github/workflows/callable-deploy.yml
+    steps:
+      - name: Trigger Netlify deploy
+        if: ${{ success() }}
+        run: curl -X POST ${{ secrets.NETLIFY_BUILD_HOOK_URL }}
 
   notifyMe:
     env:

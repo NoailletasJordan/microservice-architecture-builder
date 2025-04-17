@@ -23,7 +23,7 @@ export default function Settings({ openResetModal }: Props) {
 
   const target = (
     <Menu.Target>
-      <ActionIcon onClick={toggle}>
+      <ActionIcon onClick={toggle} data-testid="button-settings">
         <IconMenu2 style={ICON_STYLE} />
       </ActionIcon>
     </Menu.Target>

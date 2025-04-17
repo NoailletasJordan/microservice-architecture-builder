@@ -44,13 +44,10 @@ jobs:
           retention-days: 30
 
   triggerDeploy:
-    name: Trigger Netlify Deploy
-    runs-on: ubuntu-latest
+    name: Call Deploy job
     needs: tests
-    steps:
-      - name: Trigger Netlify deploy
-        if: ${{ success() }}
-        run: curl -X POST ${{ secrets.NETLIFY_BUILD_HOOK_URL }}
+    uses: ./.github/workflows/callable-deploy.yml
+    secrets: inherit
 
   notifyMe:
     env:

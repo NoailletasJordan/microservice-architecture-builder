@@ -1,5 +1,10 @@
 on:
   workflow_call:
+    inputs:
+      tests-result:
+        required: true
+        type: string
+        description: 'Status of the tests job'
     secrets:
       RAN_ON_GITHUB:
         required: true

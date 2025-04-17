@@ -52,6 +52,7 @@ jobs:
     secrets: inherit
 
   notifyMe:
+    if: always()
     env:
       RAN_ON_GITHUB: ${{ secrets.RAN_ON_GITHUB }}
     name: Send Deployment Notifications

@@ -1,7 +1,9 @@
 name: Tests and deploy
 on:
   push:
-    branches: master
+    branches:
+      - master
+      - feat-55-test-suite
   workflow_dispatch:
     inputs:
       environment:

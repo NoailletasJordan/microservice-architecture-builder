@@ -59,6 +59,7 @@ export default function ConnexionCollapsableMenu({
   return (
     <Collapse in={!collapseAll}>
       <Paper
+        aria-label="connexion-menu"
         withBorder
         w={CARD_WIDTH + 12}
         style={{

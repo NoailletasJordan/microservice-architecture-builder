@@ -62,6 +62,7 @@ export default function ServiceActionsWrapper({
           >
             <TooltipWrapper label="Add a note">
               <ActionIcon
+                aria-label="Add a note"
                 onClick={handleActionClick}
                 variant="outline"
                 style={{ border: 'none' }}

@@ -49,10 +49,12 @@ jobs:
     name: Call Deploy job
     needs: tests
     uses: ./.github/workflows/callable-deploy.yml
+    with:
+      event_name: ${{ github.event_name }}
     secrets: inherit
 
   notifyMe:
-    if: always()
+    if: always() && github.event_name == 'push'
     env:
       RAN_ON_GITHUB: ${{ secrets.RAN_ON_GITHUB }}
     name: Send Deployment Notifications

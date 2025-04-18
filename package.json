@@ -41,6 +41,7 @@
     "uuid": "9.0.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.51.1",
     "@types/lodash": "^4.14.198",
     "@types/node": "^20.6.0",
     "@types/react": "^18.2.15",

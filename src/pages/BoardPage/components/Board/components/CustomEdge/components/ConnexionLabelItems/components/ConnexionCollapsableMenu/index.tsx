@@ -59,6 +59,7 @@ export default function ConnexionCollapsableMenu({
   return (
     <Collapse in={!collapseAll}>
       <Paper
+        aria-label="connexion-menu"
         withBorder
         w={CARD_WIDTH + 12}
         style={{
@@ -75,6 +76,7 @@ export default function ConnexionCollapsableMenu({
               <TooltipWrapper label="Delete the connexion">
                 <ActionIcon
                   onClick={handleDeleteEdge}
+                  data-testid={`delete-edge-${connexion.id}`}
                   size="md"
                   color="red"
                   variant="outline"

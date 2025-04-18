@@ -16,6 +16,7 @@ export default function Line({
   const theme = useMantineTheme()
   return (
     <path
+      aria-label="edge"
       fill="none"
       stroke={theme.colors.gray[12]}
       d={d}

@@ -79,6 +79,7 @@ export default function SharableModal({ close, opened, nodes }: Props) {
                 variant="unstyled"
                 px="xs"
                 py={3}
+                data-testid="share-link-input"
                 styles={{
                   input: {
                     color: themeDarkColorVariables['--text'],

@@ -74,7 +74,11 @@ export default function App() {
   return (
     <>
       <PostHogProvider
-        apiKey={accessEnvVariable('VITE_POSTHOG_KEY')}
+        apiKey={
+          window.location.hostname.startsWith('localhost')
+            ? ''
+            : accessEnvVariable('VITE_POSTHOG_KEY')
+        }
         options={options}
       >
         <div

@@ -62,6 +62,7 @@ export default function ServiceActionsWrapper({
           >
             <TooltipWrapper label="Add a note">
               <ActionIcon
+                aria-label="Add a note"
                 onClick={handleActionClick}
                 variant="outline"
                 style={{ border: 'none' }}
@@ -73,6 +74,7 @@ export default function ServiceActionsWrapper({
             </TooltipWrapper>
             <TooltipWrapper label="Delete the service">
               <ActionIcon
+                data-testid={`node-delete-${parentId}`}
                 size="md"
                 variant="outline"
                 style={{ border: 'none' }}

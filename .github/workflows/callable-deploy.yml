@@ -1,0 +1,26 @@
+on:
+  workflow_call:
+    inputs:
+      event_name:
+        required: true
+        type: string
+        description: 'The GitHub event that triggered this workflow'
+    secrets:
+      RAN_ON_GITHUB:
+        required: true
+      NETLIFY_BUILD_HOOK_URL:
+        required: true
+
+jobs:
+  trigger_deploy:
+    name: Trigger deploy
+    runs-on: ubuntu-latest
+    env:
+      RAN_ON_GITHUB: ${{ secrets.RAN_ON_GITHUB }}
+    steps:
+      - name: Trigger Netlify deploy
+        if: ${{ env.RAN_ON_GITHUB == 'true' && inputs.event_name == 'push' }}
+        run: |
+          COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
+          ENCODED_MESSAGE=$(python3 -c "import urllib.parse; print(urllib.parse.quote('''$COMMIT_MESSAGE'''))")
+          curl -X POST "${{ secrets.NETLIFY_BUILD_HOOK_URL }}?trigger_title=${ENCODED_MESSAGE}"

@@ -3,11 +3,9 @@ on:
   push:
     branches:
       - master
-      - feat-55-test-suite
   pull_request:
     branches:
       - master
-      - feat-55-test-suite
   workflow_dispatch:
     inputs:
       environment:

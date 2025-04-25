@@ -37,6 +37,11 @@ jobs:
         run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: npx playwright test
+        env:
+          VITE_POSTHOG_HOST: 'wrongOnPurpose'
+          VITE_POSTHOG_KEY: 'wrongOnPurpose'
+          VITE_POSTHOG_REVERSE_PROXY_URL: 'wrongOnPurpose'
+
       - name: Upload test report
         if: ${{ env.RAN_ON_GITHUB == 'true' && !cancelled() }}
         uses: actions/upload-artifact@v4

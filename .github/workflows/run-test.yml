@@ -24,6 +24,9 @@ jobs:
     env:
       RAN_ON_GITHUB: ${{ secrets.RAN_ON_GITHUB }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -47,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report/
+          path: frontend/playwright-report/
           retention-days: 30
 
   triggerDeploy:
@@ -67,10 +70,8 @@ jobs:
     needs: tests
     steps:
       - name: Notify on success
-        if:
-          ${{ needs.tests.result == 'success' && env.RAN_ON_GITHUB == 'true' }}
+        if: ${{ needs.tests.result == 'success' && env.RAN_ON_GITHUB == 'true' }}
         run: curl -X POST ${{ secrets.N8N_SUCCESS_NOTIFICATION_URL }}
       - name: Notify on failure
-        if:
-          ${{ needs.tests.result != 'success' && env.RAN_ON_GITHUB == 'true' }}
+        if: ${{ needs.tests.result != 'success' && env.RAN_ON_GITHUB == 'true' }}
         run: curl -X POST ${{ secrets.N8N_FAILURE_NOTIFICATION_URL }}

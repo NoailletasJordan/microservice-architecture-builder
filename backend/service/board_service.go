@@ -6,10 +6,10 @@ import (
 )
 
 type BoardService struct {
-	store *data.BoardStore
+	store data.BoardStorer
 }
 
-func NewBoardService(store *data.BoardStore) *BoardService {
+func NewBoardService(store data.BoardStorer) *BoardService {
 	return &BoardService{store: store}
 }
 

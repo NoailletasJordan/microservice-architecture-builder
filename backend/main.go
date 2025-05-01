@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"microservice-architecture-builder/backend/controller"
 	"microservice-architecture-builder/backend/data"
@@ -14,8 +16,20 @@ import (
 )
 
 func main() {
+	// Setup data directory
+	dataDir := "./data"
+	if err := os.MkdirAll(dataDir, 0755); err != nil {
+		log.Fatalf("Failed to create data directory: %v", err)
+	}
+
 	// Initialize dependencies
-	store := data.NewBoardStore()
+	dbPath := filepath.Join(dataDir, "boards.db")
+	store, err := data.NewSQLiteStore(dbPath)
+	if err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
+	}
+	defer store.Close()
+
 	boardService := service.NewBoardService(store)
 	boardController := controller.NewBoardController(boardService)
 

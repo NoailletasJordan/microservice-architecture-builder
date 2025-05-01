@@ -95,3 +95,9 @@ func (s *BoardStore) Delete(id string) error {
 	board.Deleted = &now
 	return nil
 }
+
+// Close implements BoardStorer.Close
+func (s *BoardStore) Close() error {
+	// Nothing to close for in-memory store
+	return nil
+}

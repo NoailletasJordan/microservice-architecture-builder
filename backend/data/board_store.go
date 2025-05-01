@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"microservice-architecture-builder/model"
+	"microservice-architecture-builder/backend/model"
 
 	"github.com/google/uuid"
 )

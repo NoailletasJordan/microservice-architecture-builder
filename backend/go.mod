@@ -1,4 +1,4 @@
-module microservice-architecture-builder
+module microservice-architecture-builder/backend
 
 go 1.21
 

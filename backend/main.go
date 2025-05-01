@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"microservice-architecture-builder/controller"
-	"microservice-architecture-builder/data"
-	"microservice-architecture-builder/service"
+	"microservice-architecture-builder/backend/controller"
+	"microservice-architecture-builder/backend/data"
+	"microservice-architecture-builder/backend/service"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"

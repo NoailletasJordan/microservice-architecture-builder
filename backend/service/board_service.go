@@ -1,8 +1,8 @@
 package service
 
 import (
-	"microservice-architecture-builder/data"
-	"microservice-architecture-builder/model"
+	"microservice-architecture-builder/backend/data"
+	"microservice-architecture-builder/backend/model"
 )
 
 type BoardService struct {

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"microservice-architecture-builder/model"
-	"microservice-architecture-builder/service"
+	"microservice-architecture-builder/backend/model"
+	"microservice-architecture-builder/backend/service"
 
 	"github.com/go-chi/chi/v5"
 )

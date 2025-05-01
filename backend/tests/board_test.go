@@ -78,8 +78,9 @@ func TestCreateBoard(t *testing.T) {
 				Owner: "test_owner",
 				Data:  `{"test": "data"}`,
 			},
-			expectedCode: http.StatusCreated,
-			expectError:  false,
+			expectedCode:  http.StatusBadRequest,
+			expectError:   true,
+			errorContains: "title must be between 2 and 100 characters",
 		},
 	}
 

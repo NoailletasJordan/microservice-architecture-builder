@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"microservice-architecture-builder/backend/controller"
 	"microservice-architecture-builder/backend/data"
@@ -13,9 +12,16 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// Load .env file
+	err := godotenv.Load("./.env")
+	if err != nil {
+		log.Fatalf("Failed to load environment variables: %v", err)
+	}
+
 	// Setup data directory
 	dataDir := "./data"
 	if err := os.MkdirAll(dataDir, 0755); err != nil {
@@ -23,11 +29,7 @@ func main() {
 	}
 
 	// Initialize dependencies
-	dbPath := filepath.Join(dataDir, "boards.db")
-	store, err := data.NewSQLiteStore(dbPath)
-	if err != nil {
-		log.Fatalf("Failed to initialize database: %v", err)
-	}
+	store := data.NewSupabaseStore()
 	defer store.Close()
 
 	boardService := service.NewBoardService(store)

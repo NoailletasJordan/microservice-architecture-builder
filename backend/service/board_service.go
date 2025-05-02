@@ -1,9 +1,13 @@
 package service
 
 import (
+	"log"
 	"microservice-architecture-builder/backend/data"
 	"microservice-architecture-builder/backend/model"
 )
+
+// Re-export SupabaseError for controller use
+type SupabaseError = data.SupabaseError
 
 type BoardService struct {
 	store data.BoardStorer
@@ -15,7 +19,7 @@ func NewBoardService(store data.BoardStorer) *BoardService {
 
 func (s *BoardService) CreateBoard(board *model.Board) error {
 	if err := board.Validate(); err != nil {
-		return err
+		return &SupabaseError{StatusCode: 400, Message: err.Error()}
 	}
 	return s.store.Create(board)
 }
@@ -30,11 +34,15 @@ func (s *BoardService) GetBoard(id string) (*model.Board, error) {
 
 func (s *BoardService) UpdateBoard(id string, board *model.Board) error {
 	if err := board.Validate(); err != nil {
-		return err
+		return &SupabaseError{StatusCode: 400, Message: err.Error()}
 	}
 	return s.store.Update(id, board)
 }
 
 func (s *BoardService) DeleteBoard(id string) error {
-	return s.store.Delete(id)
+	err := s.store.Delete(id)
+	if err != nil {
+		log.Printf("BoardService.DeleteBoard: error: %v", err)
+	}
+	return err
 }

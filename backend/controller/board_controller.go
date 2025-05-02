@@ -40,7 +40,11 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := c.service.CreateBoard(&board); err != nil {
-		sendError(w, http.StatusBadRequest, err.Error())
+		if se, ok := err.(*service.SupabaseError); ok {
+			sendError(w, se.StatusCode, se.Message)
+		} else {
+			sendError(w, http.StatusInternalServerError, err.Error())
+		}
 		return
 	}
 
@@ -56,7 +60,11 @@ func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	board, err := c.service.GetBoard(id)
 	if err != nil {
-		sendError(w, http.StatusNotFound, err.Error())
+		if se, ok := err.(*service.SupabaseError); ok {
+			sendError(w, se.StatusCode, se.Message)
+		} else {
+			sendError(w, http.StatusInternalServerError, err.Error())
+		}
 		return
 	}
 
@@ -72,7 +80,11 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := c.service.UpdateBoard(id, &board); err != nil {
-		sendError(w, http.StatusBadRequest, err.Error())
+		if se, ok := err.(*service.SupabaseError); ok {
+			sendError(w, se.StatusCode, se.Message)
+		} else {
+			sendError(w, http.StatusInternalServerError, err.Error())
+		}
 		return
 	}
 
@@ -82,7 +94,11 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 func (c *BoardController) DeleteBoard(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if err := c.service.DeleteBoard(id); err != nil {
-		sendError(w, http.StatusNotFound, err.Error())
+		if se, ok := err.(*service.SupabaseError); ok {
+			sendError(w, se.StatusCode, se.Message)
+		} else {
+			sendError(w, http.StatusInternalServerError, err.Error())
+		}
 		return
 	}
 

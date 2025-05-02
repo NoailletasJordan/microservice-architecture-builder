@@ -3,7 +3,9 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
+	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
@@ -24,7 +26,7 @@ type TestServer struct {
 }
 
 func NewTestServer() *TestServer {
-	store := data.NewBoardStore()
+	store := data.NewSupabaseStore()
 	boardService := service.NewBoardService(store)
 	boardController := controller.NewBoardController(boardService)
 
@@ -42,7 +44,7 @@ func NewTestServer() *TestServer {
 	return &TestServer{
 		Server:     ts,
 		Router:     r,
-		Store:      store,
+		Store:      nil, // Not used with SupabaseStore
 		Service:    boardService,
 		Controller: boardController,
 	}
@@ -60,12 +62,15 @@ func createTestBoard(t *testing.T, ts *TestServer) *model.Board {
 		Data:  `{"test": "data"}`,
 	}
 
-	err := ts.Service.CreateBoard(board)
-	if err != nil {
-		t.Fatalf("Failed to create test board: %v", err)
+	rr := makeRequest(t, ts, "POST", "/api/board/", board)
+	if rr.Code != http.StatusCreated {
+		t.Fatalf("Failed to create test board: status %d", rr.Code)
 	}
-
-	return board
+	var created model.Board
+	if err := json.NewDecoder(rr.Body).Decode(&created); err != nil {
+		t.Fatalf("Failed to decode created board: %v", err)
+	}
+	return &created
 }
 
 // Helper function to make HTTP requests
@@ -92,4 +97,19 @@ func makeRequest(t *testing.T, ts *TestServer, method, path string, body interfa
 // Helper function to generate a long string of specified length
 func generateLongString(length int) string {
 	return strings.Repeat("a", length)
+}
+
+// Clean up all boards in Supabase after each test run
+func cleanupSupabaseBoards() {
+	client := &http.Client{}
+	url := os.Getenv("SUPABASE_URL")
+	key := os.Getenv("SUPABASE_PUBLIC_ANON_KEY")
+	if url == "" || key == "" {
+		panic("SUPABASE_URL and SUPABASE_PUBLIC_ANON_KEY must be set in environment")
+	}
+	req, _ := http.NewRequest("DELETE", url+"?", nil)
+	req.Header.Set("apikey", key)
+	req.Header.Set("Authorization", "Bearer "+key)
+	req.Header.Set("Prefer", "return=minimal")
+	client.Do(req)
 }

@@ -161,17 +161,20 @@ func TestBoardValidation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			rr := makeRequest(t, ts, "POST", "/api/board/", tt.board)
 
-			if rr.Code != tt.expectedCode {
-				t.Errorf("Expected status code %d, got %d", tt.expectedCode, rr.Code)
-			}
-
 			if tt.errorContains != "" {
+				if rr.Code != tt.expectedCode {
+					t.Errorf("Expected status code %d, got %d", tt.expectedCode, rr.Code)
+				}
 				var errResp map[string]string
 				if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 					t.Fatalf("Failed to decode error response: %v", err)
 				}
 				if errMsg, ok := errResp["error"]; !ok || errMsg != tt.errorContains {
 					t.Errorf("Expected error '%s', got '%s'", tt.errorContains, errMsg)
+				}
+			} else {
+				if rr.Code != tt.expectedCode {
+					t.Errorf("Expected status code %d, got %d", tt.expectedCode, rr.Code)
 				}
 			}
 		})
@@ -279,11 +282,10 @@ func TestBoardUpdateValidation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			rr := makeRequest(t, ts, "PATCH", "/api/board/"+board.ID, tt.updates)
 
-			if rr.Code != tt.expectedCode {
-				t.Errorf("Expected status code %d, got %d", tt.expectedCode, rr.Code)
-			}
-
 			if tt.expectError {
+				if rr.Code != tt.expectedCode {
+					t.Errorf("Expected status code %d, got %d", tt.expectedCode, rr.Code)
+				}
 				var errResp map[string]string
 				if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 					t.Fatalf("Failed to decode error response: %v", err)
@@ -292,6 +294,9 @@ func TestBoardUpdateValidation(t *testing.T) {
 					t.Errorf("Expected error containing '%s', got '%s'", tt.errorContains, errMsg)
 				}
 			} else {
+				if rr.Code != tt.expectedCode {
+					t.Errorf("Expected status code %d, got %d", tt.expectedCode, rr.Code)
+				}
 				var responseBoard model.Board
 				if err := json.NewDecoder(rr.Body).Decode(&responseBoard); err != nil {
 					t.Fatalf("Failed to decode response: %v", err)

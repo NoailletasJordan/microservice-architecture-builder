@@ -2,10 +2,14 @@ package tests
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
+	"os"
 	"testing"
 
 	"microservice-architecture-builder/backend/model"
+
+	"github.com/joho/godotenv"
 )
 
 func TestCreateBoard(t *testing.T) {
@@ -88,11 +92,10 @@ func TestCreateBoard(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			rr := makeRequest(t, ts, "POST", "/api/board/", tt.board)
 
-			if rr.Code != tt.expectedCode {
-				t.Errorf("Expected status code %d, got %d", tt.expectedCode, rr.Code)
-			}
-
 			if tt.expectError {
+				if rr.Code != tt.expectedCode {
+					t.Errorf("Expected error status code %d, got %d", tt.expectedCode, rr.Code)
+				}
 				var errResp map[string]string
 				if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 					t.Fatalf("Failed to decode error response: %v", err)
@@ -101,6 +104,9 @@ func TestCreateBoard(t *testing.T) {
 					t.Errorf("Expected error containing '%s', got '%s'", tt.errorContains, errMsg)
 				}
 			} else {
+				if rr.Code != tt.expectedCode {
+					t.Errorf("Expected status code %d, got %d", tt.expectedCode, rr.Code)
+				}
 				var board model.Board
 				if err := json.NewDecoder(rr.Body).Decode(&board); err != nil {
 					t.Fatalf("Failed to decode response: %v", err)
@@ -149,11 +155,10 @@ func TestGetBoard(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			rr := makeRequest(t, ts, "GET", "/api/board/"+tt.boardID, nil)
 
-			if rr.Code != tt.expectedCode {
-				t.Errorf("Expected status code %d, got %d", tt.expectedCode, rr.Code)
-			}
-
 			if tt.expectError {
+				if rr.Code != tt.expectedCode {
+					t.Errorf("Expected error status code %d, got %d", tt.expectedCode, rr.Code)
+				}
 				var errResp map[string]string
 				if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 					t.Fatalf("Failed to decode error response: %v", err)
@@ -162,6 +167,9 @@ func TestGetBoard(t *testing.T) {
 					t.Errorf("Expected error containing '%s', got '%s'", tt.errorContains, errMsg)
 				}
 			} else {
+				if rr.Code != tt.expectedCode {
+					t.Errorf("Expected status code %d, got %d", tt.expectedCode, rr.Code)
+				}
 				var responseBoard model.Board
 				if err := json.NewDecoder(rr.Body).Decode(&responseBoard); err != nil {
 					t.Fatalf("Failed to decode response: %v", err)
@@ -242,11 +250,10 @@ func TestUpdateBoard(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			rr := makeRequest(t, ts, "PATCH", "/api/board/"+tt.boardID, tt.updates)
 
-			if rr.Code != tt.expectedCode {
-				t.Errorf("Expected status code %d, got %d", tt.expectedCode, rr.Code)
-			}
-
 			if tt.expectError {
+				if rr.Code != tt.expectedCode {
+					t.Errorf("Expected error status code %d, got %d", tt.expectedCode, rr.Code)
+				}
 				var errResp map[string]string
 				if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 					t.Fatalf("Failed to decode error response: %v", err)
@@ -255,6 +262,9 @@ func TestUpdateBoard(t *testing.T) {
 					t.Errorf("Expected error containing '%s', got '%s'", tt.errorContains, errMsg)
 				}
 			} else {
+				if rr.Code != tt.expectedCode {
+					t.Errorf("Expected status code %d, got %d", tt.expectedCode, rr.Code)
+				}
 				var responseBoard model.Board
 				if err := json.NewDecoder(rr.Body).Decode(&responseBoard); err != nil {
 					t.Fatalf("Failed to decode response: %v", err)
@@ -307,17 +317,16 @@ func TestDeleteBoard(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			rr := makeRequest(t, ts, "DELETE", "/api/board/"+tt.boardID, nil)
 
-			if rr.Code != tt.expectedCode {
-				t.Errorf("Expected status code %d, got %d", tt.expectedCode, rr.Code)
-			}
-
 			if tt.expectError {
+				if rr.Code != tt.expectedCode {
+					t.Errorf("Expected error, name: %s, status code %d, got %d", tt.name, tt.expectedCode, rr.Code)
+				}
 				var errResp map[string]string
 				if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 					t.Fatalf("Failed to decode error response: %v", err)
 				}
 				if errMsg, ok := errResp["error"]; !ok || !contains(errMsg, tt.errorContains) {
-					t.Errorf("Expected error containing '%s', got '%s'", tt.errorContains, errMsg)
+					t.Errorf("Expected error, name: %s, containing '%s', got '%s'", tt.name, tt.errorContains, errMsg)
 				}
 			} else {
 				var response map[string]string
@@ -325,7 +334,7 @@ func TestDeleteBoard(t *testing.T) {
 					t.Fatalf("Failed to decode response: %v", err)
 				}
 				if msg, ok := response["message"]; !ok || msg != "Board deleted successfully" {
-					t.Errorf("Expected success message, got %v", response)
+					t.Errorf("Expected success message, name: %s, got %v", tt.name, response)
 				}
 			}
 		})
@@ -337,7 +346,7 @@ func TestListBoards(t *testing.T) {
 	defer ts.Close()
 
 	// Get initial boards count (should be 1 - the sample board)
-	initialBoards := ts.Store.GetAll()
+	initialBoards := ts.Service.GetAllBoards()
 	initialCount := len(initialBoards)
 
 	// Create multiple test boards
@@ -352,10 +361,10 @@ func TestListBoards(t *testing.T) {
 		t.Fatalf("Failed to delete test board: %v", err)
 	}
 
-	// Verify the board is marked as deleted
-	deletedBoard, _ := ts.Store.GetByID(board3.ID)
-	if deletedBoard != nil && deletedBoard.Deleted == nil {
-		t.Errorf("Board %s should be marked as deleted", board3.ID)
+	// Verify the board is not found after deletion
+	_, err := ts.Service.GetBoard(board3.ID)
+	if err == nil {
+		t.Errorf("Expected error when getting deleted board")
 	}
 
 	rr := makeRequest(t, ts, "GET", "/api/board/", nil)
@@ -411,4 +420,16 @@ func stringPtr(s string) *string {
 // Helper function to check if a string contains another string
 func contains(s, substr string) bool {
 	return len(s) > 0 && len(substr) > 0 && s == substr
+}
+
+func TestMain(m *testing.M) {
+	err := godotenv.Load("../.env")
+	if err != nil {
+		log.Fatalf("Failed to load environment variables: %v", err)
+	}
+
+	cleanupSupabaseBoards() // Clean before tests
+	code := m.Run()
+	cleanupSupabaseBoards() // Clean after tests
+	os.Exit(code)
 }

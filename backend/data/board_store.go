@@ -1,11 +1,12 @@
 package data
 
 import (
-	"errors"
 	"sync"
 	"time"
 
 	"microservice-architecture-builder/backend/model"
+
+	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -34,9 +35,10 @@ func NewBoardStore() *BoardStore {
 }
 
 func (s *BoardStore) Create(board *model.Board) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
+	err := board.Validate()
+	if err != nil {
+		return &SupabaseError{StatusCode: 400, Message: fmt.Sprintf("board validation failed: %v", err)}
+	}
 	board.ID = uuid.New().String()
 	board.CreatedAt = time.Now()
 	s.boards[board.ID] = board
@@ -62,7 +64,7 @@ func (s *BoardStore) GetByID(id string) (*model.Board, error) {
 
 	board, exists := s.boards[id]
 	if !exists || board.Deleted != nil {
-		return nil, errors.New("board not found")
+		return nil, &SupabaseError{StatusCode: 404, Message: "board not found"}
 	}
 	return board, nil
 }
@@ -73,9 +75,12 @@ func (s *BoardStore) Update(id string, board *model.Board) error {
 
 	existing, exists := s.boards[id]
 	if !exists || existing.Deleted != nil {
-		return errors.New("board not found")
+		return &SupabaseError{StatusCode: 404, Message: "board not found"}
 	}
-
+	err := board.Validate()
+	if err != nil {
+		return &SupabaseError{StatusCode: 400, Message: fmt.Sprintf("board validation failed: %v", err)}
+	}
 	board.ID = id
 	board.CreatedAt = existing.CreatedAt
 	s.boards[id] = board
@@ -88,7 +93,7 @@ func (s *BoardStore) Delete(id string) error {
 
 	board, exists := s.boards[id]
 	if !exists || board.Deleted != nil {
-		return errors.New("board not found")
+		return &SupabaseError{StatusCode: 404, Message: "board not found"}
 	}
 
 	now := time.Now()

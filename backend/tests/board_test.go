@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 
 	"microservice-architecture-builder/backend/model"
@@ -240,7 +241,7 @@ func TestUpdateBoard(t *testing.T) {
 				Owner: "updated_owner",
 				Data:  `{"updated": "data"}`,
 			},
-			expectedCode:  http.StatusBadRequest,
+			expectedCode:  http.StatusNotFound,
 			expectError:   true,
 			errorContains: "board not found",
 		},
@@ -306,7 +307,7 @@ func TestDeleteBoard(t *testing.T) {
 		},
 		{
 			name:          "Already Deleted Board",
-			boardID:       board.ID, // Try to delete the same board again
+			boardID:       board.ID,
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
 			errorContains: "board not found",
@@ -356,13 +357,20 @@ func TestListBoards(t *testing.T) {
 
 	t.Logf("Created boards: %s, %s, %s", board1.ID, board2.ID, board3.ID)
 
+	// NEW: Check if board3 exists before deletion
+	fetched, err := ts.Service.GetBoard(board3.ID)
+	if err != nil {
+		t.Fatalf("Board3 not found immediately after creation: %v", err)
+	}
+	t.Logf("Fetched board3 before deletion: %+v", fetched)
+
 	// Delete one board to test it's not returned
 	if err := ts.Service.DeleteBoard(board3.ID); err != nil {
 		t.Fatalf("Failed to delete test board: %v", err)
 	}
 
 	// Verify the board is not found after deletion
-	_, err := ts.Service.GetBoard(board3.ID)
+	_, err = ts.Service.GetBoard(board3.ID)
 	if err == nil {
 		t.Errorf("Expected error when getting deleted board")
 	}
@@ -419,7 +427,7 @@ func stringPtr(s string) *string {
 
 // Helper function to check if a string contains another string
 func contains(s, substr string) bool {
-	return len(s) > 0 && len(substr) > 0 && s == substr
+	return strings.Contains(s, substr)
 }
 
 func TestMain(m *testing.M) {

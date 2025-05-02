@@ -222,6 +222,11 @@ func (s *SupabaseStore) Update(id string, board *model.Board) error {
 }
 
 func (s *SupabaseStore) Delete(id string) error {
+	// Check if board exists before attempting delete
+	_, err := s.GetByID(id)
+	if err != nil {
+		return err
+	}
 	patch := map[string]interface{}{"deleted": time.Now().UTC()}
 	payload, _ := json.Marshal(patch)
 	url := getSupabaseUrl() + fmt.Sprintf("?id=eq.%s", id)
@@ -230,10 +235,18 @@ func (s *SupabaseStore) Delete(id string) error {
 		return err
 	}
 	defer resp.Body.Close()
+
+	// Debug logging: print status code and response body
+	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+	log.Printf("SupabaseStore.Delete: HTTP %d, response: %s", resp.StatusCode, string(bodyBytes))
+
 	var boards []model.Board
-	if err := json.NewDecoder(resp.Body).Decode(&boards); err == nil && len(boards) == 0 {
-		log.Printf("SupabaseStore.Delete: board not found for id=%s", id)
-		return &SupabaseError{StatusCode: 404, Message: "board not found"}
+	if err := json.Unmarshal(bodyBytes, &boards); err == nil {
+		if len(boards) == 0 {
+			log.Printf("SupabaseStore.Delete: board not found for id=%s", id)
+			return &SupabaseError{StatusCode: 404, Message: "board not found"}
+		}
+		// If the board is returned (even with Deleted set), treat as success
 	}
 	return nil
 }

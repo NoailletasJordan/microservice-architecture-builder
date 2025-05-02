@@ -436,6 +436,17 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Failed to load environment variables: %v", err)
 	}
 
+	// Override Supabase env vars with test values if present
+	if testUrl := os.Getenv("TEST_SUPABASE_URL"); testUrl != "" {
+		os.Setenv("SUPABASE_URL", testUrl)
+	}
+	if testKey := os.Getenv("TEST_SUPABASE_PUBLIC_ANON_KEY"); testKey != "" {
+		os.Setenv("SUPABASE_PUBLIC_ANON_KEY", testKey)
+	}
+	if testProjectID := os.Getenv("TEST_SUPABASE_PROJECT_ID"); testProjectID != "" {
+		os.Setenv("SUPABASE_PROJECT_ID", testProjectID)
+	}
+
 	cleanupSupabaseBoards() // Clean before tests
 	code := m.Run()
 	cleanupSupabaseBoards() // Clean after tests

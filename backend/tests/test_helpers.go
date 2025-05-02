@@ -107,7 +107,8 @@ func cleanupSupabaseBoards() {
 	if url == "" || key == "" {
 		panic("SUPABASE_URL and SUPABASE_PUBLIC_ANON_KEY must be set in environment")
 	}
-	req, _ := http.NewRequest("DELETE", url+"?", nil)
+	// Only delete boards with id > 0 (id number trick)
+	req, _ := http.NewRequest("DELETE", url+"?id=gt.0", nil)
 	req.Header.Set("apikey", key)
 	req.Header.Set("Authorization", "Bearer "+key)
 	req.Header.Set("Prefer", "return=minimal")

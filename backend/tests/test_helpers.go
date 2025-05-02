@@ -20,7 +20,6 @@ import (
 type TestServer struct {
 	Server     *httptest.Server
 	Router     *chi.Mux
-	Store      *data.BoardStore
 	Service    *service.BoardService
 	Controller *controller.BoardController
 }
@@ -44,7 +43,6 @@ func NewTestServer() *TestServer {
 	return &TestServer{
 		Server:     ts,
 		Router:     r,
-		Store:      nil, // Not used with SupabaseStore
 		Service:    boardService,
 		Controller: boardController,
 	}

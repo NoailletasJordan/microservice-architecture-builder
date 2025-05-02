@@ -10,10 +10,10 @@ import (
 type SupabaseError = data.SupabaseError
 
 type BoardService struct {
-	store data.BoardStorer
+	store *data.SupabaseStore
 }
 
-func NewBoardService(store data.BoardStorer) *BoardService {
+func NewBoardService(store *data.SupabaseStore) *BoardService {
 	return &BoardService{store: store}
 }
 

@@ -251,10 +251,6 @@ func (s *SupabaseStore) Delete(id string) error {
 	return nil
 }
 
-func (s *SupabaseStore) Close() error {
-	return nil // nothing to close
-}
-
 // Helper: generate UUID (since we can't use Google UUID in this file)
 func generateUUID() string {
 	return uuid.NewString()

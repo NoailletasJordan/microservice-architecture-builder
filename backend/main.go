@@ -30,7 +30,6 @@ func main() {
 
 	// Initialize dependencies
 	store := data.NewSupabaseStore()
-	defer store.Close()
 
 	boardService := service.NewBoardService(store)
 	boardController := controller.NewBoardController(boardService)

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -237,7 +238,7 @@ func (s *SupabaseStore) Delete(id string) error {
 	defer resp.Body.Close()
 
 	// Debug logging: print status code and response body
-	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+	bodyBytes, _ := io.ReadAll(resp.Body)
 	log.Printf("SupabaseStore.Delete: HTTP %d, response: %s", resp.StatusCode, string(bodyBytes))
 
 	var boards []model.Board

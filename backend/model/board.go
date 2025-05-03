@@ -50,8 +50,6 @@ func isString(fl validator.FieldLevel) bool {
 
 // Exported for use in controller
 func ValidateMapCustom(validate *validator.Validate, body map[string]any, rulesMap map[string]any) error {
-	log.Println("body", body)
-
 	for key := range rulesMap {
 
 		err := validate.Var(body[key], rulesMap[key].(string))

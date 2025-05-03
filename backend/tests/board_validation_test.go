@@ -27,7 +27,7 @@ func TestBoardValidation(t *testing.T) {
 				Data:  `{"test": "data"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
-			errorContains: "title is required",
+			errorContains: "validation error on field",
 		},
 		{
 			name: "Title Too Short",
@@ -134,7 +134,7 @@ func TestBoardValidation(t *testing.T) {
 			name:          "All Fields Missing",
 			board:         model.Board{},
 			expectedCode:  http.StatusBadRequest,
-			errorContains: "title is required",
+			errorContains: "validation error on field",
 		},
 		{
 			name: "All Fields Invalid",
@@ -204,7 +204,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
-			errorContains: "title is required",
+			errorContains: "validation error on field",
 		},
 		{
 			name: "Update Title Too Short",

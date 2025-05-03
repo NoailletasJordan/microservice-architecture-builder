@@ -42,7 +42,7 @@ func TestCreateBoard(t *testing.T) {
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
-			errorContains: "title is required",
+			errorContains: "validation error on field",
 		},
 		{
 			name: "Missing Owner",

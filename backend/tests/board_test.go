@@ -59,7 +59,7 @@ func TestCreateBoard(t *testing.T) {
 			board: map[string]string{
 				"title": "Test Board",
 				"owner": "test_owner",
-				"data":  `{"example": "data`,
+				"data":  `{"BROKENSJSON": "data`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
@@ -237,7 +237,7 @@ func TestUpdateBoard(t *testing.T) {
 			boardID: board.ID,
 			updates: map[string]string{
 				"title": "Test Title",
-				"data":  `{"example": "data"}`,
+				"data":  `{"BROKENSJSON": "da`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
@@ -317,7 +317,9 @@ func TestUpdateBoard(t *testing.T) {
 
 	// Extra: test PATCH with none of the allowed fields
 	t.Run("PATCH with no allowed fields", func(t *testing.T) {
-		raw := `{"owner":"should not be allowed"}`
+		raw := map[string]string{
+			"owner": "should not be allowed",
+		}
 		rr := makeRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw)
 		if rr.Code != http.StatusBadRequest {
 			t.Errorf("Expected 400 for missing allowed fields, got %d", rr.Code)

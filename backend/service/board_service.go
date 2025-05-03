@@ -4,6 +4,9 @@ import (
 	"log"
 	"microservice-architecture-builder/backend/data"
 	"microservice-architecture-builder/backend/model"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 // Re-export SupabaseError for controller use
@@ -17,10 +20,20 @@ func NewBoardService(store *data.SupabaseStore) *BoardService {
 	return &BoardService{store: store}
 }
 
-func (s *BoardService) CreateBoard(board *model.Board) error {
-	if err := board.Validate(); err != nil {
-		return &SupabaseError{StatusCode: 400, Message: err.Error()}
+func (s *BoardService) CreateBoard(entries *map[string]any) error {
+	board := &model.Board{
+		Title: (*entries)["title"].(string),
+		Owner: (*entries)["owner"].(string),
+		Data:  (*entries)["data"].(string),
 	}
+	if password, ok := (*entries)["password"].(string); ok {
+		board.Password = &password
+	}
+
+	board.ID = uuid.New().String()
+	board.CreatedAt = time.Now().UTC()
+
+	// Validation is now handled in the controller
 	return s.store.Create(board)
 }
 

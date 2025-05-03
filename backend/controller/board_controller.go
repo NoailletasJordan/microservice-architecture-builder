@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -34,24 +33,6 @@ func sendError(w http.ResponseWriter, status int, message string) {
 	sendJSON(w, status, ErrorResponse{Error: message})
 }
 
-// validateAllowedFields checks if the input JSON contains only allowed keys.
-// It ignores system fields (id, created_at, deleted) if present.
-func validateAllowedFields(body []byte, allowedFields map[string]struct{}) (extraKeys []string, err error) {
-	var raw map[string]interface{}
-	if err := json.Unmarshal(body, &raw); err != nil {
-		return nil, fmt.Errorf("Invalid request body")
-	}
-	for k := range raw {
-		if k == "id" || k == "created_at" || k == "deleted" {
-			continue // ignore system fields
-		}
-		if _, ok := allowedFields[k]; !ok {
-			extraKeys = append(extraKeys, k)
-		}
-	}
-	return extraKeys, nil
-}
-
 // CreateBoard godoc
 // @Summary Create a new board
 // @Description Create a new board. Allowed fields: title (required), owner (required), data (required), password (optional). No other fields allowed.
@@ -63,39 +44,45 @@ func validateAllowedFields(body []byte, allowedFields map[string]struct{}) (extr
 // @Failure 400 {object} ErrorResponse "Bad Request. Example: {\"error\": \"unexpected fields: [foo, bar]\"}"
 // @Router /board/ [post]
 func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
-	allowed := map[string]struct{}{"title": {}, "owner": {}, "data": {}, "password": {}}
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		sendError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
-	extraKeys, err := validateAllowedFields(body, allowed)
-	if err != nil {
-		sendError(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	if len(extraKeys) > 0 {
-		sendError(w, http.StatusBadRequest, fmt.Sprintf("unexpected fields: %v", extraKeys))
-		return
-	}
-	var board model.Board
-	if err := json.Unmarshal(body, &board); err != nil {
+	var raw map[string]interface{}
+	if err := json.Unmarshal(body, &raw); err != nil {
 		sendError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
-	// Zero out fields that should not be set by the user
-	board.ID = ""
-	board.CreatedAt = board.CreatedAt
-	board.Deleted = nil
-	if err := c.service.CreateBoard(&board); err != nil {
-		if se, ok := err.(*service.SupabaseError); ok {
-			sendError(w, se.StatusCode, se.Message)
+	// Define rules for POST
+	rules := map[string]any{
+		"title":    "required,type-string,min=2,max=100",
+		"owner":    "required,type-string,min=2,max=50",
+		"data":     "required,type-string",
+		"password": "omitempty,type-string",
+	}
+	// Check for unknown keys
+	if err := model.ValidateMapCustom(model.GetValidator(), raw, rules); err != nil {
+		sendError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	// Validate the data field as JSON
+	var js json.RawMessage
+	if err := json.Unmarshal([]byte(raw["data"].(string)), &js); err != nil {
+		sendError(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	if err := c.service.CreateBoard(&raw); err != nil {
+		if serviceError, ok := err.(*service.SupabaseError); ok {
+			sendError(w, serviceError.StatusCode, serviceError.Message)
 		} else {
 			sendError(w, http.StatusInternalServerError, err.Error())
 		}
 		return
 	}
-	sendJSON(w, http.StatusCreated, board)
+	sendJSON(w, http.StatusCreated, raw)
 }
 
 // GetAllBoards godoc
@@ -150,7 +137,6 @@ func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id} [patch]
 func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
-	allowed := map[string]struct{}{"title": {}, "data": {}, "password": {}}
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		sendError(w, http.StatusBadRequest, "Invalid request body")
@@ -161,34 +147,34 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 		sendError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
-
-	// Check for any disallowed fields
-	for k := range raw {
-		if _, ok := allowed[k]; !ok {
-			sendError(w, http.StatusBadRequest, fmt.Sprintf("field '%s' is not allowed", k))
-			return
-		}
+	// Define rules for PATCH (all fields optional, but must be allowed)
+	rules := map[string]any{
+		"title":    "type-string,min=2,max=100",
+		"data":     "type-string",
+		"password": "omitempty,type-string",
 	}
-	// Check if at least one allowed field is present
-	hasAtLeastOneAllowed := false
-	for k := range raw {
-		if _, ok := allowed[k]; ok {
-			hasAtLeastOneAllowed = true
+	// Check if any valid keys are present
+	hasAtLeastOneRuleKey := false
+	for key := range raw {
+		if _, exists := rules[key]; exists {
+			hasAtLeastOneRuleKey = true
 			break
 		}
 	}
-	if !hasAtLeastOneAllowed {
+	if !hasAtLeastOneRuleKey {
 		sendError(w, http.StatusBadRequest, "at least one of title, data, password is required")
 		return
 	}
 
-	// Zero out fields that should not be set by the user
-	board.ID = ""
-	board.CreatedAt = board.CreatedAt
-	board.Deleted = nil
-	// Only validate present fields for PATCH
-	if err := board.ValidatePatch(raw); err != nil {
+	// Validate the request body against the rules
+	if err := model.ValidateMapCustom(model.GetValidator(), raw, rules); err != nil {
 		sendError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	var board model.Board
+	if err := json.Unmarshal(body, &board); err != nil {
+		sendError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 	id := chi.URLParam(r, "id")

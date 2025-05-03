@@ -5,15 +5,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"reflect"
 	"time"
 
 	"microservice-architecture-builder/backend/model"
 
 	"github.com/google/uuid"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type SupabaseStore struct {
@@ -97,16 +99,6 @@ func (s *SupabaseStore) doRequest(method, url string, headers http.Header, body 
 }
 
 func (s *SupabaseStore) Create(board *model.Board) error {
-	if err := board.Validate(); err != nil {
-		return &SupabaseError{StatusCode: 400, Message: fmt.Sprintf("board validation failed: %v", err)}
-	}
-	var js json.RawMessage
-	if err := json.Unmarshal([]byte(board.Data), &js); err != nil {
-		return &SupabaseError{StatusCode: 400, Message: fmt.Sprintf("invalid JSON data: %v", err)}
-	}
-	board.ID = generateUUID()
-	board.CreatedAt = time.Now().UTC()
-
 	// Prepare payload
 	payload, err := json.Marshal(board)
 	if err != nil {
@@ -128,7 +120,7 @@ func (s *SupabaseStore) Create(board *model.Board) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK {
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body)
 		return &SupabaseError{StatusCode: resp.StatusCode, Message: fmt.Sprintf("failed to create board: %s", string(body))}
 	}
 
@@ -185,20 +177,40 @@ func (s *SupabaseStore) GetByID(id string) (*model.Board, error) {
 	return boards[0], nil
 }
 
-func (s *SupabaseStore) Update(id string, board *model.Board) error {
+func (s *SupabaseStore) Update(id string, updates map[string]any) error {
 	existing, err := s.GetByID(id)
 	if err != nil {
 		return err
 	}
-	// PATCH validation is handled in the controller using ValidatePatch
-	var js json.RawMessage
-	if err := json.Unmarshal([]byte(board.Data), &js); err != nil {
-		return &SupabaseError{StatusCode: 400, Message: fmt.Sprintf("invalid JSON data: %v", err)}
-	}
-	board.ID = id
-	board.CreatedAt = existing.CreatedAt
 
-	payload, err := json.Marshal(board)
+	// Apply updates to the existing board
+	for key, value := range updates {
+		if strValue, ok := value.(string); ok {
+			c := cases.Title(language.Und)
+			field := reflect.ValueOf(existing).Elem().FieldByName(c.String(key))
+			if field.IsValid() && field.CanSet() {
+				if field.Kind() == reflect.Ptr {
+					// Handle pointer fields (like Password)
+					newValue := reflect.New(field.Type().Elem())
+					newValue.Elem().SetString(strValue)
+					field.Set(newValue)
+				} else if field.Kind() == reflect.String {
+					// Handle string fields directly
+					field.SetString(strValue)
+				}
+			}
+		}
+	}
+
+	// Do not update id or created_at from the input map
+	// Validate JSON data if data is present
+	if _, ok := updates["data"]; ok {
+		var js json.RawMessage
+		if err := json.Unmarshal([]byte(existing.Data), &js); err != nil {
+			return &SupabaseError{StatusCode: 400, Message: fmt.Sprintf("invalid JSON data: %v", err)}
+		}
+	}
+	payload, err := json.Marshal(existing)
 	if err != nil {
 		return err
 	}
@@ -215,7 +227,7 @@ func (s *SupabaseStore) Update(id string, board *model.Board) error {
 		if len(boards) == 0 {
 			return &SupabaseError{StatusCode: 404, Message: "board not found"}
 		}
-		*board = boards[0]
+		*existing = boards[0]
 	}
 	return nil
 }
@@ -236,11 +248,11 @@ func (s *SupabaseStore) Delete(id string) error {
 	defer resp.Body.Close()
 
 	// Debug logging: print status code and response body
-	bodyBytes, _ := io.ReadAll(resp.Body)
-	log.Printf("SupabaseStore.Delete: HTTP %d, response: %s", resp.StatusCode, string(bodyBytes))
+	body, _ := io.ReadAll(resp.Body)
+	log.Printf("SupabaseStore.Delete: HTTP %d, response: %s", resp.StatusCode, string(body))
 
 	var boards []model.Board
-	if err := json.Unmarshal(bodyBytes, &boards); err == nil {
+	if err := json.Unmarshal(body, &boards); err == nil {
 		if len(boards) == 0 {
 			log.Printf("SupabaseStore.Delete: board not found for id=%s", id)
 			return &SupabaseError{StatusCode: 404, Message: "board not found"}

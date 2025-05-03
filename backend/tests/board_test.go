@@ -121,6 +121,22 @@ func TestCreateBoard(t *testing.T) {
 			}
 		})
 	}
+
+	// Extra: test POST with extra keys
+	t.Run("Extra Keys in POST", func(t *testing.T) {
+		raw := `{"title":"Test Board","owner":"test_owner","data":"{\"test\":\"data\"}","foo":123,"bar":"baz"}`
+		rr := makeRawRequest(t, ts, "POST", "/api/board/", raw)
+		if rr.Code != http.StatusBadRequest {
+			t.Errorf("Expected 400 for extra keys, got %d", rr.Code)
+		}
+		var errResp map[string]string
+		if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
+			t.Fatalf("Failed to decode error response: %v", err)
+		}
+		if errMsg, ok := errResp["error"]; !ok || !contains(errMsg, "unexpected fields") || !contains(errMsg, "foo") || !contains(errMsg, "bar") {
+			t.Errorf("Expected error listing extra keys, got '%s'", errMsg)
+		}
+	})
 }
 
 func TestGetBoard(t *testing.T) {
@@ -203,7 +219,6 @@ func TestUpdateBoard(t *testing.T) {
 			boardID: board.ID,
 			updates: model.Board{
 				Title: "Updated Title",
-				Owner: "updated_owner",
 				Data:  `{"updated": "data"}`,
 			},
 			expectedCode: http.StatusOK,
@@ -214,7 +229,6 @@ func TestUpdateBoard(t *testing.T) {
 			boardID: board.ID,
 			updates: model.Board{
 				Title: "Test Title",
-				Owner: "test_owner",
 				Data:  `{invalid json}`,
 			},
 			expectedCode:  http.StatusBadRequest,
@@ -222,23 +236,18 @@ func TestUpdateBoard(t *testing.T) {
 			errorContains: "data must be valid JSON",
 		},
 		{
-			name:    "Missing Required Fields",
-			boardID: board.ID,
-			updates: model.Board{
-				Title: "",
-				Owner: "",
-				Data:  `{"test": "data"}`,
-			},
+			name:          "Missing Required Fields",
+			boardID:       board.ID,
+			updates:       model.Board{},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
-			errorContains: "title is required",
+			errorContains: "at least one of title, data, password is required",
 		},
 		{
 			name:    "Non-existent Board",
 			boardID: "non-existent-id",
 			updates: model.Board{
 				Title: "Updated Title",
-				Owner: "updated_owner",
 				Data:  `{"updated": "data"}`,
 			},
 			expectedCode:  http.StatusNotFound,
@@ -276,6 +285,38 @@ func TestUpdateBoard(t *testing.T) {
 			}
 		})
 	}
+
+	// Extra: test PATCH with extra keys
+	t.Run("Extra Keys in PATCH", func(t *testing.T) {
+		raw := `{"title":"Updated Title","data":"{\"updated\":\"data\"}","foo":123,"bar":"baz"}`
+		rr := makeRawRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw)
+		if rr.Code != http.StatusBadRequest {
+			t.Errorf("Expected 400 for extra keys, got %d", rr.Code)
+		}
+		var errResp map[string]string
+		if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
+			t.Fatalf("Failed to decode error response: %v", err)
+		}
+		if errMsg, ok := errResp["error"]; !ok || !contains(errMsg, "unexpected fields") || !contains(errMsg, "foo") || !contains(errMsg, "bar") {
+			t.Errorf("Expected error listing extra keys, got '%s'", errMsg)
+		}
+	})
+
+	// Extra: test PATCH with none of the allowed fields
+	t.Run("PATCH with no allowed fields", func(t *testing.T) {
+		raw := `{"owner":"should not be allowed"}`
+		rr := makeRawRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw)
+		if rr.Code != http.StatusBadRequest {
+			t.Errorf("Expected 400 for missing allowed fields, got %d", rr.Code)
+		}
+		var errResp map[string]string
+		if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
+			t.Fatalf("Failed to decode error response: %v", err)
+		}
+		if errMsg, ok := errResp["error"]; !ok || !contains(errMsg, "at least one of title, data, password is required") {
+			t.Errorf("Expected error for missing allowed fields, got '%s'", errMsg)
+		}
+	})
 }
 
 func TestDeleteBoard(t *testing.T) {

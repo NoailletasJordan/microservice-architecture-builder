@@ -33,9 +33,7 @@ func (s *BoardService) GetBoard(id string) (*model.Board, error) {
 }
 
 func (s *BoardService) UpdateBoard(id string, board *model.Board) error {
-	if err := board.Validate(); err != nil {
-		return &SupabaseError{StatusCode: 400, Message: err.Error()}
-	}
+	// PATCH validation is handled in the controller using ValidatePatch
 	return s.store.Update(id, board)
 }
 

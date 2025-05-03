@@ -190,9 +190,7 @@ func (s *SupabaseStore) Update(id string, board *model.Board) error {
 	if err != nil {
 		return err
 	}
-	if err := board.Validate(); err != nil {
-		return &SupabaseError{StatusCode: 400, Message: fmt.Sprintf("board validation failed: %v", err)}
-	}
+	// PATCH validation is handled in the controller using ValidatePatch
 	var js json.RawMessage
 	if err := json.Unmarshal([]byte(board.Data), &js); err != nil {
 		return &SupabaseError{StatusCode: 400, Message: fmt.Sprintf("invalid JSON data: %v", err)}

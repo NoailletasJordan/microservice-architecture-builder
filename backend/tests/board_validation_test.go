@@ -199,7 +199,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 		{
 			name: "Update with Empty Title",
 			updates: model.Board{
-				Owner: "test_owner",
+				Title: "",
 				Data:  `{"test": "data"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
@@ -210,7 +210,6 @@ func TestBoardUpdateValidation(t *testing.T) {
 			name: "Update Title Too Short",
 			updates: model.Board{
 				Title: "a",
-				Owner: "test_owner",
 				Data:  `{"test": "data"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
@@ -221,56 +220,28 @@ func TestBoardUpdateValidation(t *testing.T) {
 			name: "Update Title Too Long",
 			updates: model.Board{
 				Title: strings.Repeat("a", 101),
-				Owner: "test_owner",
 				Data:  `{"test": "data"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
 			errorContains: "title must be between 2 and 100 characters",
 		},
-
-		// Owner validation
-		{
-			name: "Update with Empty Owner",
-			updates: model.Board{
-				Title: "Test Board",
-				Data:  `{"test": "data"}`,
-			},
-			expectedCode:  http.StatusBadRequest,
-			expectError:   true,
-			errorContains: "owner is required",
-		},
-		{
-			name: "Update Owner Too Short",
-			updates: model.Board{
-				Title: "Test Board",
-				Owner: "a",
-				Data:  `{"test": "data"}`,
-			},
-			expectedCode:  http.StatusBadRequest,
-			expectError:   true,
-			errorContains: "owner must be between 2 and 50 characters",
-		},
-
 		// Data validation
 		{
 			name: "Update with Invalid JSON Data",
 			updates: model.Board{
 				Title: "Test Board",
-				Owner: "test_owner",
 				Data:  `{"key":}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
 			errorContains: "data must be valid JSON",
 		},
-
 		// Valid update
 		{
 			name: "Valid Update All Fields",
 			updates: model.Board{
 				Title: "Updated Board",
-				Owner: "updated_owner",
 				Data:  `{"updated": "data"}`,
 			},
 			expectedCode: http.StatusOK,
@@ -307,4 +278,20 @@ func TestBoardUpdateValidation(t *testing.T) {
 			}
 		})
 	}
+
+	// Extra: test PATCH with forbidden field 'owner'
+	t.Run("PATCH with forbidden field owner", func(t *testing.T) {
+		raw := `{"owner":"should not be allowed"}`
+		rr := makeRawRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw)
+		if rr.Code != http.StatusBadRequest {
+			t.Errorf("Expected 400 for forbidden field, got %d", rr.Code)
+		}
+		var errResp map[string]string
+		if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
+			t.Fatalf("Failed to decode error response: %v", err)
+		}
+		if errMsg, ok := errResp["error"]; !ok || !contains(errMsg, "unexpected fields") || !contains(errMsg, "owner") {
+			t.Errorf("Expected error for forbidden field 'owner', got '%s'", errMsg)
+		}
+	})
 }

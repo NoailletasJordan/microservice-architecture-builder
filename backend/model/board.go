@@ -44,3 +44,33 @@ func (b *Board) Validate() error {
 
 	return nil
 }
+
+// ValidatePatch validates only the fields present in the PATCH payload.
+func (b *Board) ValidatePatch(fields map[string]interface{}) error {
+	if _, ok := fields["title"]; ok {
+		if b.Title == "" {
+			return errors.New("title is required")
+		}
+		if len(b.Title) < 2 || len(b.Title) > 100 {
+			return errors.New("title must be between 2 and 100 characters")
+		}
+	}
+	if _, ok := fields["owner"]; ok {
+		if b.Owner == "" {
+			return errors.New("owner is required")
+		}
+		if len(b.Owner) < 2 || len(b.Owner) > 50 {
+			return errors.New("owner must be between 2 and 50 characters")
+		}
+	}
+	if _, ok := fields["data"]; ok {
+		if b.Data == "" {
+			return errors.New("data is required")
+		}
+		var js json.RawMessage
+		if err := json.Unmarshal([]byte(b.Data), &js); err != nil {
+			return errors.New("data must be valid JSON")
+		}
+	}
+	return nil
+}

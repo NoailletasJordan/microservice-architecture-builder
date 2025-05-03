@@ -25,20 +25,21 @@ definitions:
 host: localhost:8080
 info:
   contact: {}
-  description: This is the API documentation for the Microservice Architecture Builder
+  description:
+    This is the API documentation for the Microservice Architecture Builder
     backend.
   title: Microservice Architecture Builder API
-  version: "1.0"
+  version: '1.0'
 paths:
   /board/:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get a list of all boards
       produces:
-      - application/json
+        - application/json
       responses:
-        "200":
+        '200':
           description: OK
           schema:
             items:
@@ -46,123 +47,148 @@ paths:
             type: array
       summary: Get all boards
       tags:
-      - boards
+        - boards
     post:
       consumes:
-      - application/json
-      description: Create a new board with title, owner, and data
+        - application/json
+      description: |
+        Create a new board. Allowed fields:
+          - title (string, required)
+          - owner (string, required)
+          - data (string, required)
+          - password (string, optional)
+        No other fields are allowed. If extra fields are present, a 400 error is returned listing the unexpected keys.
       parameters:
-      - description: Board object
-        in: body
-        name: board
-        required: true
-        schema:
-          $ref: '#/definitions/model.Board'
+        - description: Board object (only title, owner, data, password allowed)
+          in: body
+          name: board
+          required: true
+          schema:
+            $ref: '#/definitions/model.Board'
       produces:
-      - application/json
+        - application/json
       responses:
-        "201":
+        '201':
           description: Created
           schema:
             $ref: '#/definitions/model.Board'
-        "400":
-          description: Bad Request
+        '400':
+          description: |
+            Bad Request. Possible reasons:
+              - Extra keys present in request body (unexpected fields)
+              - Missing required fields
+            Example error for extra keys:
+              {"error": "unexpected fields: [foo, bar]"}
+            Example error for missing required field:
+              {"error": "title is required"}
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
       summary: Create a new board
       tags:
-      - boards
+        - boards
   /board/{id}:
     delete:
       consumes:
-      - application/json
+        - application/json
       description: Delete a board by its unique ID
       parameters:
-      - description: Board ID
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: Board ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
-        "200":
+        '200':
           description: OK
           schema:
             additionalProperties:
               type: string
             type: object
-        "400":
+        '400':
           description: Bad Request
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
-        "404":
+        '404':
           description: Not Found
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
       summary: Delete a board by ID
       tags:
-      - boards
+        - boards
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get a board by its unique ID
       parameters:
-      - description: Board ID
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: Board ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
-        "200":
+        '200':
           description: OK
           schema:
             $ref: '#/definitions/model.Board'
-        "400":
+        '400':
           description: Bad Request
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
-        "404":
+        '404':
           description: Not Found
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
       summary: Get a board by ID
       tags:
-      - boards
+        - boards
     patch:
       consumes:
-      - application/json
-      description: Update a board's details by its unique ID
+        - application/json
+      description: |
+        Update a board's details by its unique ID. Allowed fields:
+          - title (string, optional)
+          - data (string, optional)
+          - password (string, optional)
+        At least one of these fields must be present. No other fields are allowed. If extra fields are present, a 400 error is returned listing the unexpected keys. If none of the allowed fields are present, a 400 error is returned.
       parameters:
-      - description: Board ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Board object
-        in: body
-        name: board
-        required: true
-        schema:
-          $ref: '#/definitions/model.Board'
+        - description: Board ID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Board object (only title, data, password allowed)
+          in: body
+          name: board
+          required: true
+          schema:
+            $ref: '#/definitions/model.Board'
       produces:
-      - application/json
+        - application/json
       responses:
-        "200":
+        '200':
           description: OK
           schema:
             $ref: '#/definitions/model.Board'
-        "400":
-          description: Bad Request
+        '400':
+          description: |
+            Bad Request. Possible reasons:
+              - Extra keys present in request body (unexpected fields)
+              - None of title, data, or password present
+            Example error for extra keys:
+              {"error": "unexpected fields: [foo, bar]"}
+            Example error for missing all allowed fields:
+              {"error": "at least one of title, data, password is required"}
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
-        "404":
+        '404':
           description: Not Found
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
       summary: Update a board by ID
       tags:
-      - boards
-swagger: "2.0"
+        - boards
+swagger: '2.0'

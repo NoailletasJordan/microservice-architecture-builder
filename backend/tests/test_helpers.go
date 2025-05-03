@@ -92,6 +92,17 @@ func makeRequest(t *testing.T, ts *TestServer, method, path string, body interfa
 	return rr
 }
 
+// Helper function to make HTTP requests with raw JSON (for extra key tests)
+func makeRawRequest(t *testing.T, ts *TestServer, method, path string, rawJSON string) *httptest.ResponseRecorder {
+	req := httptest.NewRequest(method, path, bytes.NewBufferString(rawJSON))
+	req.Header.Set("Content-Type", "application/json")
+
+	rr := httptest.NewRecorder()
+	ts.Router.ServeHTTP(rr, req)
+
+	return rr
+}
+
 // Helper function to generate a long string of specified length
 func generateLongString(length int) string {
 	return strings.Repeat("a", length)

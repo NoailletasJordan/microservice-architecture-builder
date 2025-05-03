@@ -76,7 +76,12 @@ func makeRequest(t *testing.T, ts *TestServer, method, path string, body interfa
 	var reqBody []byte
 	var err error
 
-	if body != nil {
+	switch v := body.(type) {
+	case nil:
+		// No body
+	case string:
+		reqBody = []byte(v)
+	default:
 		reqBody, err = json.Marshal(body)
 		if err != nil {
 			t.Fatalf("Failed to marshal request body: %v", err)
@@ -84,17 +89,6 @@ func makeRequest(t *testing.T, ts *TestServer, method, path string, body interfa
 	}
 
 	req := httptest.NewRequest(method, path, bytes.NewBuffer(reqBody))
-	req.Header.Set("Content-Type", "application/json")
-
-	rr := httptest.NewRecorder()
-	ts.Router.ServeHTTP(rr, req)
-
-	return rr
-}
-
-// Helper function to make HTTP requests with raw JSON (for extra key tests)
-func makeRawRequest(t *testing.T, ts *TestServer, method, path string, rawJSON string) *httptest.ResponseRecorder {
-	req := httptest.NewRequest(method, path, bytes.NewBufferString(rawJSON))
 	req.Header.Set("Content-Type", "application/json")
 
 	rr := httptest.NewRecorder()

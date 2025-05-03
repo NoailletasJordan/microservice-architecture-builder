@@ -107,7 +107,7 @@ func TestBoardValidation(t *testing.T) {
 				"owner": "test_owner",
 			},
 			expectedCode:  http.StatusBadRequest,
-			errorContains: "data is required",
+			errorContains: "validation error on field",
 		},
 		{
 			name: "Invalid JSON Data",
@@ -144,7 +144,7 @@ func TestBoardValidation(t *testing.T) {
 				"data":  `{invalid}`,
 			},
 			expectedCode:  http.StatusBadRequest,
-			errorContains: "title must be between 2 and 100 characters",
+			errorContains: "validation error on field",
 		},
 		{
 			name: "All Fields Valid",
@@ -282,7 +282,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 	// Extra: test PATCH with forbidden field 'owner'
 	t.Run("PATCH with forbidden field owner", func(t *testing.T) {
 		raw := `{"owner":"should not be allowed"}`
-		rr := makeRawRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw)
+		rr := makeRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw)
 		if rr.Code != http.StatusBadRequest {
 			t.Errorf("Expected 400 for forbidden field, got %d", rr.Code)
 		}

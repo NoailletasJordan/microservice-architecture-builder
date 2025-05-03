@@ -127,7 +127,7 @@ func TestCreateBoard(t *testing.T) {
 	// Extra: test POST with extra keys
 	t.Run("Extra Keys in POST", func(t *testing.T) {
 		raw := `{"title":"Test Board","owner":"test_owner","data":"{\"test\":\"data\"}","foo":123,"bar":"baz"}`
-		rr := makeRawRequest(t, ts, "POST", "/api/board/", raw)
+		rr := makeRequest(t, ts, "POST", "/api/board/", raw)
 		if rr.Code != http.StatusBadRequest {
 			t.Errorf("Expected 400 for extra keys, got %d", rr.Code)
 		}
@@ -291,7 +291,7 @@ func TestUpdateBoard(t *testing.T) {
 	// Extra: test PATCH with extra keys
 	t.Run("Extra Keys in PATCH", func(t *testing.T) {
 		raw := `{"title":"Updated Title","data":"{\"example\":\"data\"}","foo":123,"bar":"baz"}`
-		rr := makeRawRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw)
+		rr := makeRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw)
 		if rr.Code != http.StatusBadRequest {
 			t.Errorf("Expected 400 for extra keys, got %d", rr.Code)
 		}
@@ -307,7 +307,7 @@ func TestUpdateBoard(t *testing.T) {
 	// Extra: test PATCH with none of the allowed fields
 	t.Run("PATCH with no allowed fields", func(t *testing.T) {
 		raw := `{"owner":"should not be allowed"}`
-		rr := makeRawRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw)
+		rr := makeRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw)
 		if rr.Code != http.StatusBadRequest {
 			t.Errorf("Expected 400 for missing allowed fields, got %d", rr.Code)
 		}

@@ -13,7 +13,6 @@ import (
 
 	"microservice-architecture-builder/backend/model"
 
-	"github.com/google/uuid"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -260,9 +259,4 @@ func (s *SupabaseStore) Delete(id string) error {
 		// If the board is returned (even with Deleted set), treat as success
 	}
 	return nil
-}
-
-// Helper: generate UUID (since we can't use Google UUID in this file)
-func generateUUID() string {
-	return uuid.NewString()
 }

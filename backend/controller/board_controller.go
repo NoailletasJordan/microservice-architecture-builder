@@ -82,6 +82,7 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
 	sendJSON(w, http.StatusCreated, raw)
 }
 

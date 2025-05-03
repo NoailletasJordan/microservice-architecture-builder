@@ -32,6 +32,16 @@ func sendError(w http.ResponseWriter, status int, message string) {
 	sendJSON(w, status, ErrorResponse{Error: message})
 }
 
+// CreateBoard godoc
+// @Summary Create a new board
+// @Description Create a new board with title, owner, and data
+// @Tags boards
+// @Accept json
+// @Produce json
+// @Param board body model.Board true "Board object"
+// @Success 201 {object} model.Board
+// @Failure 400 {object} ErrorResponse
+// @Router /board/ [post]
 func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 	var board model.Board
 	if err := json.NewDecoder(r.Body).Decode(&board); err != nil {
@@ -51,11 +61,30 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 	sendJSON(w, http.StatusCreated, board)
 }
 
+// GetAllBoards godoc
+// @Summary Get all boards
+// @Description Get a list of all boards
+// @Tags boards
+// @Accept json
+// @Produce json
+// @Success 200 {array} model.Board
+// @Router /board/ [get]
 func (c *BoardController) GetAllBoards(w http.ResponseWriter, r *http.Request) {
 	boards := c.service.GetAllBoards()
 	sendJSON(w, http.StatusOK, boards)
 }
 
+// GetBoard godoc
+// @Summary Get a board by ID
+// @Description Get a board by its unique ID
+// @Tags boards
+// @Accept json
+// @Produce json
+// @Param id path string true "Board ID"
+// @Success 200 {object} model.Board
+// @Failure 400 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Router /board/{id} [get]
 func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	board, err := c.service.GetBoard(id)
@@ -71,6 +100,18 @@ func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
 	sendJSON(w, http.StatusOK, board)
 }
 
+// UpdateBoard godoc
+// @Summary Update a board by ID
+// @Description Update a board's details by its unique ID
+// @Tags boards
+// @Accept json
+// @Produce json
+// @Param id path string true "Board ID"
+// @Param board body model.Board true "Board object"
+// @Success 200 {object} model.Board
+// @Failure 400 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Router /board/{id} [patch]
 func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	var board model.Board
@@ -91,6 +132,17 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 	sendJSON(w, http.StatusOK, board)
 }
 
+// DeleteBoard godoc
+// @Summary Delete a board by ID
+// @Description Delete a board by its unique ID
+// @Tags boards
+// @Accept json
+// @Produce json
+// @Param id path string true "Board ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Router /board/{id} [delete]
 func (c *BoardController) DeleteBoard(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if err := c.service.DeleteBoard(id); err != nil {

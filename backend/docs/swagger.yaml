@@ -1,0 +1,168 @@
+basePath: /api
+definitions:
+  controller.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  model.Board:
+    properties:
+      created_at:
+        type: string
+      data:
+        type: string
+      deleted:
+        type: string
+      id:
+        type: string
+      owner:
+        type: string
+      password:
+        type: string
+      title:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is the API documentation for the Microservice Architecture Builder
+    backend.
+  title: Microservice Architecture Builder API
+  version: "1.0"
+paths:
+  /board/:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all boards
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Board'
+            type: array
+      summary: Get all boards
+      tags:
+      - boards
+    post:
+      consumes:
+      - application/json
+      description: Create a new board with title, owner, and data
+      parameters:
+      - description: Board object
+        in: body
+        name: board
+        required: true
+        schema:
+          $ref: '#/definitions/model.Board'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Board'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+      summary: Create a new board
+      tags:
+      - boards
+  /board/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a board by its unique ID
+      parameters:
+      - description: Board ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+      summary: Delete a board by ID
+      tags:
+      - boards
+    get:
+      consumes:
+      - application/json
+      description: Get a board by its unique ID
+      parameters:
+      - description: Board ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Board'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+      summary: Get a board by ID
+      tags:
+      - boards
+    patch:
+      consumes:
+      - application/json
+      description: Update a board's details by its unique ID
+      parameters:
+      - description: Board ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Board object
+        in: body
+        name: board
+        required: true
+        schema:
+          $ref: '#/definitions/model.Board'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Board'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+      summary: Update a board by ID
+      tags:
+      - boards
+swagger: "2.0"

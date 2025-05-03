@@ -75,7 +75,7 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 
 	// Validate the data field as JSON
 	if !isValidJSON(raw["data"].(string)) {
-		sendError(w, http.StatusBadRequest, "Invalid request body")
+		sendError(w, http.StatusBadRequest, "data must be valid JSON")
 		return
 	}
 
@@ -180,7 +180,7 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 	// Validate the data field as JSON
 	if data, ok := body["data"]; ok {
 		if !isValidJSON(data.(string)) {
-			sendError(w, http.StatusBadRequest, "Invalid request body")
+			sendError(w, http.StatusBadRequest, "data must be valid JSON")
 			return
 		}
 	}

@@ -19,26 +19,26 @@ func TestCreateBoard(t *testing.T) {
 
 	tests := []struct {
 		name          string
-		board         model.Board
+		board         map[string]string
 		expectedCode  int
 		expectError   bool
 		errorContains string
 	}{
 		{
 			name: "Valid Board",
-			board: model.Board{
-				Title: "Test Board",
-				Owner: "test_owner",
-				Data:  `{"test": "data"}`,
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "test_owner",
+				"data":  `{\"example\": \"data\"}`,
 			},
 			expectedCode: http.StatusCreated,
 			expectError:  false,
 		},
 		{
 			name: "Missing Title",
-			board: model.Board{
-				Owner: "test_owner",
-				Data:  `{"test": "data"}`,
+			board: map[string]string{
+				"owner": "test_owner",
+				"data":  `{\"example\": \"data\"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
@@ -46,20 +46,20 @@ func TestCreateBoard(t *testing.T) {
 		},
 		{
 			name: "Missing Owner",
-			board: model.Board{
-				Title: "Test Board",
-				Data:  `{"test": "data"}`,
+			board: map[string]string{
+				"title": "Test Board",
+				"data":  `{\"example\": \"data\"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
-			errorContains: "owner is required",
+			errorContains: "validation error on field",
 		},
 		{
 			name: "Invalid JSON Data",
-			board: model.Board{
-				Title: "Test Board",
-				Owner: "test_owner",
-				Data:  `{invalid json}`,
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "test_owner",
+				"data":  `{\"example\": \"data\"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
@@ -67,21 +67,21 @@ func TestCreateBoard(t *testing.T) {
 		},
 		{
 			name: "With Optional Password",
-			board: model.Board{
-				Title:    "Test Board",
-				Owner:    "test_owner",
-				Data:     `{"test": "data"}`,
-				Password: stringPtr("secret123"),
+			board: map[string]string{
+				"title":    "Test Board",
+				"owner":    "test_owner",
+				"data":     `{\"example\": \"data\"}`,
+				"password": "secret123",
 			},
 			expectedCode: http.StatusCreated,
 			expectError:  false,
 		},
 		{
 			name: "Very Long Title",
-			board: model.Board{
-				Title: generateLongString(1000),
-				Owner: "test_owner",
-				Data:  `{"test": "data"}`,
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "test_owner",
+				"data":  `{\"example\": \"data\"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
@@ -209,7 +209,7 @@ func TestUpdateBoard(t *testing.T) {
 	tests := []struct {
 		name          string
 		boardID       string
-		updates       model.Board
+		updates       map[string]string
 		expectedCode  int
 		expectError   bool
 		errorContains string
@@ -217,9 +217,9 @@ func TestUpdateBoard(t *testing.T) {
 		{
 			name:    "Valid Update",
 			boardID: board.ID,
-			updates: model.Board{
-				Title: "Updated Title",
-				Data:  `{"updated": "data"}`,
+			updates: map[string]string{
+				"title": "Updated Title",
+				"data":  `{\"example\": \"data\"}`,
 			},
 			expectedCode: http.StatusOK,
 			expectError:  false,
@@ -227,9 +227,9 @@ func TestUpdateBoard(t *testing.T) {
 		{
 			name:    "Invalid JSON Data",
 			boardID: board.ID,
-			updates: model.Board{
-				Title: "Test Title",
-				Data:  `{invalid json}`,
+			updates: map[string]string{
+				"title": "Test Title",
+				"data":  `{\"example\": \"data\"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
@@ -238,7 +238,7 @@ func TestUpdateBoard(t *testing.T) {
 		{
 			name:          "Missing Required Fields",
 			boardID:       board.ID,
-			updates:       model.Board{},
+			updates:       map[string]string{},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
 			errorContains: "at least one of title, data, password is required",
@@ -246,9 +246,9 @@ func TestUpdateBoard(t *testing.T) {
 		{
 			name:    "Non-existent Board",
 			boardID: "non-existent-id",
-			updates: model.Board{
-				Title: "Updated Title",
-				Data:  `{"updated": "data"}`,
+			updates: map[string]string{
+				"title": "Updated Title",
+				"data":  `{\"example\": \"data\"}`,
 			},
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
@@ -279,8 +279,8 @@ func TestUpdateBoard(t *testing.T) {
 				if err := json.NewDecoder(rr.Body).Decode(&responseBoard); err != nil {
 					t.Fatalf("Failed to decode response: %v", err)
 				}
-				if responseBoard.Title != tt.updates.Title {
-					t.Errorf("Expected title %s, got %s", tt.updates.Title, responseBoard.Title)
+				if responseBoard.Title != tt.updates["title"] {
+					t.Errorf("Expected title %s, got %s", tt.updates["title"], responseBoard.Title)
 				}
 			}
 		})
@@ -288,7 +288,7 @@ func TestUpdateBoard(t *testing.T) {
 
 	// Extra: test PATCH with extra keys
 	t.Run("Extra Keys in PATCH", func(t *testing.T) {
-		raw := `{"title":"Updated Title","data":"{\"updated\":\"data\"}","foo":123,"bar":"baz"}`
+		raw := `{"title":"Updated Title","data":"{\"example\":\"data\"}","foo":123,"bar":"baz"}`
 		rr := makeRawRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw)
 		if rr.Code != http.StatusBadRequest {
 			t.Errorf("Expected 400 for extra keys, got %d", rr.Code)

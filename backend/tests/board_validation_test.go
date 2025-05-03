@@ -15,46 +15,46 @@ func TestBoardValidation(t *testing.T) {
 
 	tests := []struct {
 		name          string
-		board         model.Board
+		board         map[string]string
 		expectedCode  int
 		errorContains string
 	}{
 		// Title validation tests
 		{
 			name: "Missing Title",
-			board: model.Board{
-				Owner: "test_owner",
-				Data:  `{"test": "data"}`,
+			board: map[string]string{
+				"owner": "test_owner",
+				"data":  `{"test": "data"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
 		},
 		{
 			name: "Title Too Short",
-			board: model.Board{
-				Title: "a",
-				Owner: "test_owner",
-				Data:  `{"test": "data"}`,
+			board: map[string]string{
+				"title": "a",
+				"owner": "test_owner",
+				"data":  `{"test": "data"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "title must be between 2 and 100 characters",
 		},
 		{
 			name: "Title Too Long",
-			board: model.Board{
-				Title: generateLongString(101),
-				Owner: "test_owner",
-				Data:  `{"test": "data"}`,
+			board: map[string]string{
+				"title": generateLongString(101),
+				"owner": "test_owner",
+				"data":  `{"test": "data"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "title must be between 2 and 100 characters",
 		},
 		{
 			name: "Valid Title",
-			board: model.Board{
-				Title: "Valid Title",
-				Owner: "test_owner",
-				Data:  `{"test": "data"}`,
+			board: map[string]string{
+				"title": "Valid Title",
+				"owner": "test_owner",
+				"data":  `{"test": "data"}`,
 			},
 			expectedCode: http.StatusCreated,
 		},
@@ -62,39 +62,39 @@ func TestBoardValidation(t *testing.T) {
 		// Owner validation tests
 		{
 			name: "Missing Owner",
-			board: model.Board{
-				Title: "Test Board",
-				Data:  `{"test": "data"}`,
+			board: map[string]string{
+				"title": "Test Board",
+				"data":  `{"test": "data"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "owner is required",
 		},
 		{
 			name: "Owner Too Short",
-			board: model.Board{
-				Title: "Test Board",
-				Owner: "a",
-				Data:  `{"test": "data"}`,
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "a",
+				"data":  `{"test": "data"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "owner must be between 2 and 50 characters",
 		},
 		{
 			name: "Owner Too Long",
-			board: model.Board{
-				Title: "Test Board",
-				Owner: generateLongString(51),
-				Data:  `{"test": "data"}`,
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": generateLongString(51),
+				"data":  `{"test": "data"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "owner must be between 2 and 50 characters",
 		},
 		{
 			name: "Valid Owner",
-			board: model.Board{
-				Title: "Test Board",
-				Owner: "valid_owner",
-				Data:  `{"test": "data"}`,
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "valid_owner",
+				"data":  `{"test": "data"}`,
 			},
 			expectedCode: http.StatusCreated,
 		},
@@ -102,29 +102,29 @@ func TestBoardValidation(t *testing.T) {
 		// Data validation tests
 		{
 			name: "Missing Data",
-			board: model.Board{
-				Title: "Test Board",
-				Owner: "test_owner",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "test_owner",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "data is required",
 		},
 		{
 			name: "Invalid JSON Data",
-			board: model.Board{
-				Title: "Test Board",
-				Owner: "test_owner",
-				Data:  `{invalid json}`,
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "test_owner",
+				"data":  `{invalid json}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "data must be valid JSON",
 		},
 		{
 			name: "Valid JSON Data",
-			board: model.Board{
-				Title: "Test Board",
-				Owner: "test_owner",
-				Data:  `{"valid": "json"}`,
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "test_owner",
+				"data":  `{"valid": "json"}`,
 			},
 			expectedCode: http.StatusCreated,
 		},
@@ -132,26 +132,26 @@ func TestBoardValidation(t *testing.T) {
 		// Combined validation tests
 		{
 			name:          "All Fields Missing",
-			board:         model.Board{},
+			board:         map[string]string{},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
 		},
 		{
 			name: "All Fields Invalid",
-			board: model.Board{
-				Title: "a",
-				Owner: "b",
-				Data:  `{invalid}`,
+			board: map[string]string{
+				"title": "a",
+				"owner": "b",
+				"data":  `{invalid}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "title must be between 2 and 100 characters",
 		},
 		{
 			name: "All Fields Valid",
-			board: model.Board{
-				Title: "Valid Title",
-				Owner: "valid_owner",
-				Data:  `{"valid": "json"}`,
+			board: map[string]string{
+				"title": "Valid Title",
+				"owner": "valid_owner",
+				"data":  `{"valid": "json"}`,
 			},
 			expectedCode: http.StatusCreated,
 		},

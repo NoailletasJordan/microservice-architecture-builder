@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -11,13 +12,13 @@ import (
 )
 
 type Board struct {
-	ID        string     `json:"id,omitempty"`
+	ID        string     `json:"id,omitnil"`
 	Title     string     `json:"title"`
 	Owner     string     `json:"owner"`
 	Data      string     `json:"data"`
-	Password  *string    `json:"password,omitempty"`
-	Deleted   *time.Time `json:"deleted,omitempty"`
-	CreatedAt time.Time  `json:"created_at,omitempty"`
+	Password  *string    `json:"password,omitnil"`
+	Deleted   *time.Time `json:"deleted,omitnil"`
+	CreatedAt time.Time  `json:"created_at,omitnil"`
 }
 
 // Exported for use in controller
@@ -51,6 +52,13 @@ func isString(fl validator.FieldLevel) bool {
 // Exported for use in controller
 func ValidateMapCustom(validate *validator.Validate, body map[string]any, rulesMap map[string]any) error {
 	for key := range rulesMap {
+
+		// Skip validation if field is omitnil and not present in body
+		if strings.Contains(rulesMap[key].(string), "omitnil") {
+			if _, exists := body[key]; !exists {
+				continue
+			}
+		}
 
 		err := validate.Var(body[key], rulesMap[key].(string))
 		if err != nil {

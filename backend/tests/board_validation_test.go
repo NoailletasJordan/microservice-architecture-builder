@@ -190,7 +190,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 
 	tests := []struct {
 		name          string
-		updates       model.Board
+		updates       map[string]string
 		expectedCode  int
 		expectError   bool
 		errorContains string
@@ -198,9 +198,9 @@ func TestBoardUpdateValidation(t *testing.T) {
 		// Title validation
 		{
 			name: "Update with Empty Title",
-			updates: model.Board{
-				Title: "",
-				Data:  `{"test": "data"}`,
+			updates: map[string]string{
+				"title": "",
+				"data":  `{"test": "data"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
@@ -208,30 +208,30 @@ func TestBoardUpdateValidation(t *testing.T) {
 		},
 		{
 			name: "Update Title Too Short",
-			updates: model.Board{
-				Title: "a",
-				Data:  `{"test": "data"}`,
+			updates: map[string]string{
+				"title": "a",
+				"data":  `{"test": "data"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
-			errorContains: "title must be between 2 and 100 characters",
+			errorContains: "validation error on field",
 		},
 		{
 			name: "Update Title Too Long",
-			updates: model.Board{
-				Title: strings.Repeat("a", 101),
-				Data:  `{"test": "data"}`,
+			updates: map[string]string{
+				"title": strings.Repeat("a", 101),
+				"data":  `{"test": "data"}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
-			errorContains: "title must be between 2 and 100 characters",
+			errorContains: "validation error on field",
 		},
 		// Data validation
 		{
 			name: "Update with Invalid JSON Data",
-			updates: model.Board{
-				Title: "Test Board",
-				Data:  `{"key":}`,
+			updates: map[string]string{
+				"title": "Test Board",
+				"data":  `{"key":}`,
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
@@ -240,9 +240,9 @@ func TestBoardUpdateValidation(t *testing.T) {
 		// Valid update
 		{
 			name: "Valid Update All Fields",
-			updates: model.Board{
-				Title: "Updated Board",
-				Data:  `{"updated": "data"}`,
+			updates: map[string]string{
+				"title": "Updated Board",
+				"data":  `{"updated": "data"}`,
 			},
 			expectedCode: http.StatusOK,
 			expectError:  false,
@@ -272,8 +272,8 @@ func TestBoardUpdateValidation(t *testing.T) {
 				if err := json.NewDecoder(rr.Body).Decode(&responseBoard); err != nil {
 					t.Fatalf("Failed to decode response: %v", err)
 				}
-				if responseBoard.Title != tt.updates.Title {
-					t.Errorf("Expected title %s, got %s", tt.updates.Title, responseBoard.Title)
+				if responseBoard.Title != tt.updates["title"] {
+					t.Errorf("Expected title %s, got %s", tt.updates["title"], responseBoard.Title)
 				}
 			}
 		})

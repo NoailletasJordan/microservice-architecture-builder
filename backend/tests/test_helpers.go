@@ -54,15 +54,15 @@ func (ts *TestServer) Close() {
 
 // Helper function to create a test board
 func createTestBoard(t *testing.T, ts *TestServer) *model.Board {
-	board := &model.Board{
-		Title: "Test Board",
-		Owner: "test_owner",
-		Data:  `{"test": "data"}`,
+	board := map[string]string{
+		"title": "Test Board",
+		"owner": "test_owner",
+		"data":  `{"example": "data"}`,
 	}
 
 	rr := makeRequest(t, ts, "POST", "/api/board/", board)
 	if rr.Code != http.StatusCreated {
-		t.Fatalf("Failed to create test board: status %d", rr.Code)
+		t.Fatalf("Failed to create test board: status %d, body %s", rr.Code, rr.Body.String())
 	}
 	var created model.Board
 	if err := json.NewDecoder(rr.Body).Decode(&created); err != nil {
@@ -76,12 +76,7 @@ func makeRequest(t *testing.T, ts *TestServer, method, path string, body interfa
 	var reqBody []byte
 	var err error
 
-	switch v := body.(type) {
-	case nil:
-		// No body
-	case string:
-		reqBody = []byte(v)
-	default:
+	if body != nil {
 		reqBody, err = json.Marshal(body)
 		if err != nil {
 			t.Fatalf("Failed to marshal request body: %v", err)

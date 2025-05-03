@@ -65,8 +65,9 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 		"title":    "required,type-string,min=2,max=100",
 		"owner":    "required,type-string,min=2,max=50",
 		"data":     "required,type-string",
-		"password": "omitempty,type-string",
+		"password": "omitnil,type-string",
 	}
+
 	// Check for unknown keys
 	if err := model.ValidateMapCustom(model.GetValidator(), raw, rules); err != nil {
 		sendError(w, http.StatusBadRequest, err.Error())
@@ -158,9 +159,9 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 
 	// Define rules for PATCH (all fields optional, but must be allowed)
 	rules := map[string]any{
-		"title":    "omitempty,type-string,min=2,max=100",
-		"data":     "omitempty,type-string",
-		"password": "omitempty,type-string",
+		"title":    "omitnil,type-string,min=2,max=100",
+		"data":     "omitnil,type-string",
+		"password": "omitnil,type-string",
 	}
 
 	// Check if any valid keys are present

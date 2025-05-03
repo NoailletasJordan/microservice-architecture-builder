@@ -33,6 +33,12 @@ func sendError(w http.ResponseWriter, status int, message string) {
 	sendJSON(w, status, ErrorResponse{Error: message})
 }
 
+// isValidJSON checks if a string is valid JSON.
+func isValidJSON(s string) bool {
+	var js json.RawMessage
+	return json.Unmarshal([]byte(s), &js) == nil
+}
+
 // CreateBoard godoc
 // @Summary Create a new board
 // @Description Create a new board. Allowed fields: title (required), owner (required), data (required), password (optional). No other fields allowed.
@@ -68,13 +74,13 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate the data field as JSON
-	var js json.RawMessage
-	if err := json.Unmarshal([]byte(raw["data"].(string)), &js); err != nil {
+	if !isValidJSON(raw["data"].(string)) {
 		sendError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 
-	if err := c.service.CreateBoard(&raw); err != nil {
+	board, err := c.service.CreateBoard(&raw)
+	if err != nil {
 		if serviceError, ok := err.(*service.SupabaseError); ok {
 			sendError(w, serviceError.StatusCode, serviceError.Message)
 		} else {
@@ -83,7 +89,7 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sendJSON(w, http.StatusCreated, raw)
+	sendJSON(w, http.StatusCreated, board)
 }
 
 // GetAllBoards godoc
@@ -138,48 +144,57 @@ func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id} [patch]
 func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
+	yBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		sendError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
-	var raw map[string]interface{}
-	if err := json.Unmarshal(body, &raw); err != nil {
+
+	var body map[string]interface{}
+	if err := json.Unmarshal(yBody, &body); err != nil {
 		sendError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
+
 	// Define rules for PATCH (all fields optional, but must be allowed)
 	rules := map[string]any{
-		"title":    "type-string,min=2,max=100",
-		"data":     "type-string",
+		"title":    "omitempty,type-string,min=2,max=100",
+		"data":     "omitempty,type-string",
 		"password": "omitempty,type-string",
 	}
+
 	// Check if any valid keys are present
 	hasAtLeastOneRuleKey := false
-	for key := range raw {
+	for key := range body {
 		if _, exists := rules[key]; exists {
 			hasAtLeastOneRuleKey = true
 			break
 		}
 	}
+
 	if !hasAtLeastOneRuleKey {
 		sendError(w, http.StatusBadRequest, "at least one of title, data, password is required")
 		return
 	}
 
+	// Validate the data field as JSON
+	if data, ok := body["data"]; ok {
+		if !isValidJSON(data.(string)) {
+			sendError(w, http.StatusBadRequest, "Invalid request body")
+			return
+		}
+	}
+
 	// Validate the request body against the rules
-	if err := model.ValidateMapCustom(model.GetValidator(), raw, rules); err != nil {
+	if err := model.ValidateMapCustom(model.GetValidator(), body, rules); err != nil {
 		sendError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	var board model.Board
-	if err := json.Unmarshal(body, &board); err != nil {
-		sendError(w, http.StatusBadRequest, "Invalid request body")
-		return
-	}
 	id := chi.URLParam(r, "id")
-	if err := c.service.UpdateBoard(id, &board); err != nil {
+
+	board, err := c.service.UpdateBoard(id, &body)
+	if err != nil {
 		if se, ok := err.(*service.SupabaseError); ok {
 			sendError(w, se.StatusCode, se.Message)
 		} else {
@@ -187,6 +202,7 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
 	sendJSON(w, http.StatusOK, board)
 }
 

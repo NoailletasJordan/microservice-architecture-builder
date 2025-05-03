@@ -4,9 +4,12 @@ import (
 	"log"
 	"microservice-architecture-builder/backend/data"
 	"microservice-architecture-builder/backend/model"
+	"reflect"
 	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // Re-export SupabaseError for controller use
@@ -20,12 +23,13 @@ func NewBoardService(store *data.SupabaseStore) *BoardService {
 	return &BoardService{store: store}
 }
 
-func (s *BoardService) CreateBoard(entries *map[string]any) error {
+func (s *BoardService) CreateBoard(entries *map[string]any) (*model.Board, error) {
 	board := &model.Board{
 		Title: (*entries)["title"].(string),
 		Owner: (*entries)["owner"].(string),
 		Data:  (*entries)["data"].(string),
 	}
+
 	if password, ok := (*entries)["password"].(string); ok {
 		board.Password = &password
 	}
@@ -34,7 +38,7 @@ func (s *BoardService) CreateBoard(entries *map[string]any) error {
 	board.CreatedAt = time.Now().UTC()
 
 	// Validation is now handled in the controller
-	return s.store.Create(board)
+	return board, s.store.Create(board)
 }
 
 func (s *BoardService) GetAllBoards() []*model.Board {
@@ -45,9 +49,37 @@ func (s *BoardService) GetBoard(id string) (*model.Board, error) {
 	return s.store.GetByID(id)
 }
 
-func (s *BoardService) UpdateBoard(id string, board *model.Board) error {
-	// PATCH validation is handled in the controller using ValidatePatch
-	return s.store.Update(id, board)
+func (s *BoardService) UpdateBoard(id string, entries *map[string]any) (*model.Board, error) {
+	boardToUpdate, err := s.store.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	// Apply updates to the existing board
+	for key, value := range *entries {
+		if strValue, ok := value.(string); ok {
+			c := cases.Title(language.Und)
+			field := reflect.ValueOf(boardToUpdate).Elem().FieldByName(c.String(key))
+			if field.IsValid() && field.CanSet() {
+				if field.Kind() == reflect.Ptr {
+					// Handle pointer fields (like Password)
+					newValue := reflect.New(field.Type().Elem())
+					newValue.Elem().SetString(strValue)
+					field.Set(newValue)
+				} else if field.Kind() == reflect.String {
+					// Handle string fields directly
+					field.SetString(strValue)
+				}
+			}
+		}
+	}
+
+	err = s.store.Update(id, boardToUpdate)
+	if err != nil {
+		return nil, err
+	}
+
+	return boardToUpdate, nil
 }
 
 func (s *BoardService) DeleteBoard(id string) error {

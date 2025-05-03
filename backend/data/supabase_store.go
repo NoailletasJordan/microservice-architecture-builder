@@ -8,13 +8,9 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"reflect"
 	"time"
 
 	"microservice-architecture-builder/backend/model"
-
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 type SupabaseStore struct {
@@ -176,58 +172,20 @@ func (s *SupabaseStore) GetByID(id string) (*model.Board, error) {
 	return boards[0], nil
 }
 
-func (s *SupabaseStore) Update(id string, updates map[string]any) error {
-	existing, err := s.GetByID(id)
-	if err != nil {
-		return err
-	}
-
-	// Apply updates to the existing board
-	for key, value := range updates {
-		if strValue, ok := value.(string); ok {
-			c := cases.Title(language.Und)
-			field := reflect.ValueOf(existing).Elem().FieldByName(c.String(key))
-			if field.IsValid() && field.CanSet() {
-				if field.Kind() == reflect.Ptr {
-					// Handle pointer fields (like Password)
-					newValue := reflect.New(field.Type().Elem())
-					newValue.Elem().SetString(strValue)
-					field.Set(newValue)
-				} else if field.Kind() == reflect.String {
-					// Handle string fields directly
-					field.SetString(strValue)
-				}
-			}
-		}
-	}
-
-	// Do not update id or created_at from the input map
-	// Validate JSON data if data is present
-	if _, ok := updates["data"]; ok {
-		var js json.RawMessage
-		if err := json.Unmarshal([]byte(existing.Data), &js); err != nil {
-			return &SupabaseError{StatusCode: 400, Message: fmt.Sprintf("invalid JSON data: %v", err)}
-		}
-	}
-	payload, err := json.Marshal(existing)
-	if err != nil {
-		return err
-	}
-
+func (s *SupabaseStore) Update(id string, updatedBoard *model.Board) error {
 	url := getSupabaseUrl() + fmt.Sprintf("?id=eq.%s", id)
+
+	payload, err := json.Marshal(updatedBoard)
+	if err != nil {
+		return err
+	}
+
 	resp, err := s.doRequest("PATCH", url, s.headers(), payload)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
-	var boards []model.Board
-	if err := json.NewDecoder(resp.Body).Decode(&boards); err == nil {
-		if len(boards) == 0 {
-			return &SupabaseError{StatusCode: 404, Message: "board not found"}
-		}
-		*existing = boards[0]
-	}
 	return nil
 }
 

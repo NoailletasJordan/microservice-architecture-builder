@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"strings"
 	"testing"
 
 	"microservice-architecture-builder/backend/controller"
 	"microservice-architecture-builder/backend/data"
 	"microservice-architecture-builder/backend/model"
+	"microservice-architecture-builder/backend/server"
 	"microservice-architecture-builder/backend/service"
 
 	"github.com/go-chi/chi/v5"
@@ -29,14 +29,7 @@ func NewTestServer() *TestServer {
 	boardService := service.NewBoardService(store)
 	boardController := controller.NewBoardController(boardService)
 
-	r := chi.NewRouter()
-	r.Route("/api/board", func(r chi.Router) {
-		r.Post("/", boardController.CreateBoard)
-		r.Get("/", boardController.GetAllBoards)
-		r.Get("/{id}", boardController.GetBoard)
-		r.Patch("/{id}", boardController.UpdateBoard)
-		r.Delete("/{id}", boardController.DeleteBoard)
-	})
+	r := server.NewServer(boardController)
 
 	ts := httptest.NewServer(r)
 
@@ -90,26 +83,6 @@ func makeRequest(t *testing.T, ts *TestServer, method, path string, body interfa
 	ts.Router.ServeHTTP(rr, req)
 
 	return rr
-}
-
-// Helper function to generate a large JSON string with n key-value pairs
-func generateLargeJSON(n int) string {
-	var b strings.Builder
-	b.WriteString("{")
-	for i := 0; i < n; i++ {
-		if i > 0 {
-			b.WriteString(",")
-		}
-		b.WriteString("\"")
-		b.WriteString("key")
-		b.WriteString(string(rune('0' + (i % 10))))
-		b.WriteString("\":\"")
-		b.WriteString("value")
-		b.WriteString(string(rune('0' + (i % 10))))
-		b.WriteString("\"")
-	}
-	b.WriteString("}")
-	return b.String()
 }
 
 // Clean up all boards in Supabase after each test run

@@ -8,6 +8,8 @@ import (
 	"microservice-architecture-builder/backend/model"
 	"microservice-architecture-builder/backend/service"
 
+	"errors"
+
 	"github.com/go-chi/chi/v5"
 )
 
@@ -52,6 +54,11 @@ func isValidJSON(s string) bool {
 func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
+		var maxBytesErr *http.MaxBytesError
+		if errors.As(err, &maxBytesErr) {
+			sendError(w, http.StatusRequestEntityTooLarge, "request body too large")
+			return
+		}
 		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
 		return
 	}
@@ -147,6 +154,11 @@ func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
 func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 	yBody, err := io.ReadAll(r.Body)
 	if err != nil {
+		var maxBytesErr *http.MaxBytesError
+		if errors.As(err, &maxBytesErr) {
+			sendError(w, http.StatusRequestEntityTooLarge, "request body too large")
+			return
+		}
 		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
 		return
 	}

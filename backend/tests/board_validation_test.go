@@ -549,7 +549,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 				"data":  strings.Repeat("x", 4*1024*1024), // 4MB of x's
 			},
 			expectedCode: http.StatusRequestEntityTooLarge,
-			expectError:  false,
+			expectError:  true,
 		},
 		{
 			name: "Update With Extra Unexpected Field",

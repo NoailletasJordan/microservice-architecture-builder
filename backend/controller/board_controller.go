@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 
 	"microservice-architecture-builder/backend/model"
@@ -38,8 +39,6 @@ func isValidJSON(s string) bool {
 	return json.Unmarshal([]byte(s), &js) == nil
 }
 
-const MaxRequestBodySize = 3 * 1024 * 1024 // 3MB
-
 // CreateBoard godoc
 // @Summary Create a new board
 // @Description Create a new board. Allowed fields: title (required), owner (required), data (required), password (optional). No other fields allowed.
@@ -51,11 +50,14 @@ const MaxRequestBodySize = 3 * 1024 * 1024 // 3MB
 // @Failure 400 {object} ErrorResponse "Bad Request. Example: {\"error\": \"unexpected fields: [foo, bar]\"}"
 // @Router /board/ [post]
 func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
-	r.Body = http.MaxBytesReader(w, r.Body, MaxRequestBodySize)
-	var req map[string]string
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&req); err != nil {
-		http.Error(w, "Request body too large or invalid JSON", http.StatusRequestEntityTooLarge)
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
+		return
+	}
+	var raw map[string]interface{}
+	if err := json.Unmarshal(body, &raw); err != nil {
+		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
 		return
 	}
 	// Define rules for POST
@@ -67,18 +69,18 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check for unknown keys
-	if err := model.ValidateMapCustom(model.GetValidator(), req, rules); err != nil {
+	if err := model.ValidateMapCustom(model.GetValidator(), raw, rules); err != nil {
 		sendError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	// Validate the data field as JSON
-	if !isValidJSON(req["data"]) {
+	if !isValidJSON(raw["data"].(string)) {
 		sendError(w, http.StatusBadRequest, model.ErrorMessages.DataMustBeValidJSON)
 		return
 	}
 
-	board, err := c.service.CreateBoard(&req)
+	board, err := c.service.CreateBoard(&raw)
 	if err != nil {
 		if serviceError, ok := err.(*service.SupabaseError); ok {
 			sendError(w, serviceError.StatusCode, serviceError.Message)
@@ -143,11 +145,15 @@ func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id} [patch]
 func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
-	r.Body = http.MaxBytesReader(w, r.Body, MaxRequestBodySize)
+	yBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
+		return
+	}
+
 	var body map[string]interface{}
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&body); err != nil {
-		http.Error(w, "Request body too large or invalid JSON", http.StatusRequestEntityTooLarge)
+	if err := json.Unmarshal(yBody, &body); err != nil {
+		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
 		return
 	}
 

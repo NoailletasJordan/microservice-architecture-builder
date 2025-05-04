@@ -54,15 +54,15 @@ func (e *SupabaseError) Error() string { return e.Message }
 func normalizeErrorMessage(statusCode int) string {
 	switch statusCode {
 	case 404:
-		return "board not found"
+		return model.ErrorMessages.BoardNotFound
 	case 400:
-		return "bad request"
+		return model.ErrorMessages.BadRequest
 	case 401:
-		return "unauthorized"
+		return model.ErrorMessages.Unauthorized
 	case 403:
-		return "forbidden"
+		return model.ErrorMessages.Forbidden
 	default:
-		return "internal server error"
+		return model.ErrorMessages.InternalServerError
 	}
 }
 
@@ -167,7 +167,7 @@ func (s *SupabaseStore) GetByID(id string) (*model.Board, error) {
 		return nil, err
 	}
 	if len(boards) == 0 {
-		return nil, &SupabaseError{StatusCode: 404, Message: "board not found"}
+		return nil, &SupabaseError{StatusCode: 404, Message: model.ErrorMessages.BoardNotFound}
 	}
 	return boards[0], nil
 }
@@ -212,7 +212,7 @@ func (s *SupabaseStore) Delete(id string) error {
 	if err := json.Unmarshal(body, &boards); err == nil {
 		if len(boards) == 0 {
 			log.Printf("SupabaseStore.Delete: board not found for id=%s", id)
-			return &SupabaseError{StatusCode: 404, Message: "board not found"}
+			return &SupabaseError{StatusCode: 404, Message: model.ErrorMessages.BoardNotFound}
 		}
 		// If the board is returned (even with Deleted set), treat as success
 	}

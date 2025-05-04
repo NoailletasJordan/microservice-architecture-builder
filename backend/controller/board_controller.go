@@ -52,12 +52,12 @@ func isValidJSON(s string) bool {
 func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		sendError(w, http.StatusBadRequest, "Invalid request body")
+		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
 		return
 	}
 	var raw map[string]interface{}
 	if err := json.Unmarshal(body, &raw); err != nil {
-		sendError(w, http.StatusBadRequest, "Invalid request body")
+		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
 		return
 	}
 	// Define rules for POST
@@ -76,7 +76,7 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 
 	// Validate the data field as JSON
 	if !isValidJSON(raw["data"].(string)) {
-		sendError(w, http.StatusBadRequest, "data must be valid JSON")
+		sendError(w, http.StatusBadRequest, model.ErrorMessages.DataMustBeValidJSON)
 		return
 	}
 
@@ -147,13 +147,13 @@ func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
 func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 	yBody, err := io.ReadAll(r.Body)
 	if err != nil {
-		sendError(w, http.StatusBadRequest, "Invalid request body")
+		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
 		return
 	}
 
 	var body map[string]interface{}
 	if err := json.Unmarshal(yBody, &body); err != nil {
-		sendError(w, http.StatusBadRequest, "Invalid request body")
+		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
 		return
 	}
 
@@ -174,14 +174,14 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !hasAtLeastOneRuleKey {
-		sendError(w, http.StatusBadRequest, "at least one of title, data, password is required")
+		sendError(w, http.StatusBadRequest, model.ErrorMessages.AtLeastOneFieldRequired)
 		return
 	}
 
 	// Validate the data field as JSON
 	if data, ok := body["data"]; ok {
 		if !isValidJSON(data.(string)) {
-			sendError(w, http.StatusBadRequest, "data must be valid JSON")
+			sendError(w, http.StatusBadRequest, model.ErrorMessages.DataMustBeValidJSON)
 			return
 		}
 	}

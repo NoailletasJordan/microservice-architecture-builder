@@ -1,7 +1,7 @@
 package model
 
 import (
-	"fmt"
+	"errors"
 	"log"
 	"reflect"
 	"strings"
@@ -12,13 +12,13 @@ import (
 )
 
 type Board struct {
-	ID        string     `json:"id,omitnil"`
+	ID        string     `json:"id,omitempty"`
 	Title     string     `json:"title"`
 	Owner     string     `json:"owner"`
 	Data      string     `json:"data"`
-	Password  *string    `json:"password,omitnil"`
-	Deleted   *time.Time `json:"deleted,omitnil"`
-	CreatedAt time.Time  `json:"created_at,omitnil"`
+	Password  *string    `json:"password,omitempty"`
+	Deleted   *time.Time `json:"deleted,omitempty"`
+	CreatedAt time.Time  `json:"created_at,omitempty"`
 }
 
 // Exported for use in controller
@@ -67,7 +67,7 @@ func ValidateMapCustom(validate *validator.Validate, body map[string]any, rulesM
 				return err
 			}
 			if _, ok := err.(validator.ValidationErrors); ok {
-				return fmt.Errorf("validation error on field: %s, failed on tag %s", key, err.(validator.ValidationErrors)[0].ActualTag())
+				return errors.New(ValidationErrorOnField(key, err.(validator.ValidationErrors)[0].ActualTag()))
 			}
 		}
 
@@ -75,7 +75,7 @@ func ValidateMapCustom(validate *validator.Validate, body map[string]any, rulesM
 	// Check for extra fields in body that aren't in rules
 	for key := range body {
 		if _, exists := rulesMap[key]; !exists {
-			return fmt.Errorf("unexpected field in request body: %s", key)
+			return errors.New(UnexpectedFieldError(key))
 		}
 	}
 

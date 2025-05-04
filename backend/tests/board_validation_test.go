@@ -178,7 +178,7 @@ func TestBoardValidation(t *testing.T) {
 			errorContains: "validation error on field",
 		},
 		{
-			name: "Title With Special Characters",
+			name: "Title With Special Characters Allowed",
 			board: map[string]string{
 				"title": "!@#$%^&*()_+",
 				"owner": "test_owner",
@@ -187,7 +187,7 @@ func TestBoardValidation(t *testing.T) {
 			expectedCode: http.StatusCreated,
 		},
 		{
-			name: "Owner With Special Characters",
+			name: "Owner With Special Characters Allowed",
 			board: map[string]string{
 				"title": "Test Board",
 				"owner": "!@#$%^&*()_+",
@@ -196,22 +196,22 @@ func TestBoardValidation(t *testing.T) {
 			expectedCode: http.StatusCreated,
 		},
 		{
-			name: "Title With Unicode",
+			name: "Title With Unicode UNAllowed",
 			board: map[string]string{
 				"title": "测试🧪",
 				"owner": "test_owner",
 				"data":  `{"test": "data"}`,
 			},
-			expectedCode: http.StatusCreated,
+			expectedCode: http.StatusBadRequest,
 		},
 		{
-			name: "Owner With Unicode",
+			name: "Owner With Unicode UNAllowed",
 			board: map[string]string{
 				"title": "Test Board",
 				"owner": "测试🧪",
 				"data":  `{"test": "data"}`,
 			},
-			expectedCode: http.StatusCreated,
+			expectedCode: http.StatusBadRequest,
 		},
 		{
 			name: "Title At Min Length",
@@ -268,13 +268,13 @@ func TestBoardValidation(t *testing.T) {
 			expectedCode: http.StatusCreated,
 		},
 		{
-			name: "Data Field Large JSON",
+			name: "Data Field Large JSON (about 5MB)",
 			board: map[string]string{
 				"title": "Test Board",
 				"owner": "test_owner",
-				"data":  generateLargeJSON(1000),
+				"data":  generateLargeJSON(5000000),
 			},
-			expectedCode: http.StatusCreated,
+			expectedCode: http.StatusBadRequest,
 		},
 		{
 			name: "Extra Unexpected Field",
@@ -284,7 +284,8 @@ func TestBoardValidation(t *testing.T) {
 				"data":  `{"test": "data"}`,
 				"extra": "should be ignored or rejected",
 			},
-			expectedCode: http.StatusCreated, // or BadRequest if you want to reject extras
+			// TODO: Decide if extra fields should be ignored or rejected
+			expectedCode: http.StatusCreated,
 		},
 		{
 			name: "Null Fields",
@@ -295,6 +296,93 @@ func TestBoardValidation(t *testing.T) {
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
+		},
+		{
+			name: "Title With Accented Latin Characters",
+			board: map[string]string{
+				"title": "Café",
+				"owner": "test_owner",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "Title With Cyrillic Characters",
+			board: map[string]string{
+				"title": "Тест",
+				"owner": "test_owner",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorContains: "latin only",
+		},
+		{
+			name: "Title With Chinese Characters",
+			board: map[string]string{
+				"title": "测试",
+				"owner": "test_owner",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorContains: "latin only",
+		},
+		{
+			name: "Title With Emoji",
+			board: map[string]string{
+				"title": "Test 😊",
+				"owner": "test_owner",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorContains: "latin only",
+		},
+		{
+			name: "Owner With Accented Latin Characters",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "Renée",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "Owner With Cyrillic Characters",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "Иван",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorContains: "latin only",
+		},
+		{
+			name: "Owner With Chinese Characters",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "测试",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorContains: "latin only",
+		},
+		{
+			name: "Owner With Emoji",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "😊",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorContains: "latin only",
+		},
+		{
+			name: "Valid Latin Only Title and Owner",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "ValidOwner",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusCreated,
 		},
 	}
 
@@ -405,6 +493,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 				"title": "!@#$%^&*()_+",
 				"data":  `{"test": "data"}`,
 			},
+			// TODO: Decide if special characters should be allowed in title
 			expectedCode: http.StatusOK,
 			expectError:  false,
 		},
@@ -414,6 +503,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 				"title": "测试🧪",
 				"data":  `{"test": "data"}`,
 			},
+			// TODO: Decide if Unicode should be allowed in title
 			expectedCode: http.StatusOK,
 			expectError:  false,
 		},
@@ -450,6 +540,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 				"title": "Test Board",
 				"data":  `[]`,
 			},
+			// TODO: Decide if empty array is valid for data field
 			expectedCode: http.StatusOK,
 			expectError:  false,
 		},
@@ -459,6 +550,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 				"title": "Test Board",
 				"data":  generateLargeJSON(1000),
 			},
+			// TODO: Decide if there should be a max size for data field
 			expectedCode: http.StatusOK,
 			expectError:  false,
 		},
@@ -469,7 +561,8 @@ func TestBoardUpdateValidation(t *testing.T) {
 				"data":  `{"test": "data"}`,
 				"extra": "should be ignored or rejected",
 			},
-			expectedCode: http.StatusOK, // or BadRequest if you want to reject extras
+			// TODO: Decide if extra fields should be ignored or rejected
+			expectedCode: http.StatusOK,
 			expectError:  false,
 		},
 		{
@@ -497,6 +590,54 @@ func TestBoardUpdateValidation(t *testing.T) {
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
 			errorContains: "at least one of",
+		},
+		{
+			name: "Update Title With Accented Latin Characters",
+			updates: map[string]string{
+				"title": "Café",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusOK,
+			expectError:  false,
+		},
+		{
+			name: "Update Title With Cyrillic Characters",
+			updates: map[string]string{
+				"title": "Тест",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode:  http.StatusBadRequest,
+			expectError:   true,
+			errorContains: "latin only",
+		},
+		{
+			name: "Update Title With Chinese Characters",
+			updates: map[string]string{
+				"title": "测试",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode:  http.StatusBadRequest,
+			expectError:   true,
+			errorContains: "latin only",
+		},
+		{
+			name: "Update Title With Emoji",
+			updates: map[string]string{
+				"title": "Test 😊",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode:  http.StatusBadRequest,
+			expectError:   true,
+			errorContains: "latin only",
+		},
+		{
+			name: "Update With Valid Latin Only Title",
+			updates: map[string]string{
+				"title": "ValidTitle",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusOK,
+			expectError:  false,
 		},
 	}
 

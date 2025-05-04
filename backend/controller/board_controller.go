@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 
 	"microservice-architecture-builder/backend/model"
@@ -39,6 +38,8 @@ func isValidJSON(s string) bool {
 	return json.Unmarshal([]byte(s), &js) == nil
 }
 
+const MaxRequestBodySize = 3 * 1024 * 1024 // 3MB
+
 // CreateBoard godoc
 // @Summary Create a new board
 // @Description Create a new board. Allowed fields: title (required), owner (required), data (required), password (optional). No other fields allowed.
@@ -50,37 +51,34 @@ func isValidJSON(s string) bool {
 // @Failure 400 {object} ErrorResponse "Bad Request. Example: {\"error\": \"unexpected fields: [foo, bar]\"}"
 // @Router /board/ [post]
 func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
-		return
-	}
-	var raw map[string]interface{}
-	if err := json.Unmarshal(body, &raw); err != nil {
-		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
+	r.Body = http.MaxBytesReader(w, r.Body, MaxRequestBodySize)
+	var req map[string]string
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&req); err != nil {
+		http.Error(w, "Request body too large or invalid JSON", http.StatusRequestEntityTooLarge)
 		return
 	}
 	// Define rules for POST
 	rules := map[string]any{
-		"title":    "required,type-string,min=2,max=100",
-		"owner":    "required,type-string,min=2,max=50",
-		"data":     "required,type-string",
-		"password": "omitnil,type-string",
+		"title":    "required,type-string,min=2,max=100,isLatinOnly,notOnlyWhitespace",
+		"owner":    "required,type-string,min=2,max=50,isLatinOnly,notOnlyWhitespace",
+		"data":     "required,type-string,isLatinOnly,notOnlyWhitespace",
+		"password": "omitnil,type-string,isLatinOnly,notOnlyWhitespace",
 	}
 
 	// Check for unknown keys
-	if err := model.ValidateMapCustom(model.GetValidator(), raw, rules); err != nil {
+	if err := model.ValidateMapCustom(model.GetValidator(), req, rules); err != nil {
 		sendError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	// Validate the data field as JSON
-	if !isValidJSON(raw["data"].(string)) {
+	if !isValidJSON(req["data"]) {
 		sendError(w, http.StatusBadRequest, model.ErrorMessages.DataMustBeValidJSON)
 		return
 	}
 
-	board, err := c.service.CreateBoard(&raw)
+	board, err := c.service.CreateBoard(&req)
 	if err != nil {
 		if serviceError, ok := err.(*service.SupabaseError); ok {
 			sendError(w, serviceError.StatusCode, serviceError.Message)
@@ -145,23 +143,19 @@ func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id} [patch]
 func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
-	yBody, err := io.ReadAll(r.Body)
-	if err != nil {
-		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
-		return
-	}
-
+	r.Body = http.MaxBytesReader(w, r.Body, MaxRequestBodySize)
 	var body map[string]interface{}
-	if err := json.Unmarshal(yBody, &body); err != nil {
-		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&body); err != nil {
+		http.Error(w, "Request body too large or invalid JSON", http.StatusRequestEntityTooLarge)
 		return
 	}
 
 	// Define rules for PATCH (all fields optional, but must be allowed)
 	rules := map[string]any{
-		"title":    "omitnil,type-string,min=2,max=100",
-		"data":     "omitnil,type-string",
-		"password": "omitnil,type-string",
+		"title":    "omitnil,type-string,min=2,max=100,isLatinOnly,notOnlyWhitespace",
+		"data":     "omitnil,type-string,isLatinOnly,notOnlyWhitespace",
+		"password": "omitnil,type-string,isLatinOnly,notOnlyWhitespace",
 	}
 
 	// Check if any valid keys are present

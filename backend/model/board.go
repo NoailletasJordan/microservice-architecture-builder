@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"reflect"
+	"regexp"
 	"strings"
 	"time"
 
@@ -34,7 +35,28 @@ func GetValidator() *validator.Validate {
 		panic(err)
 	}
 
+	err = validate.RegisterValidation("isLatinOnly", IsLatinOnly)
+	if err != nil {
+		panic(err)
+	}
+
+	err = validate.RegisterValidation("notOnlyWhitespace", notOnlyWhitespace)
+	if err != nil {
+		panic(err)
+	}
+
 	return validate
+}
+
+func notOnlyWhitespace(fl validator.FieldLevel) bool {
+	value := fl.Field().String()
+	return strings.TrimSpace(value) != ""
+}
+
+func IsLatinOnly(fl validator.FieldLevel) bool {
+	// Allow only Latin script letters, numbers, punctuation, symbols, spaces
+	re := regexp.MustCompile(`^[\p{Latin}\p{N}\p{P}\p{S}\p{Zs}]+$`)
+	return re.MatchString(fl.Field().String())
 }
 
 func isValidUUID(fl validator.FieldLevel) bool {

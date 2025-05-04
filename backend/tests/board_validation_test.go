@@ -117,7 +117,7 @@ func TestBoardValidation(t *testing.T) {
 				"data":  `{invalid json}`,
 			},
 			expectedCode:  http.StatusBadRequest,
-			errorContains: "data must be valid JSON",
+			errorContains: model.ErrorMessages.DataMustBeValidJSON,
 		},
 		{
 			name: "Valid JSON Data",
@@ -154,6 +154,147 @@ func TestBoardValidation(t *testing.T) {
 				"data":  `{"valid": "json"}`,
 			},
 			expectedCode: http.StatusCreated,
+		},
+
+		// Additional robust test cases
+		{
+			name: "Title Only Whitespace",
+			board: map[string]string{
+				"title": "   ",
+				"owner": "test_owner",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorContains: "validation error on field",
+		},
+		{
+			name: "Owner Only Whitespace",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "   ",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorContains: "validation error on field",
+		},
+		{
+			name: "Title With Special Characters",
+			board: map[string]string{
+				"title": "!@#$%^&*()_+",
+				"owner": "test_owner",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "Owner With Special Characters",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "!@#$%^&*()_+",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "Title With Unicode",
+			board: map[string]string{
+				"title": "测试🧪",
+				"owner": "test_owner",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "Owner With Unicode",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "测试🧪",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "Title At Min Length",
+			board: map[string]string{
+				"title": generateLongString(2),
+				"owner": "test_owner",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "Title At Max Length",
+			board: map[string]string{
+				"title": generateLongString(100),
+				"owner": "test_owner",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "Owner At Min Length",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": generateLongString(2),
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "Owner At Max Length",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": generateLongString(50),
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "Data Field Empty Object",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "test_owner",
+				"data":  `{}`,
+			},
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "Data Field Empty Array",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "test_owner",
+				"data":  `[]`,
+			},
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "Data Field Large JSON",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "test_owner",
+				"data":  generateLargeJSON(1000),
+			},
+			expectedCode: http.StatusCreated,
+		},
+		{
+			name: "Extra Unexpected Field",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "test_owner",
+				"data":  `{"test": "data"}`,
+				"extra": "should be ignored or rejected",
+			},
+			expectedCode: http.StatusCreated, // or BadRequest if you want to reject extras
+		},
+		{
+			name: "Null Fields",
+			board: map[string]string{
+				"title": "",
+				"owner": "",
+				"data":  "",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorContains: "validation error on field",
 		},
 	}
 
@@ -235,7 +376,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
-			errorContains: "data must be valid JSON",
+			errorContains: model.ErrorMessages.DataMustBeValidJSON,
 		},
 		// Valid update
 		{
@@ -246,6 +387,116 @@ func TestBoardUpdateValidation(t *testing.T) {
 			},
 			expectedCode: http.StatusOK,
 			expectError:  false,
+		},
+		// Additional robust PATCH/Update test cases
+		{
+			name: "Update Title Only Whitespace",
+			updates: map[string]string{
+				"title": "   ",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode:  http.StatusBadRequest,
+			expectError:   true,
+			errorContains: "validation error on field",
+		},
+		{
+			name: "Update Title With Special Characters",
+			updates: map[string]string{
+				"title": "!@#$%^&*()_+",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusOK,
+			expectError:  false,
+		},
+		{
+			name: "Update Title With Unicode",
+			updates: map[string]string{
+				"title": "测试🧪",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusOK,
+			expectError:  false,
+		},
+		{
+			name: "Update Title At Min Length",
+			updates: map[string]string{
+				"title": generateLongString(2),
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusOK,
+			expectError:  false,
+		},
+		{
+			name: "Update Title At Max Length",
+			updates: map[string]string{
+				"title": generateLongString(100),
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode: http.StatusOK,
+			expectError:  false,
+		},
+		{
+			name: "Update Data Field Empty Object",
+			updates: map[string]string{
+				"title": "Test Board",
+				"data":  `{}`,
+			},
+			expectedCode: http.StatusOK,
+			expectError:  false,
+		},
+		{
+			name: "Update Data Field Empty Array",
+			updates: map[string]string{
+				"title": "Test Board",
+				"data":  `[]`,
+			},
+			expectedCode: http.StatusOK,
+			expectError:  false,
+		},
+		{
+			name: "Update Data Field Large JSON",
+			updates: map[string]string{
+				"title": "Test Board",
+				"data":  generateLargeJSON(1000),
+			},
+			expectedCode: http.StatusOK,
+			expectError:  false,
+		},
+		{
+			name: "Update With Extra Unexpected Field",
+			updates: map[string]string{
+				"title": "Test Board",
+				"data":  `{"test": "data"}`,
+				"extra": "should be ignored or rejected",
+			},
+			expectedCode: http.StatusOK, // or BadRequest if you want to reject extras
+			expectError:  false,
+		},
+		{
+			name: "Update With Null Fields",
+			updates: map[string]string{
+				"title": "",
+				"data":  "",
+			},
+			expectedCode:  http.StatusBadRequest,
+			expectError:   true,
+			errorContains: "validation error on field",
+		},
+		{
+			name: "PATCH With Only Forbidden Field",
+			updates: map[string]string{
+				"owner": "new_owner",
+			},
+			expectedCode:  http.StatusBadRequest,
+			expectError:   true,
+			errorContains: "at least one of",
+		},
+		{
+			name:          "PATCH With No Fields",
+			updates:       map[string]string{},
+			expectedCode:  http.StatusBadRequest,
+			expectError:   true,
+			errorContains: "at least one of",
 		},
 	}
 

@@ -97,6 +97,26 @@ func generateLongString(length int) string {
 	return strings.Repeat("a", length)
 }
 
+// Helper function to generate a large JSON string with n key-value pairs
+func generateLargeJSON(n int) string {
+	var b strings.Builder
+	b.WriteString("{")
+	for i := 0; i < n; i++ {
+		if i > 0 {
+			b.WriteString(",")
+		}
+		b.WriteString("\"")
+		b.WriteString("key")
+		b.WriteString(string(rune('0' + (i % 10))))
+		b.WriteString("\":\"")
+		b.WriteString("value")
+		b.WriteString(string(rune('0' + (i % 10))))
+		b.WriteString("\"")
+	}
+	b.WriteString("}")
+	return b.String()
+}
+
 // Clean up all boards in Supabase after each test run
 func cleanupSupabaseBoards() {
 	client := &http.Client{}

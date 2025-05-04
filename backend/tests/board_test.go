@@ -63,7 +63,7 @@ func TestCreateBoard(t *testing.T) {
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
-			errorContains: "data must be valid JSON",
+			errorContains: model.ErrorMessages.DataMustBeValidJSON,
 		},
 		{
 			name: "With Optional Password",
@@ -172,7 +172,7 @@ func TestGetBoard(t *testing.T) {
 			boardID:       "non-existent-id",
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
-			errorContains: "board not found",
+			errorContains: model.ErrorMessages.BoardNotFound,
 		},
 	}
 
@@ -241,7 +241,7 @@ func TestUpdateBoard(t *testing.T) {
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
-			errorContains: "data must be valid JSON",
+			errorContains: model.ErrorMessages.DataMustBeValidJSON,
 		},
 		{
 			name:          "Missing Required Fields",
@@ -260,7 +260,7 @@ func TestUpdateBoard(t *testing.T) {
 			},
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
-			errorContains: "board not found",
+			errorContains: model.ErrorMessages.BoardNotFound,
 		},
 	}
 
@@ -359,14 +359,14 @@ func TestDeleteBoard(t *testing.T) {
 			boardID:       "non-existent-id",
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
-			errorContains: "board not found",
+			errorContains: model.ErrorMessages.BoardNotFound,
 		},
 		{
 			name:          "Already Deleted Board",
 			boardID:       board.ID,
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
-			errorContains: "board not found",
+			errorContains: model.ErrorMessages.BoardNotFound,
 		},
 	}
 

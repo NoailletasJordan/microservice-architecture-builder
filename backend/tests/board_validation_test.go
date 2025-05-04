@@ -502,8 +502,9 @@ func TestBoardUpdateValidation(t *testing.T) {
 				"title": "测试测试🧪🧪",
 				"data":  `{"test": "data"}`,
 			},
-			expectedCode: http.StatusBadRequest,
-			expectError:  false,
+			expectedCode:  http.StatusBadRequest,
+			expectError:   true,
+			errorContains: "validation error on field",
 		},
 		{
 			name: "Update Title At Min Length",

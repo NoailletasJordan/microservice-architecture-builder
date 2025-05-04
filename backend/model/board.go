@@ -35,7 +35,7 @@ func GetValidator() *validator.Validate {
 		panic(err)
 	}
 
-	err = validate.RegisterValidation("isLatinOnly", IsLatinOnly)
+	err = validate.RegisterValidation("isLatinOnly", isLatinOnly)
 	if err != nil {
 		panic(err)
 	}
@@ -53,10 +53,33 @@ func notOnlyWhitespace(fl validator.FieldLevel) bool {
 	return strings.TrimSpace(value) != ""
 }
 
-func IsLatinOnly(fl validator.FieldLevel) bool {
-	// Allow only Latin script letters, numbers, punctuation, symbols, spaces
-	re := regexp.MustCompile(`^[\p{Latin}\p{N}\p{P}\p{S}\p{Zs}]+$`)
-	return re.MatchString(fl.Field().String())
+func isLatinOnly(fl validator.FieldLevel) bool {
+	// Allows Latin letters, numbers, punctuation, common symbols, and space
+	// Explicitly disallows emoji (typically outside BMP or in \p{So})
+	re := regexp.MustCompile(`^[\p{Latin}\p{N}\p{P}\p{Zs}\p{Sm}\p{Sc}\p{Sk}]+$`)
+	str := fl.Field().String()
+
+	if !re.MatchString(str) {
+		return false
+	}
+
+	// Extra emoji ban: catch Unicode characters in typical emoji ranges
+	for _, r := range str {
+		switch {
+		case r >= 0x1F000 && r <= 0x1FFFF: // Emoji & Symbols Supplement
+			return false
+		case r >= 0x2700 && r <= 0x27BF: // Dingbats (some emojis)
+			return false
+		case r >= 0x1F900 && r <= 0x1F9FF: // Supplemental Symbols and Pictographs
+			return false
+		case r >= 0xFE00 && r <= 0xFE0F: // Variation Selectors (emoji modifiers)
+			return false
+		case r >= 0x1F300 && r <= 0x1F5FF: // Misc Symbols and Pictographs
+			return false
+		}
+	}
+
+	return true
 }
 
 func isValidUUID(fl validator.FieldLevel) bool {

@@ -13,140 +13,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func TestCreateBoard(t *testing.T) {
-	ts := NewTestServer()
-	defer ts.Close()
-
-	tests := []struct {
-		name          string
-		board         map[string]string
-		expectedCode  int
-		expectError   bool
-		errorContains string
-	}{
-		{
-			name: "Valid Board",
-			board: map[string]string{
-				"title": "Test Board",
-				"owner": "test_owner",
-				"data":  `{"example": "data"}`,
-			},
-			expectedCode: http.StatusCreated,
-			expectError:  false,
-		},
-		{
-			name: "Missing Title",
-			board: map[string]string{
-				"owner": "test_owner",
-				"data":  `{"example": "data"}`,
-			},
-			expectedCode:  http.StatusBadRequest,
-			expectError:   true,
-			errorContains: "validation error on field",
-		},
-		{
-			name: "Missing Owner",
-			board: map[string]string{
-				"title": "Test Board",
-				"data":  `{"example": "data"}`,
-			},
-			expectedCode:  http.StatusBadRequest,
-			expectError:   true,
-			errorContains: "validation error on field",
-		},
-		{
-			name: "Invalid JSON Data",
-			board: map[string]string{
-				"title": "Test Board",
-				"owner": "test_owner",
-				"data":  `{"BROKENSJSON": "data`,
-			},
-			expectedCode:  http.StatusBadRequest,
-			expectError:   true,
-			errorContains: model.ErrorMessages.DataMustBeValidJSON,
-		},
-		{
-			name: "With Optional Password",
-			board: map[string]string{
-				"title":    "Test Board",
-				"owner":    "test_owner",
-				"data":     `{"example": "data"}`,
-				"password": "secret123",
-			},
-			expectedCode: http.StatusCreated,
-			expectError:  false,
-		},
-		{
-			name: "Very Long Title",
-			board: map[string]string{
-				"title": generateLongString(101),
-				"owner": "test_owner",
-				"data":  `{"example": "data"}`,
-			},
-			expectedCode:  http.StatusBadRequest,
-			expectError:   true,
-			errorContains: "validation error on field",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			rr := makeRequest(t, ts, "POST", "/api/board/", tt.board)
-
-			if tt.expectError {
-				if rr.Code != tt.expectedCode {
-					t.Errorf("Expected error status code %d, got %d", tt.expectedCode, rr.Code)
-				}
-				var errResp map[string]string
-				if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
-					t.Fatalf("Failed to decode error response: %v", err)
-				}
-				if errMsg, ok := errResp["error"]; !ok || !contains(errMsg, tt.errorContains) {
-					t.Errorf("Expected error containing '%s', got '%s'", tt.errorContains, errMsg)
-				}
-			} else {
-				t.Logf("Response: %+v", rr.Body)
-
-				if rr.Code != tt.expectedCode {
-					t.Errorf("Expected status code %d, got %d", tt.expectedCode, rr.Code)
-				}
-				var board model.Board
-				if err := json.NewDecoder(rr.Body).Decode(&board); err != nil {
-					t.Fatalf("Failed to decode response: %v", err)
-				}
-				if board.ID == "" {
-					t.Error("Expected board ID to be set")
-				}
-				if board.CreatedAt.IsZero() {
-					t.Error("Expected CreatedAt to be set")
-				}
-			}
-		})
-	}
-
-	// Extra: test POST with extra keys
-	t.Run("Extra Keys in POST", func(t *testing.T) {
-		raw := map[string]string{
-			"title": "Test Board",
-			"owner": "test_owner",
-			"data":  `{"test":"data"}`,
-			"foo":   "123",
-			"bar":   "baz",
-		}
-		rr := makeRequest(t, ts, "POST", "/api/board/", raw)
-		if rr.Code != http.StatusBadRequest {
-			t.Errorf("Expected 400 for extra keys, got %d", rr.Code)
-		}
-		var errResp map[string]string
-		if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
-			t.Fatalf("Failed to decode error response: %v", err)
-		}
-		if errMsg, ok := errResp["error"]; !ok || !(contains(errMsg, "foo") || contains(errMsg, "bar")) {
-			t.Errorf("Expected error listing extra keys, got '%s'", errMsg)
-		}
-	})
-}
-
 func TestGetBoard(t *testing.T) {
 	ts := NewTestServer()
 	defer ts.Close()
@@ -188,7 +54,7 @@ func TestGetBoard(t *testing.T) {
 				if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 					t.Fatalf("Failed to decode error response: %v", err)
 				}
-				if errMsg, ok := errResp["error"]; !ok || !contains(errMsg, tt.errorContains) {
+				if errMsg, ok := errResp["error"]; !ok || !strings.Contains(errMsg, tt.errorContains) {
 					t.Errorf("Expected error containing '%s', got '%s'", tt.errorContains, errMsg)
 				}
 			} else {
@@ -276,7 +142,7 @@ func TestUpdateBoard(t *testing.T) {
 				if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 					t.Fatalf("Failed to decode error response: %v", err)
 				}
-				if errMsg, ok := errResp["error"]; !ok || !contains(errMsg, tt.errorContains) {
+				if errMsg, ok := errResp["error"]; !ok || !strings.Contains(errMsg, tt.errorContains) {
 					t.Errorf("Expected error containing '%s', got '%s'", tt.errorContains, errMsg)
 				}
 			} else {
@@ -310,7 +176,7 @@ func TestUpdateBoard(t *testing.T) {
 		if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 			t.Fatalf("Failed to decode error response: %v", err)
 		}
-		if errMsg, ok := errResp["error"]; !ok || !(contains(errMsg, "foo") || contains(errMsg, "bar")) {
+		if errMsg, ok := errResp["error"]; !ok || !(strings.Contains(errMsg, "foo") || strings.Contains(errMsg, "bar")) {
 			t.Errorf("Expected error listing extra keys, got '%s'", errMsg)
 		}
 	})
@@ -328,7 +194,7 @@ func TestUpdateBoard(t *testing.T) {
 		if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 			t.Fatalf("Failed to decode error response: %v", err)
 		}
-		if errMsg, ok := errResp["error"]; !ok || !contains(errMsg, "at least one of title, data, password is required") {
+		if errMsg, ok := errResp["error"]; !ok || !strings.Contains(errMsg, "at least one of title, data, password is required") {
 			t.Errorf("Expected error for missing allowed fields, got '%s'", errMsg)
 		}
 	})
@@ -382,7 +248,7 @@ func TestDeleteBoard(t *testing.T) {
 				if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 					t.Fatalf("Failed to decode error response: %v", err)
 				}
-				if errMsg, ok := errResp["error"]; !ok || !contains(errMsg, tt.errorContains) {
+				if errMsg, ok := errResp["error"]; !ok || !strings.Contains(errMsg, tt.errorContains) {
 					t.Errorf("Expected error, name: %s, containing '%s', got '%s'", tt.name, tt.errorContains, errMsg)
 				}
 			} else {
@@ -474,11 +340,6 @@ func TestListBoards(t *testing.T) {
 		t.Errorf("Not all expected boards were found. Board1 found: %v, Board2 found: %v",
 			found1, found2)
 	}
-}
-
-// Helper function to check if a string contains another string
-func contains(s, substr string) bool {
-	return strings.Contains(s, substr)
 }
 
 func TestMain(m *testing.M) {

@@ -92,11 +92,6 @@ func makeRequest(t *testing.T, ts *TestServer, method, path string, body interfa
 	return rr
 }
 
-// Helper function to generate a long string of specified length
-func generateLongString(length int) string {
-	return strings.Repeat("a", length)
-}
-
 // Helper function to generate a large JSON string with n key-value pairs
 func generateLargeJSON(n int) string {
 	var b strings.Builder

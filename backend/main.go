@@ -48,6 +48,7 @@ func main() {
 	// Middleware
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(MaxBodySizeMiddleware)
 
 	// Routes
 	r.Route("/api/board", func(r chi.Router) {

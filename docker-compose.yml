@@ -11,7 +11,9 @@ services:
     volumes:
       - ./backend/data:/app/data
     depends_on:
-      - db_local
+      db_local:
+        condition: service_healthy
+    restart: on-failure
 
   db_local:
     image: postgres:latest
@@ -25,6 +27,13 @@ services:
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
       - ./postgres/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
 
   pgadmin:
     image: dpage/pgadmin4

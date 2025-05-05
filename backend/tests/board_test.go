@@ -2,7 +2,6 @@ package tests
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -356,22 +355,6 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 	defer store.DB().Close()
-
-	// Create test database if it doesn't exist
-	_, err = store.DB().Exec("CREATE DATABASE IF EXISTS mas_test")
-	if err != nil {
-		panic(err)
-	}
-
-	sqlBytes, err := ioutil.ReadFile("../../postgres/init-db.sql")
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = store.DB().Exec(string(sqlBytes))
-	if err != nil {
-		panic(err)
-	}
 
 	cleanupTestBoards() // Clean before tests
 	code := m.Run()

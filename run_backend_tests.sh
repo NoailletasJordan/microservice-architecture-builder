@@ -12,10 +12,8 @@ until docker exec postgres pg_isready -U postgres; do
   sleep 1
 done
 
-# Run backend tests (assuming from the backend directory)
-cd backend
-go test -count=1 ./tests/...
-cd ..
+# Run Go backend tests inside the running backend Docker container
+docker-compose exec backend go test -count=1 ./tests/... -v
 
 # Bring down the database container after tests complete
 docker-compose down 

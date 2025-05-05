@@ -2,10 +2,10 @@
 set -e
 
 # Wait until PostgreSQL is ready
-until pg_isready -U "${POSTGRES_USER:-postgres}" -h localhost; do
-  echo "Waiting for PostgreSQL to be ready..."
-  sleep 1
-done
+# until pg_isready -U "${POSTGRES_USER:-postgres}" -h localhost; do
+#   echo "Waiting for PostgreSQL to be ready..."
+#   sleep 1
+# done
 
 # Run SQL in the default database
 echo "Running schema in default database..."

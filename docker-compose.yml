@@ -3,17 +3,20 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      target: dev  # Use the dev stage for development
     container_name: backend
     ports:
       - "8080:8080"
     env_file:
       - ./backend/.env
     volumes:
-      - ./backend/data:/app/data
+      - ./backend:/app  # Mount entire backend directory for hot reloading
     depends_on:
       db_local:
         condition: service_healthy
     restart: on-failure
+    working_dir: /app
+    command: air -c .air.toml
 
   db_local:
     image: postgres:latest
@@ -34,7 +37,6 @@ services:
       retries: 5
       start_period: 10s
 
-
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -45,7 +47,4 @@ services:
       - "5050:80"
     depends_on:
       - db_local
-
-volumes:
-  postgres_data:
-  postgres_test_data: 
+    restart: on-failure

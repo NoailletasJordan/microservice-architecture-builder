@@ -345,6 +345,7 @@ func TestListBoards(t *testing.T) {
 
 func TestMain(m *testing.M) {
 	err := godotenv.Load("../.env")
+
 	if err != nil {
 		log.Fatalf("Failed to load environment variables: %v", err)
 	}

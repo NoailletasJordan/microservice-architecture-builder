@@ -2,12 +2,14 @@ package tests
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 	"testing"
 
+	"microservice-architecture-builder/backend/data"
 	"microservice-architecture-builder/backend/model"
 
 	"github.com/joho/godotenv"
@@ -348,8 +350,31 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Failed to load environment variables: %v", err)
 	}
 
-	cleanupBoards() // Clean before tests
+	var testDSN = os.Getenv("POSTGRES_TEST_DSN")
+	store, err := data.NewPostgresStore(testDSN)
+	if err != nil {
+		panic(err)
+	}
+	defer store.DB().Close()
+
+	// Create test database if it doesn't exist
+	_, err = store.DB().Exec("CREATE DATABASE IF EXISTS mas_test")
+	if err != nil {
+		panic(err)
+	}
+
+	sqlBytes, err := ioutil.ReadFile("../../postgres/init-db.sql")
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = store.DB().Exec(string(sqlBytes))
+	if err != nil {
+		panic(err)
+	}
+
+	cleanupTestBoards() // Clean before tests
 	code := m.Run()
-	cleanupBoards() // Clean after tests
+	cleanupTestBoards() // Clean after tests
 	os.Exit(code)
 }

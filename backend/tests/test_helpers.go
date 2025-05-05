@@ -3,6 +3,7 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -14,10 +15,8 @@ import (
 	"microservice-architecture-builder/backend/server"
 	"microservice-architecture-builder/backend/service"
 
-	"io/ioutil"
-	"strings"
-
 	"github.com/go-chi/chi/v5"
+	_ "github.com/lib/pq"
 )
 
 type TestServer struct {
@@ -27,10 +26,12 @@ type TestServer struct {
 	Controller *controller.BoardController
 }
 
-func NewTestServerWithDSN(dsn string) *TestServer {
-	ensureTestTable(dsn)
-	store, err := data.NewPostgresStore(dsn)
+func NewTestServer() *TestServer {
+	var testDSN = os.Getenv("POSTGRES_TEST_DSN")
+
+	store, err := data.NewPostgresStore(testDSN)
 	if err != nil {
+		log.Fatalf("Failed to connect to PostgreSQL: %v", err)
 		panic(err)
 	}
 	boardService := service.NewBoardService(store)
@@ -46,14 +47,6 @@ func NewTestServerWithDSN(dsn string) *TestServer {
 		Service:    boardService,
 		Controller: boardController,
 	}
-}
-
-func NewTestServer() *TestServer {
-	testDSN := os.Getenv("POSTGRES_TEST_DSN")
-	if testDSN == "" {
-		testDSN = "host=localhost port=5432 user=postgres password=postgres dbname=mas_test sslmode=disable"
-	}
-	return NewTestServerWithDSN(testDSN)
 }
 
 func (ts *TestServer) Close() {
@@ -100,36 +93,12 @@ func makeRequest(t *testing.T, ts *TestServer, method, path string, body interfa
 	return rr
 }
 
-// Clean up all boards in the database after each test run
-func cleanupBoardsWithDSN(dsn string) {
-	store, err := data.NewPostgresStore(dsn)
-	if err != nil {
-		panic(err)
-	}
-	store.DB().Exec("DELETE FROM tests")
-}
-
-func cleanupBoards() {
+func cleanupTestBoards() {
 	testDSN := os.Getenv("POSTGRES_TEST_DSN")
-	if testDSN == "" {
-		testDSN = "host=localhost port=5432 user=postgres password=postgres dbname=mas_test sslmode=disable"
-	}
-	cleanupBoardsWithDSN(testDSN)
-}
-
-// Ensure the 'tests' table exists with the same schema as 'boards'
-func ensureTestTable(dsn string) {
-	store, err := data.NewPostgresStore(dsn)
+	store, err := data.NewPostgresStore(testDSN)
 	if err != nil {
 		panic(err)
 	}
-	sqlBytes, err := ioutil.ReadFile("../../postgres/init-db.sql")
-	if err != nil {
-		panic(err)
-	}
-	sqlStr := strings.ReplaceAll(string(sqlBytes), "boards", "tests")
-	_, err = store.DB().Exec(sqlStr)
-	if err != nil {
-		panic(err)
-	}
+	defer store.DB().Close()
+	store.DB().Exec("DELETE FROM tests")
 }

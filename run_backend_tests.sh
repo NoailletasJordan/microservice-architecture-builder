@@ -14,7 +14,7 @@ done
 
 # Run backend tests (assuming from the backend directory)
 cd backend
-go test ./tests/...
+go test -count=1 ./tests/...
 cd ..
 
 # Bring down the database container after tests complete

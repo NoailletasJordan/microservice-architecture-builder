@@ -3,7 +3,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      target: dev  # Use the dev stage for development
+      target: builder # Use the builder stage for production
     container_name: backend
     ports:
       - "8080:8080"

@@ -39,29 +39,41 @@ VITE_POSTHOG_HOST=
 VITE_POSTHOG_REVERSE_PROXY_URL=
 ```
 
-### Backend Supabase Environment Variables
+### Backend Database Environment Variables
 
-For production, set these in your `.env` file:
-
-```
-SUPABASE_URL=
-SUPABASE_PUBLIC_ANON_KEY=
-SUPABASE_PROJECT_ID=
-```
-
-For backend tests, set the following in your `.env` file. These will be used automatically when running `go test`:
+For backend and tests, set these in your `.env` file:
 
 ```
-TEST_SUPABASE_URL=
-TEST_SUPABASE_PUBLIC_ANON_KEY=
-TEST_SUPABASE_PROJECT_ID=
+# Main database for development/production
+POSTGRES_DSN=host=localhost port=5432 user=postgres password=postgres dbname=mas sslmode=disable
+
+# Separate test database (used by tests only)
+POSTGRES_TEST_DSN=host=localhost port=5432 user=postgres password=postgres dbname=mas_test sslmode=disable
 ```
 
-**How it works:**
+- The backend will use `POSTGRES_DSN` for normal operation.
+- The test suite will use `POSTGRES_TEST_DSN` for isolation and safety.
 
-- When running backend tests, the test runner will override the production Supabase environment variables with the test equivalents if they are set.
-- All backend code will transparently use the test Supabase project for all database operations during tests.
-- The test database is not initialized with schema or seed data by the test runner, and is cleaned after each test run.
+No Supabase-specific environment variables are required unless you use Supabase as a direct PostgreSQL host (in which case, use the connection string they provide as your DSN).
+
+## Database Configuration
+
+This project uses a PostgreSQL database for all board data. You can use either a local PostgreSQL instance or a Supabase-hosted PostgreSQL instance by setting the `POSTGRES_DSN` environment variable.
+
+### .env Example
+
+```
+# Local development
+POSTGRES_DSN=host=localhost port=5432 user=postgres password=postgres dbname=mas sslmode=disable
+
+# For Supabase, use the connection string from your Supabase dashboard:
+# POSTGRES_DSN=postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require
+```
+
+- For local development, use the first line.
+- For deployment on Supabase, copy your Supabase PostgreSQL connection string from the Supabase dashboard and set it as `POSTGRES_DSN`.
+
+No code changes are needed to switch between local and Supabase—just update the environment variable.
 
 ## 🤝 Contributing
 

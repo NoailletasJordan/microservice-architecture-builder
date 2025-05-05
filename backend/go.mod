@@ -7,6 +7,7 @@ require (
 	github.com/go-playground/validator/v10 v10.26.0
 	github.com/google/uuid v1.5.0
 	github.com/joho/godotenv v1.5.1
+	github.com/lib/pq v1.10.9
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.4
 	golang.org/x/text v0.22.0

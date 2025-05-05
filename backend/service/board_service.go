@@ -2,7 +2,6 @@ package service
 
 import (
 	"log"
-	"microservice-architecture-builder/backend/data"
 	"microservice-architecture-builder/backend/model"
 	"reflect"
 	"time"
@@ -12,14 +11,19 @@ import (
 	"golang.org/x/text/language"
 )
 
-// Re-export SupabaseError for controller use
-type SupabaseError = data.SupabaseError
-
-type BoardService struct {
-	store *data.SupabaseStore
+type BoardStore interface {
+	Create(*model.Board) error
+	GetAll() []*model.Board
+	GetByID(string) (*model.Board, error)
+	Update(string, *model.Board) error
+	Delete(string) error
 }
 
-func NewBoardService(store *data.SupabaseStore) *BoardService {
+type BoardService struct {
+	store BoardStore
+}
+
+func NewBoardService(store BoardStore) *BoardService {
 	return &BoardService{store: store}
 }
 

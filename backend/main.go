@@ -35,7 +35,11 @@ func main() {
 	}
 
 	// Initialize dependencies
-	store := data.NewSupabaseStore()
+	dsn := os.Getenv("POSTGRES_DSN")
+	store, err := data.NewPostgresStore(dsn)
+	if err != nil {
+		log.Fatalf("Failed to connect to PostgreSQL: %v", err)
+	}
 	boardService := service.NewBoardService(store)
 	boardController := controller.NewBoardController(boardService)
 

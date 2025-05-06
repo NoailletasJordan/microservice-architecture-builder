@@ -7,15 +7,14 @@ COPY . .
 RUN go build -o backend main.go
 
 # Stage 2: Development stage with hot reload
-# FROM golang:1.24.2-alpine AS dev
-# WORKDIR /app
-# # Install air for hot reloading
-# RUN go install github.com/air-verse/air@latest
-# COPY go.mod go.sum ./
-# RUN go mod download
-# COPY . .
-# EXPOSE 8080
-# CMD ["air", "-c", ".air.toml"]
+FROM golang:1.24.2-alpine AS dev
+WORKDIR /app
+RUN go install github.com/air-verse/air@latest
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+EXPOSE 8080
+CMD ["air", "-c", ".air.toml"]
 
 # Stage 3: Production stage
 FROM alpine:latest

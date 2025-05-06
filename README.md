@@ -31,49 +31,31 @@ npm install
 npm run dev
 ```
 
-## 🔑 Environment Variables
+## 🔑 Environment Variables with Local Development Value Sample (root .env)
 
 ```bash
+# Local PostgreSQL data directory (created and managed by Docker, db_local is the service name)
+POSTGRES_DSN=host=db_local port=5432 user=postgres password=postgres dbname=database sslmode=disable
+
+# For running tests, use the same connection string but set dbname to 'test' (enforced):
+POSTGRES_DSN=host=db_local port=5432 user=postgres password=postgres dbname=test sslmode=disable
+
 VITE_POSTHOG_KEY=
 VITE_POSTHOG_HOST=
-VITE_POSTHOG_REVERSE_PROXY_URL=
+VITE_POSTHOG_REVERSE_PROXY_URL=<frontend-url>/ingest
 ```
 
-### Backend Database Environment Variables
+## 🏃‍♂️ Development Mode
 
-For backend and tests, set these in your `.env` file:
+To start the project in development mode (with hot reloading for both backend and frontend), simply run:
 
-```
-# Main database for development/production
-POSTGRES_DSN=host=localhost port=5432 user=postgres password=postgres dbname=mas sslmode=disable
-
-# Separate test database (used by tests only)
-POSTGRES_TEST_DSN=host=localhost port=5432 user=postgres password=postgres dbname=mas_test sslmode=disable
+```bash
+make dev
 ```
 
-- The backend will use `POSTGRES_DSN` for normal operation.
-- The test suite will use `POSTGRES_TEST_DSN` for isolation and safety.
+This command will start all necessary Docker containers for local development.
 
-No Supabase-specific environment variables are required unless you use Supabase as a direct PostgreSQL host (in which case, use the connection string they provide as your DSN).
-
-## Database Configuration
-
-This project uses a PostgreSQL database for all board data. You can use either a local PostgreSQL instance or a Supabase-hosted PostgreSQL instance by setting the `POSTGRES_DSN` environment variable.
-
-### .env Example
-
-```
-# Local development
-POSTGRES_DSN=host=localhost port=5432 user=postgres password=postgres dbname=mas sslmode=disable
-
-# For Supabase, use the connection string from your Supabase dashboard:
-# POSTGRES_DSN=postgresql://USER:PASSWORD@HOST:PORT/DATABASE?sslmode=require
-```
-
-- For local development, use the first line.
-- For deployment on Supabase, copy your Supabase PostgreSQL connection string from the Supabase dashboard and set it as `POSTGRES_DSN`.
-
-No code changes are needed to switch between local and Supabase—just update the environment variable.
+**Note:** Make sure you have the root `.env` file properly set up before running this command, as it is required for the services to start correctly.
 
 ## 🤝 Contributing
 

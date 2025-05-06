@@ -22,4 +22,5 @@ FROM alpine:latest
 WORKDIR /app
 COPY --from=builder /app/backend ./toExecute
 EXPOSE 8080
+RUN chmod +x ./toExecute
 CMD ["./toExecute"]

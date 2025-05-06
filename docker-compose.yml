@@ -2,14 +2,11 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
-    container_name: backend
+      dockerfile: ./Dockerfile
     ports:
       - "8080:8080"
     env_file:
       - ./backend/.env
-    volumes:
-      - ./backend:/app  # Mount entire backend directory for hot reloading
     depends_on:
       db_local:
         condition: service_healthy

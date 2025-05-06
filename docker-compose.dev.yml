@@ -6,4 +6,5 @@ services:
   backend:
     build:
       target: dev
-  
+    volumes:
+      - ./backend:/app  # Mount entire backend directory for hot reloading

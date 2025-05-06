@@ -3,7 +3,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      target: builder # Use the builder stage for production
     container_name: backend
     ports:
       - "8080:8080"
@@ -16,7 +15,6 @@ services:
         condition: service_healthy
     restart: on-failure
     working_dir: /app
-    command: air -c .air.toml
 
   db_local:
     image: postgres:latest

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"database/sql"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -124,6 +125,10 @@ func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	board, err := c.service.GetBoard(id)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			sendError(w, http.StatusNotFound, model.ErrorMessages.BoardNotFound)
+			return
+		}
 		sendError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

@@ -33,3 +33,4 @@
 # Ignore backend and postgres data directories
 **/postgres/data/
 **/postgres/dbeaver/
+**/tmp/

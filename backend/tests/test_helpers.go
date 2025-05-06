@@ -100,5 +100,5 @@ func cleanupTestBoards() {
 		panic(err)
 	}
 	defer store.DB().Close()
-	store.DB().Exec("DELETE FROM tests")
+	store.DB().Exec("DELETE FROM boards")
 }

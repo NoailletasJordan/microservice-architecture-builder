@@ -266,9 +266,23 @@ func TestListBoards(t *testing.T) {
 	ts := NewTestServer()
 	defer ts.Close()
 
-	// Get initial boards count (should be 1 - the sample board)
-	initialBoards := ts.Service.GetAllBoards()
-	initialCount := len(initialBoards)
+	cleanupTestBoards()
+
+	// Test that GET /api/board/ returns an empty array when there are no boards
+	rr := makeRequest(t, ts, "GET", "/api/board/", nil)
+	if rr.Code != http.StatusOK {
+		t.Errorf("Expected status code %d, got %d", http.StatusOK, rr.Code)
+	}
+	if strings.TrimSpace(rr.Body.String()) != "[]" {
+		t.Errorf("Expected response body to be an empty array ([]), got: %q", rr.Body.String())
+	}
+	var boards []*model.Board
+	if err := json.NewDecoder(strings.NewReader(rr.Body.String())).Decode(&boards); err != nil {
+		t.Fatalf("Failed to decode response: %v", err)
+	}
+	if len(boards) != 0 {
+		t.Errorf("Expected 0 boards, got %d", len(boards))
+	}
 
 	// Create multiple test boards
 	board1 := createTestBoard(t, ts)
@@ -295,22 +309,21 @@ func TestListBoards(t *testing.T) {
 		t.Errorf("Expected error when getting deleted board")
 	}
 
-	rr := makeRequest(t, ts, "GET", "/api/board/", nil)
+	rr = makeRequest(t, ts, "GET", "/api/board/", nil)
 
 	if rr.Code != http.StatusOK {
 		t.Errorf("Expected status code %d, got %d", http.StatusOK, rr.Code)
 	}
 
-	var boards []*model.Board
-	if err := json.NewDecoder(rr.Body).Decode(&boards); err != nil {
+	var responseBoards []*model.Board
+	if err := json.NewDecoder(rr.Body).Decode(&responseBoards); err != nil {
 		t.Fatalf("Failed to decode response: %v", err)
 	}
 
-	// Should return initial boards + 2 new non-deleted boards
-	expectedBoards := initialCount + 2
-	if len(boards) != expectedBoards {
-		t.Errorf("Expected %d boards, got %d", expectedBoards, len(boards))
-		for _, b := range boards {
+	expectedBoards := 2
+	if len(responseBoards) != expectedBoards {
+		t.Errorf("Expected %d boards, got %d", expectedBoards, len(responseBoards))
+		for _, b := range responseBoards {
 			t.Logf("Board ID: %s, Title: %s, Deleted: %v", b.ID, b.Title, b.Deleted)
 		}
 		return
@@ -318,7 +331,7 @@ func TestListBoards(t *testing.T) {
 
 	// Verify our test boards are in the response
 	found1, found2 := false, false
-	for _, board := range boards {
+	for _, board := range responseBoards {
 		if board.Deleted != nil {
 			t.Errorf("Found deleted board in response: %s", board.ID)
 			continue

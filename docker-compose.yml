@@ -1,4 +1,20 @@
 services:
+
+  frontend:
+    image: imbios/bun-node
+    working_dir: /app
+    env_file:
+      - ./.env
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    command: sh -c "bun install && bun run dev -- --host"
+    restart: on-failure
+    depends_on:
+      - backend
+
   backend:
     build:
       context: ./backend
@@ -7,9 +23,6 @@ services:
       - "8080:8080"
     env_file:
       - ./.env
-    depends_on:
-      db_local:
-        condition: service_healthy
     restart: on-failure
     working_dir: /app
 
@@ -29,18 +42,3 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-
-  cloudbeaver:
-    image: dbeaver/cloudbeaver:latest
-    container_name: cloudbeaver
-    ports:
-      - "8978:8978"
-    environment:
-      - CB_SERVER_URL=http://localhost:8978
-      - CB_ADMIN_NAME=admin
-      - CB_ADMIN_PASSWORD=admin
-    volumes:
-      - ./postgres/dbeaver:/opt/cloudbeaver/workspace
-    depends_on:
-      - db_local
-    restart: on-failure

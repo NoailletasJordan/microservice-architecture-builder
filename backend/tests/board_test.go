@@ -2,7 +2,6 @@ package tests
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -10,8 +9,6 @@ import (
 
 	"microservice-architecture-builder/backend/data"
 	"microservice-architecture-builder/backend/model"
-
-	"github.com/joho/godotenv"
 )
 
 func TestGetBoard(t *testing.T) {
@@ -344,12 +341,6 @@ func TestListBoards(t *testing.T) {
 }
 
 func TestMain(m *testing.M) {
-	err := godotenv.Load("../.env")
-
-	if err != nil {
-		log.Fatalf("Failed to load environment variables: %v", err)
-	}
-
 	var testDSN = os.Getenv("POSTGRES_TEST_DSN")
 	store, err := data.NewPostgresStore(testDSN)
 	if err != nil {

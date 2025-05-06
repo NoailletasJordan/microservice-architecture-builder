@@ -34,15 +34,25 @@ npm run dev
 ## 🔑 Environment Variables with Local Development Value Sample (root .env)
 
 ```bash
-# Local PostgreSQL data directory (created and managed by Docker, db_local is the service name)
-POSTGRES_DSN=host=db_local port=5432 user=postgres password=postgres dbname=database sslmode=disable
-
-# For running tests, use the same connection string but set dbname to 'test' (enforced):
-POSTGRES_DSN=host=db_local port=5432 user=postgres password=postgres dbname=test sslmode=disable
-
+# Frontend
 VITE_POSTHOG_KEY=
 VITE_POSTHOG_HOST=
 VITE_POSTHOG_REVERSE_PROXY_URL=<frontend-url>/ingest
+
+# Backend api
+POSTGRES_DSN=host=db_local port=5432 user=postgres password=postgres dbname=mas sslmode=disable
+POSTGRES_TEST_DSN=host=db_local port=5432 user=postgres password=postgres dbname=test sslmode=disable
+
+
+# Postgres
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_DB=
+
+
+# PG admin
+PGADMIN_DEFAULT_EMAIL=
+PGADMIN_DEFAULT_PASSWORD=
 ```
 
 ## 🏃‍♂️ Development Mode

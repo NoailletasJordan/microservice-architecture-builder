@@ -238,7 +238,7 @@ const docTemplate = `{
                 "data": {
                     "type": "string"
                 },
-                "deleted": {
+                "deleted_at": {
                     "type": "string"
                 },
                 "id": {

@@ -16,11 +16,11 @@ psql -v ON_ERROR_STOP=1 --username "${POSTGRES_USER:-postgres}" --dbname "${POST
       owner TEXT NOT NULL,
       data TEXT NOT NULL,
       password TEXT,
-      deleted TIMESTAMPTZ,
+      deleted_at TIMESTAMPTZ,
       created_at TIMESTAMPTZ NOT NULL
   );
 
-  CREATE INDEX IF NOT EXISTS idx_boards_deleted ON public.boards(deleted);
+  CREATE INDEX IF NOT EXISTS idx_boards_deleted_at ON public.boards(deleted_at);
 EOSQL
 
 # Check if test database exists, create if it doesn't
@@ -36,9 +36,9 @@ psql -v ON_ERROR_STOP=1 --username "${POSTGRES_USER:-postgres}" --dbname "test" 
       owner TEXT NOT NULL,
       data TEXT NOT NULL,
       password TEXT,
-      deleted TIMESTAMPTZ,
+      deleted_at TIMESTAMPTZ,
       created_at TIMESTAMPTZ NOT NULL
   );
 
-  CREATE INDEX IF NOT EXISTS idx_boards_deleted ON public.boards(deleted);
+  CREATE INDEX IF NOT EXISTS idx_boards_deleted_at ON public.boards(deleted_at);
 EOSQL

@@ -226,7 +226,7 @@ func TestDeleteBoard(t *testing.T) {
 			errorContains: model.ErrorMessages.BoardNotFound,
 		},
 		{
-			name:          "Already Deleted Board",
+			name:          "Already DeletedAt Board",
 			boardID:       board.ID,
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
@@ -324,7 +324,7 @@ func TestListBoards(t *testing.T) {
 	if len(responseBoards) != expectedBoards {
 		t.Errorf("Expected %d boards, got %d", expectedBoards, len(responseBoards))
 		for _, b := range responseBoards {
-			t.Logf("Board ID: %s, Title: %s, Deleted: %v", b.ID, b.Title, b.Deleted)
+			t.Logf("Board ID: %s, Title: %s, DeletedAt: %v", b.ID, b.Title, b.DeletedAt)
 		}
 		return
 	}
@@ -332,7 +332,7 @@ func TestListBoards(t *testing.T) {
 	// Verify our test boards are in the response
 	found1, found2 := false, false
 	for _, board := range responseBoards {
-		if board.Deleted != nil {
+		if board.DeletedAt != nil {
 			t.Errorf("Found deleted board in response: %s", board.ID)
 			continue
 		}

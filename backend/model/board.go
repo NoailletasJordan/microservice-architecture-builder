@@ -18,7 +18,7 @@ type Board struct {
 	Owner     string     `json:"owner"`
 	Data      string     `json:"data"`
 	Password  *string    `json:"password,omitempty"`
-	Deleted   *time.Time `json:"deleted,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	CreatedAt time.Time  `json:"created_at,omitempty"`
 }
 

@@ -106,7 +106,11 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} model.Board
 // @Router /board/ [get]
 func (c *BoardController) GetAllBoards(w http.ResponseWriter, r *http.Request) {
-	boards := c.service.GetAllBoards()
+	boards, err := c.service.GetAllBoards()
+	if err != nil {
+		sendError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
 	sendJSON(w, http.StatusOK, boards)
 }
 

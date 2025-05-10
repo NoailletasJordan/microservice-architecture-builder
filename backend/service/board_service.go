@@ -13,7 +13,7 @@ import (
 
 type BoardStore interface {
 	Create(*model.Board) error
-	GetAll() []*model.Board
+	GetAll() ([]*model.Board, error)
 	GetByID(string) (*model.Board, error)
 	Update(string, *model.Board) error
 	Delete(string) error
@@ -45,7 +45,8 @@ func (s *BoardService) CreateBoard(entries *map[string]any) (*model.Board, error
 	return board, s.store.Create(board)
 }
 
-func (s *BoardService) GetAllBoards() []*model.Board {
+func (s *BoardService) GetAllBoards() ([]*model.Board, error) {
+
 	return s.store.GetAll()
 }
 

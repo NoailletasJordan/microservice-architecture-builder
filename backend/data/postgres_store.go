@@ -34,12 +34,13 @@ func (s *PostgresStore) Create(board *model.Board) error {
 	return err
 }
 
-func (s *PostgresStore) GetAll() []*model.Board {
+func (s *PostgresStore) GetAll() ([]*model.Board, error) {
 	rows, err := s.db.Query(`SELECT id, title, owner, data, password, deleted, created_at FROM boards WHERE deleted IS NULL`)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	defer rows.Close()
+
 	var boards []*model.Board
 	for rows.Next() {
 		var b model.Board
@@ -56,7 +57,10 @@ func (s *PostgresStore) GetAll() []*model.Board {
 		}
 		boards = append(boards, &b)
 	}
-	return boards
+	if boards == nil {
+		boards = make([]*model.Board, 0)
+	}
+	return boards, nil
 }
 
 func (s *PostgresStore) GetByID(id string) (*model.Board, error) {

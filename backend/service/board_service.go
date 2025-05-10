@@ -88,7 +88,13 @@ func (s *BoardService) UpdateBoard(id string, entries *map[string]any) (*model.B
 }
 
 func (s *BoardService) DeleteBoard(id string) error {
-	err := s.store.Delete(id)
+	// Check if board exists before deleting
+	_, err := s.store.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	err = s.store.Delete(id)
 	if err != nil {
 		log.Printf("BoardService.DeleteBoard: error: %v", err)
 	}

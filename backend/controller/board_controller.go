@@ -209,6 +209,10 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 
 	board, err := c.service.UpdateBoard(id, &body)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			sendError(w, http.StatusNotFound, model.ErrorMessages.BoardNotFound)
+			return
+		}
 		sendError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -230,6 +234,10 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 func (c *BoardController) DeleteBoard(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if err := c.service.DeleteBoard(id); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			sendError(w, http.StatusNotFound, model.ErrorMessages.BoardNotFound)
+			return
+		}
 		sendError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

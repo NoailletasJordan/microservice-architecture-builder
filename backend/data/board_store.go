@@ -9,32 +9,21 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type PostgresStore struct {
+type BoardStore struct {
 	db *sql.DB
 }
 
-// NewPostgresStore creates a PostgresStore. DSN must be provided, or it panics.
-func NewPostgresStore(dsn string) (*PostgresStore, error) {
-	if dsn == "" {
-		panic("Postgres DSN must be provided to NewPostgresStore")
-	}
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		return nil, err
-	}
-	if err := db.Ping(); err != nil {
-		return nil, err
-	}
-	return &PostgresStore{db: db}, nil
+func NewBoardStore(db *sql.DB) *BoardStore {
+	return &BoardStore{db: db}
 }
 
-func (s *PostgresStore) Create(board *model.Board) error {
+func (s *BoardStore) Create(board *model.Board) error {
 	query := `INSERT INTO boards (id, title, owner, data, password, deleted_at, created_at, share_fragment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 	_, err := s.db.Exec(query, board.ID, board.Title, board.Owner, board.Data, board.Password, board.DeletedAt, board.CreatedAt, board.ShareFragment)
 	return err
 }
 
-func (s *PostgresStore) GetAll() ([]*model.Board, error) {
+func (s *BoardStore) GetAll() ([]*model.Board, error) {
 	rows, err := s.db.Query(`SELECT id, title, owner, data, password, deleted_at, created_at, share_fragment FROM boards WHERE deleted_at IS NULL`)
 	if err != nil {
 		return nil, err
@@ -67,7 +56,7 @@ func (s *PostgresStore) GetAll() ([]*model.Board, error) {
 	return boards, nil
 }
 
-func (s *PostgresStore) GetByID(id string) (*model.Board, error) {
+func (s *BoardStore) GetByID(id string) (*model.Board, error) {
 	var b model.Board
 	var password sql.NullString
 	var deletedAt sql.NullTime
@@ -89,19 +78,14 @@ func (s *PostgresStore) GetByID(id string) (*model.Board, error) {
 	return &b, nil
 }
 
-func (s *PostgresStore) Update(id string, updatedBoard *model.Board) error {
+func (s *BoardStore) Update(id string, updatedBoard *model.Board) error {
 	query := `UPDATE boards SET title = $1, data = $2, password = $3, share_fragment = $4 WHERE id = $5 AND deleted_at IS NULL`
 	_, err := s.db.Exec(query, updatedBoard.Title, updatedBoard.Data, updatedBoard.Password, updatedBoard.ShareFragment, id)
 	return err
 }
 
-func (s *PostgresStore) Delete(id string) error {
+func (s *BoardStore) Delete(id string) error {
 	query := `UPDATE boards SET deleted_at = $1 WHERE id = $2 AND deleted_at IS NULL`
 	_, err := s.db.Exec(query, time.Now().UTC(), id)
 	return err
-}
-
-// DB returns the underlying *sql.DB instance (for testing/cleanup)
-func (s *PostgresStore) DB() *sql.DB {
-	return s.db
 }

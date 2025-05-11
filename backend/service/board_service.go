@@ -2,6 +2,7 @@ package service
 
 import (
 	"log"
+	"microservice-architecture-builder/backend/data"
 	"microservice-architecture-builder/backend/model"
 	"reflect"
 	"time"
@@ -11,20 +12,12 @@ import (
 	"golang.org/x/text/language"
 )
 
-type BoardStore interface {
-	Create(*model.Board) error
-	GetAll() ([]*model.Board, error)
-	GetByID(string) (*model.Board, error)
-	Update(string, *model.Board) error
-	Delete(string) error
-}
-
 type BoardService struct {
-	store BoardStore
+	store data.BoardStore
 }
 
-func NewBoardService(store BoardStore) *BoardService {
-	return &BoardService{store: store}
+func NewBoardService(store *data.BoardStore) *BoardService {
+	return &BoardService{store: *store}
 }
 
 func (s *BoardService) CreateBoard(entries *map[string]any) (*model.Board, error) {

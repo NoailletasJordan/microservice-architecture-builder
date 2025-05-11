@@ -29,15 +29,19 @@ type TestServer struct {
 func NewTestServer() *TestServer {
 	var testDSN = os.Getenv("POSTGRES_TEST_DSN")
 
-	store, err := data.NewPostgresStore(testDSN)
+	db, err := server.NewPostgresDB(testDSN)
 	if err != nil {
 		log.Fatalf("Failed to connect to PostgreSQL: %v", err)
 		panic(err)
 	}
-	boardService := service.NewBoardService(store)
+	boardStore := data.NewBoardStore(db)
+	boardService := service.NewBoardService(boardStore)
 	boardController := controller.NewBoardController(boardService)
 
-	r := server.NewServer(boardController)
+	userStore := data.NewUserStore(db)
+	userService := service.NewUserService(userStore)
+	userController := controller.NewUserController(userService)
+	r := server.NewServer(boardController, userController)
 
 	ts := httptest.NewServer(r)
 
@@ -96,12 +100,12 @@ func makeRequest(t *testing.T, ts *TestServer, method, path string, body interfa
 
 func cleanupTestBoards() {
 	testDSN := os.Getenv("POSTGRES_TEST_DSN")
-	store, err := data.NewPostgresStore(testDSN)
+	store, err := server.NewPostgresDB(testDSN)
 	if err != nil {
 		panic(err)
 	}
-	defer store.DB().Close()
-	store.DB().Exec("DELETE FROM boards")
+	defer store.Close()
+	store.Exec("DELETE FROM boards")
 }
 
 // Helper function to generate a string of a given length

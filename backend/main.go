@@ -22,14 +22,24 @@ import (
 func main() {
 	// Initialize dependencies
 	dsn := os.Getenv("POSTGRES_DSN")
-	store, err := data.NewPostgresStore(dsn)
+	if dsn == "" {
+		log.Fatalf("POSTGRES_DSN is not set")
+	}
+	db, err := server.NewPostgresDB(dsn)
 	if err != nil {
 		log.Fatalf("Failed to connect to PostgreSQL: %v", err)
 	}
-	boardService := service.NewBoardService(store)
+	defer db.Close()
+
+	boardStore := data.NewBoardStore(db)
+	boardService := service.NewBoardService(boardStore)
 	boardController := controller.NewBoardController(boardService)
 
-	r := server.NewServer(boardController)
+	userStore := data.NewUserStore(db)
+	userService := service.NewUserService(userStore)
+	userController := controller.NewUserController(userService)
+
+	r := server.NewServer(boardController, userController)
 
 	// Start server
 	port := ":8080"

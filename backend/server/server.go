@@ -1,6 +1,7 @@
 package server
 
 import (
+	"database/sql"
 	"microservice-architecture-builder/backend/controller"
 
 	"net/http"
@@ -25,7 +26,7 @@ func MaxBodySizeMiddleware(next http.Handler) http.Handler {
 }
 
 // NewServer creates a new chi.Mux with all middleware and routes registered.
-func NewServer(boardController *controller.BoardController) *chi.Mux {
+func NewServer(boardController *controller.BoardController, userController *controller.UserController) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(chimiddleware.Logger)
@@ -41,7 +42,24 @@ func NewServer(boardController *controller.BoardController) *chi.Mux {
 		r.Delete("/{id}", boardController.DeleteBoard)
 	})
 
+	r.Get("/users/{id}", userController.GetUserByID)
+
 	r.Get("/docs/*", httpSwagger.WrapHandler)
 
 	return r
+}
+
+// NewPostgresDB creates a PostgresStore. DSN must be provided, or it panics.
+func NewPostgresDB(dsn string) (*sql.DB, error) {
+	if dsn == "" {
+		panic("Postgres DSN must be provided to NewPostgresStore")
+	}
+	db, err := sql.Open("postgres", dsn)
+	if err != nil {
+		return nil, err
+	}
+	if err := db.Ping(); err != nil {
+		return nil, err
+	}
+	return db, nil
 }

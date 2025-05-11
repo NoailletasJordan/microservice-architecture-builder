@@ -20,12 +20,67 @@ func TestBoardValidation(t *testing.T) {
 		expectedCode  int
 		errorContains string
 	}{
+		// UserID validation tests
+		{
+			name: "Missing UserID",
+			board: map[string]string{
+				"title": "Test Board",
+				"owner": "test_owner",
+				"data":  `{"test": "data"}`,
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorContains: "user_id",
+		},
+		{
+			name: "UserID Only Whitespace",
+			board: map[string]string{
+				"title":   "Test Board",
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "   ",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorContains: "user_id",
+		},
+		{
+			name: "UserID Too Short",
+			board: map[string]string{
+				"title":   "Test Board",
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "a",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorContains: "user_id",
+		},
+		{
+			name: "UserID Too Long",
+			board: map[string]string{
+				"title":   "Test Board",
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": generateLongString(101),
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorContains: "user_id",
+		},
+		{
+			name: "Valid UserID",
+			board: map[string]string{
+				"title":   "Test Board",
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
+			},
+			expectedCode: http.StatusCreated,
+		},
 		// Title validation tests
 		{
 			name: "Missing Title",
 			board: map[string]string{
-				"owner": "test_owner",
-				"data":  `{"test": "data"}`,
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -33,9 +88,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Title Too Short",
 			board: map[string]string{
-				"title": "a",
-				"owner": "test_owner",
-				"data":  `{"test": "data"}`,
+				"title":   "a",
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -43,9 +99,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Title Too Long",
 			board: map[string]string{
-				"title": generateLongString(101),
-				"owner": "test_owner",
-				"data":  `{"test": "data"}`,
+				"title":   generateLongString(101),
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -53,9 +110,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Valid Title",
 			board: map[string]string{
-				"title": "Valid Title",
-				"owner": "test_owner",
-				"data":  `{"test": "data"}`,
+				"title":   "Valid Title",
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusCreated,
 		},
@@ -64,8 +122,9 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Missing Owner",
 			board: map[string]string{
-				"title": "Test Board",
-				"data":  `{"test": "data"}`,
+				"title":   "Test Board",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -73,9 +132,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Owner Too Short",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "a",
-				"data":  `{"test": "data"}`,
+				"title":   "Test Board",
+				"owner":   "a",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -83,9 +143,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Owner Too Long",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": generateLongString(51),
-				"data":  `{"test": "data"}`,
+				"title":   "Test Board",
+				"owner":   generateLongString(51),
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -93,9 +154,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Valid Owner",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "valid_owner",
-				"data":  `{"test": "data"}`,
+				"title":   "Test Board",
+				"owner":   "valid_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusCreated,
 		},
@@ -104,8 +166,9 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Missing Data",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "test_owner",
+				"title":   "Test Board",
+				"owner":   "test_owner",
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -113,9 +176,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Invalid JSON Data",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "test_owner",
-				"data":  `{invalid json}`,
+				"title":   "Test Board",
+				"owner":   "test_owner",
+				"data":    `{invalid json}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: model.ErrorMessages.DataMustBeValidJSON,
@@ -123,9 +187,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Valid JSON Data",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "test_owner",
-				"data":  `{"valid": "json"}`,
+				"title":   "Test Board",
+				"owner":   "test_owner",
+				"data":    `{"valid": "json"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusCreated,
 		},
@@ -140,9 +205,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "All Fields Invalid",
 			board: map[string]string{
-				"title": "a",
-				"owner": "b",
-				"data":  `{invalid}`,
+				"title":   "a",
+				"owner":   "b",
+				"data":    `{invalid}`,
+				"user_id": "c",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -150,9 +216,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "All Fields Valid",
 			board: map[string]string{
-				"title": "Valid Title",
-				"owner": "valid_owner",
-				"data":  `{"valid": "json"}`,
+				"title":   "Valid Title",
+				"owner":   "valid_owner",
+				"data":    `{"valid": "json"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusCreated,
 		},
@@ -161,9 +228,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Title Only Whitespace",
 			board: map[string]string{
-				"title": "   ",
-				"owner": "test_owner",
-				"data":  `{"test": "data"}`,
+				"title":   "   ",
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -171,9 +239,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Owner Only Whitespace",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "   ",
-				"data":  `{"test": "data"}`,
+				"title":   "Test Board",
+				"owner":   "   ",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -181,108 +250,120 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Title With Special Characters Allowed",
 			board: map[string]string{
-				"title": "!@#$%^&*()_+",
-				"owner": "test_owner",
-				"data":  `{"test": "data"}`,
+				"title":   "!@#$%^&*()_+",
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusCreated,
 		},
 		{
 			name: "Owner With Special Characters Allowed",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "!@#$%^&*()_+",
-				"data":  `{"test": "data"}`,
+				"title":   "Test Board",
+				"owner":   "!@#$%^&*()_+",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusCreated,
 		},
 		{
 			name: "Title With Unicode UNAllowed",
 			board: map[string]string{
-				"title": "测试测试🧪🧪",
-				"owner": "test_owner",
-				"data":  `{"test": "data"}`,
+				"title":   "测试测试🧪🧪",
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusBadRequest,
 		},
 		{
 			name: "Owner With Unicode UNAllowed",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "测试测试🧪🧪",
-				"data":  `{"test": "data"}`,
+				"title":   "Test Board",
+				"owner":   "测试测试🧪🧪",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusBadRequest,
 		},
 		{
 			name: "Title At Min Length",
 			board: map[string]string{
-				"title": generateLongString(2),
-				"owner": "test_owner",
-				"data":  `{"test": "data"}`,
+				"title":   generateLongString(2),
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusCreated,
 		},
 		{
 			name: "Title At Max Length",
 			board: map[string]string{
-				"title": generateLongString(100),
-				"owner": "test_owner",
-				"data":  `{"test": "data"}`,
+				"title":   generateLongString(100),
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusCreated,
 		},
 		{
 			name: "Owner At Min Length",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": generateLongString(2),
-				"data":  `{"test": "data"}`,
+				"title":   "Test Board",
+				"owner":   generateLongString(2),
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusCreated,
 		},
 		{
 			name: "Owner At Max Length",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": generateLongString(50),
-				"data":  `{"test": "data"}`,
+				"title":   "Test Board",
+				"owner":   generateLongString(50),
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusCreated,
 		},
 		{
 			name: "Data Field Empty Object",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "test_owner",
-				"data":  `{}`,
+				"title":   "Test Board",
+				"owner":   "test_owner",
+				"data":    `{}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusCreated,
 		},
 		{
 			name: "Data Field Empty Array",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "test_owner",
-				"data":  `[]`,
+				"title":   "Test Board",
+				"owner":   "test_owner",
+				"data":    `[]`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusCreated,
 		},
 		{
 			name: "Data Field Large JSON",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "test_owner",
-				"data":  strings.Repeat("x", 4*1024*1024), // 4MB of x's
+				"title":   "Test Board",
+				"owner":   "test_owner",
+				"data":    strings.Repeat("x", 4*1024*1024), // 4MB of x's
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusRequestEntityTooLarge,
 		},
 		{
 			name: "Null Fields",
 			board: map[string]string{
-				"title": "",
-				"owner": "",
-				"data":  "",
+				"title":   "",
+				"owner":   "",
+				"data":    "",
+				"user_id": "",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -290,28 +371,31 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Create With Extra Unexpected Field",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "test_owner",
-				"data":  `{"test": "data"}`,
-				"extra": "should be ignored or rejected",
+				"title":   "Test Board",
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"extra":   "should be ignored or rejected",
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusBadRequest,
 		},
 		{
 			name: "Title With Accented Latin Characters",
 			board: map[string]string{
-				"title": "Café",
-				"owner": "test_owner",
-				"data":  `{"test": "data"}`,
+				"title":   "Café",
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusCreated,
 		},
 		{
 			name: "Title With Cyrillic Characters",
 			board: map[string]string{
-				"title": "Тест",
-				"owner": "test_owner",
-				"data":  `{"test": "data"}`,
+				"title":   "Тест",
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -319,9 +403,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Title With Chinese Characters",
 			board: map[string]string{
-				"title": "测试测试测试测试",
-				"owner": "test_owner",
-				"data":  `{"test": "data"}`,
+				"title":   "测试测试测试测试",
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -329,9 +414,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Title With Emoji",
 			board: map[string]string{
-				"title": "Test 😊",
-				"owner": "test_owner",
-				"data":  `{"test": "data"}`,
+				"title":   "Test 😊",
+				"owner":   "test_owner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -339,18 +425,20 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Owner With Accented Latin Characters",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "Renée",
-				"data":  `{"test": "data"}`,
+				"title":   "Test Board",
+				"owner":   "Renée",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusCreated,
 		},
 		{
 			name: "Owner With Cyrillic Characters",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "ИваИванн",
-				"data":  `{"test": "data"}`,
+				"title":   "Test Board",
+				"owner":   "ИваИванн",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -358,9 +446,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Owner With Chinese Characters",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "测试测试测试测试",
-				"data":  `{"test": "data"}`,
+				"title":   "Test Board",
+				"owner":   "测试测试测试测试",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -368,9 +457,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Owner With Emoji",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "😊😊😊😊",
-				"data":  `{"test": "data"}`,
+				"title":   "Test Board",
+				"owner":   "😊😊😊😊",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "validation error on field",
@@ -378,9 +468,10 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Valid Latin Only Title and Owner",
 			board: map[string]string{
-				"title": "Test Board",
-				"owner": "ValidOwner",
-				"data":  `{"test": "data"}`,
+				"title":   "Test Board",
+				"owner":   "ValidOwner",
+				"data":    `{"test": "data"}`,
+				"user_id": "valid_user_123",
 			},
 			expectedCode: http.StatusCreated,
 		},

@@ -56,9 +56,10 @@ func (ts *TestServer) Close() {
 // Helper function to create a test board
 func createTestBoard(t *testing.T, ts *TestServer) *model.Board {
 	board := map[string]string{
-		"title": "Test Board",
-		"owner": "test_owner",
-		"data":  `{"example": "data"}`,
+		"title":   "Test Board",
+		"owner":   "test_owner",
+		"data":    `{"example": "data"}`,
+		"user_id": "test_user_123",
 	}
 
 	rr := makeRequest(t, ts, "POST", "/api/board/", board)

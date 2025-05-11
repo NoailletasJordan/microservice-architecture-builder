@@ -475,6 +475,17 @@ func TestBoardValidation(t *testing.T) {
 			},
 			expectedCode: http.StatusCreated,
 		},
+		{
+			name: "Create With shareFragment Forbidden",
+			board: map[string]string{
+				"title":          "Test Board",
+				"owner":          "test_owner",
+				"data":           `{"test": "data"}`,
+				"user_id":        "valid_user_123",
+				"share_fragment": "not-allowed",
+			},
+			expectedCode: http.StatusBadRequest,
+		},
 	}
 
 	for _, tt := range tests {
@@ -726,6 +737,22 @@ func TestBoardUpdateValidation(t *testing.T) {
 			expectedCode: http.StatusOK,
 			expectError:  false,
 		},
+		{
+			name: "Update With shareFragment Forbidden",
+			updates: map[string]string{
+				"share_fragment": "not-allowed",
+			},
+			expectedCode: http.StatusBadRequest,
+			expectError:  true,
+		},
+		{
+			name: "Update With user_id Forbidden",
+			updates: map[string]string{
+				"user_id": "not-allowed",
+			},
+			expectedCode: http.StatusBadRequest,
+			expectError:  true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -775,8 +802,4 @@ func TestBoardUpdateValidation(t *testing.T) {
 			t.Errorf("Expected: a validation error, got '%s'", errMsg)
 		}
 	})
-}
-
-func generateLongString(length int) string {
-	return strings.Repeat("a", length)
 }

@@ -100,3 +100,22 @@ func (s *BoardService) DeleteBoard(id string) error {
 	}
 	return err
 }
+
+func (s *BoardService) GetBoardShareFragment(id string) (*string, error) {
+	board, err := s.store.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if board.ShareFragment == nil || *board.ShareFragment == "" {
+		// Generate a new share fragment
+		newShareFragment := uuid.New().String()
+		board.ShareFragment = &newShareFragment
+		err := s.store.Update(id, board)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return board.ShareFragment, nil
+}

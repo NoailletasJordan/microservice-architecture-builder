@@ -13,14 +13,15 @@ import (
 )
 
 type Board struct {
-	ID        string     `json:"id,omitempty"`
-	Title     string     `json:"title"`
-	Owner     string     `json:"owner"`
-	Data      string     `json:"data"`
-	Password  *string    `json:"password,omitempty"`
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	CreatedAt time.Time  `json:"created_at,omitempty"`
-	UserID    string     `json:"user_id"`
+	ID            string     `json:"id,omitempty"`
+	Title         string     `json:"title"`
+	Owner         string     `json:"owner"`
+	Data          string     `json:"data"`
+	Password      *string    `json:"password,omitempty"`
+	DeletedAt     *time.Time `json:"deleted_at,omitempty"`
+	CreatedAt     time.Time  `json:"created_at,omitempty"`
+	UserID        string     `json:"user_id"`
+	ShareFragment *string    `json:"share_fragment,omitempty"`
 }
 
 // Exported for use in controller

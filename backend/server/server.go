@@ -36,6 +36,7 @@ func NewServer(boardController *controller.BoardController) *chi.Mux {
 		r.Post("/", boardController.CreateBoard)
 		r.Get("/", boardController.GetAllBoards)
 		r.Get("/{id}", boardController.GetBoard)
+		r.Get("/{id}/sharefragment", boardController.GetBoardShareFragment)
 		r.Patch("/{id}", boardController.UpdateBoard)
 		r.Delete("/{id}", boardController.DeleteBoard)
 	})

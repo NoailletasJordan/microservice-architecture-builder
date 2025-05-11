@@ -17,7 +17,8 @@ psql -v ON_ERROR_STOP=1 --username "${POSTGRES_USER:-postgres}" --dbname "${POST
       data TEXT NOT NULL,
       password TEXT,
       deleted_at TIMESTAMPTZ,
-      created_at TIMESTAMPTZ NOT NULL
+      created_at TIMESTAMPTZ NOT NULL,
+      share_fragment TEXT
   );
 
   CREATE INDEX IF NOT EXISTS idx_boards_deleted_at ON public.boards(deleted_at);
@@ -37,7 +38,8 @@ psql -v ON_ERROR_STOP=1 --username "${POSTGRES_USER:-postgres}" --dbname "test" 
       data TEXT NOT NULL,
       password TEXT,
       deleted_at TIMESTAMPTZ,
-      created_at TIMESTAMPTZ NOT NULL
+      created_at TIMESTAMPTZ NOT NULL,
+      share_fragment TEXT
   );
 
   CREATE INDEX IF NOT EXISTS idx_boards_deleted_at ON public.boards(deleted_at);

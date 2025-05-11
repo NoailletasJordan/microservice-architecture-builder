@@ -29,13 +29,13 @@ func NewPostgresStore(dsn string) (*PostgresStore, error) {
 }
 
 func (s *PostgresStore) Create(board *model.Board) error {
-	query := `INSERT INTO boards (id, title, owner, data, password, deleted_at, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7)`
-	_, err := s.db.Exec(query, board.ID, board.Title, board.Owner, board.Data, board.Password, board.DeletedAt, board.CreatedAt)
+	query := `INSERT INTO boards (id, title, owner, data, password, deleted_at, created_at, share_fragment) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+	_, err := s.db.Exec(query, board.ID, board.Title, board.Owner, board.Data, board.Password, board.DeletedAt, board.CreatedAt, board.ShareFragment)
 	return err
 }
 
 func (s *PostgresStore) GetAll() ([]*model.Board, error) {
-	rows, err := s.db.Query(`SELECT id, title, owner, data, password, deleted_at, created_at FROM boards WHERE deleted_at IS NULL`)
+	rows, err := s.db.Query(`SELECT id, title, owner, data, password, deleted_at, created_at, share_fragment FROM boards WHERE deleted_at IS NULL`)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,8 @@ func (s *PostgresStore) GetAll() ([]*model.Board, error) {
 		var b model.Board
 		var password sql.NullString
 		var deletedAt sql.NullTime
-		if err := rows.Scan(&b.ID, &b.Title, &b.Owner, &b.Data, &password, &deletedAt, &b.CreatedAt); err != nil {
+		var shareFragment sql.NullString
+		if err := rows.Scan(&b.ID, &b.Title, &b.Owner, &b.Data, &password, &deletedAt, &b.CreatedAt, &shareFragment); err != nil {
 			continue
 		}
 		if password.Valid {
@@ -54,6 +55,9 @@ func (s *PostgresStore) GetAll() ([]*model.Board, error) {
 		}
 		if deletedAt.Valid {
 			b.DeletedAt = &deletedAt.Time
+		}
+		if shareFragment.Valid {
+			b.ShareFragment = &shareFragment.String
 		}
 		boards = append(boards, &b)
 	}
@@ -67,8 +71,9 @@ func (s *PostgresStore) GetByID(id string) (*model.Board, error) {
 	var b model.Board
 	var password sql.NullString
 	var deletedAt sql.NullTime
-	query := `SELECT id, title, owner, data, password, deleted_at, created_at FROM boards WHERE id = $1 AND deleted_at IS NULL`
-	err := s.db.QueryRow(query, id).Scan(&b.ID, &b.Title, &b.Owner, &b.Data, &password, &deletedAt, &b.CreatedAt)
+	var shareFragment sql.NullString
+	query := `SELECT id, title, owner, data, password, deleted_at, created_at, share_fragment FROM boards WHERE id = $1 AND deleted_at IS NULL`
+	err := s.db.QueryRow(query, id).Scan(&b.ID, &b.Title, &b.Owner, &b.Data, &password, &deletedAt, &b.CreatedAt, &shareFragment)
 	if err != nil {
 		return nil, err
 	}
@@ -78,12 +83,15 @@ func (s *PostgresStore) GetByID(id string) (*model.Board, error) {
 	if deletedAt.Valid {
 		b.DeletedAt = &deletedAt.Time
 	}
+	if shareFragment.Valid {
+		b.ShareFragment = &shareFragment.String
+	}
 	return &b, nil
 }
 
 func (s *PostgresStore) Update(id string, updatedBoard *model.Board) error {
-	query := `UPDATE boards SET title = $1, data = $2, password = $3 WHERE id = $4 AND deleted_at IS NULL`
-	_, err := s.db.Exec(query, updatedBoard.Title, updatedBoard.Data, updatedBoard.Password, id)
+	query := `UPDATE boards SET title = $1, data = $2, password = $3, share_fragment = $4 WHERE id = $5 AND deleted_at IS NULL`
+	_, err := s.db.Exec(query, updatedBoard.Title, updatedBoard.Data, updatedBoard.Password, updatedBoard.ShareFragment, id)
 	return err
 }
 

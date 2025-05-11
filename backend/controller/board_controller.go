@@ -176,7 +176,6 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 		"title":    "omitnil,type-string,min=2,max=100,isLatinOnly,notOnlyWhitespace",
 		"data":     "omitnil,type-string,isLatinOnly,notOnlyWhitespace",
 		"password": "omitnil,type-string,isLatinOnly,notOnlyWhitespace",
-		"user_id":  "omitnil,type-string,min=2,max=100,isLatinOnly,notOnlyWhitespace",
 	}
 
 	// Check if any valid keys are present
@@ -245,4 +244,24 @@ func (c *BoardController) DeleteBoard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sendJSON(w, http.StatusOK, map[string]string{"message": "Board deleted successfully"})
+}
+
+// GetBoardShareFragment godoc
+// @Summary Get the share fragment of a board by ID
+// @Description Get only the share_fragment field for a board by its unique ID
+// @Tags boards
+// @Accept json
+// @Produce json
+// @Param id path string true "Board ID"
+// @Success 200 {object} map[string]*string
+// @Failure 404 {object} ErrorResponse
+// @Router /board/{id}/sharefragment [get]
+func (c *BoardController) GetBoardShareFragment(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	shareFragment, err := c.service.GetBoardShareFragment(id)
+	if err != nil {
+		sendError(w, http.StatusNotFound, model.ErrorMessages.BoardNotFound)
+		return
+	}
+	sendJSON(w, http.StatusOK, map[string]*string{"share_fragment": shareFragment})
 }

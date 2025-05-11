@@ -103,3 +103,8 @@ func cleanupTestBoards() {
 	defer store.DB().Close()
 	store.DB().Exec("DELETE FROM boards")
 }
+
+// Helper function to generate a string of a given length
+func generateLongString(length int) string {
+	return string(bytes.Repeat([]byte("a"), length))
+}

@@ -20,7 +20,6 @@ type Board struct {
 	Password      *string    `json:"password,omitempty"`
 	DeletedAt     *time.Time `json:"deleted_at,omitempty"`
 	CreatedAt     time.Time  `json:"created_at,omitempty"`
-	UserID        string     `json:"user_id"`
 	ShareFragment *string    `json:"share_fragment,omitempty"`
 }
 

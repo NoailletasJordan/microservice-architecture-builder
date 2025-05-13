@@ -9,3 +9,6 @@ dev:
 
 prod:
 	docker compose -f docker-compose.yml up --build 
+
+temp: 
+	docker compose exec backend go test $(ARGS) ./tests/temp_test.go ./tests/test_helpers.go 

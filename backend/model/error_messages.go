@@ -10,6 +10,7 @@ var ErrorMessages = struct {
 	InvalidRequestBody      string
 	DataMustBeValidJSON     string
 	AtLeastOneFieldRequired string
+	OwnerNotFound           string
 }{
 	BoardNotFound:           "board not found",
 	BadRequest:              "bad request",
@@ -19,6 +20,7 @@ var ErrorMessages = struct {
 	InvalidRequestBody:      "Invalid request body",
 	DataMustBeValidJSON:     "data must be valid JSON",
 	AtLeastOneFieldRequired: "at least one of title, data, password is required",
+	OwnerNotFound:           "owner not found",
 }
 
 // Dynamic error message generators

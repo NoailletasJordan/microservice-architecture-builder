@@ -47,13 +47,15 @@ func NewTestServer() *TestServer {
 		log.Fatalf("Failed to connect to PostgreSQL: %v", err)
 		panic(err)
 	}
-	boardStore := data.NewBoardStore(db)
-	boardService := service.NewBoardService(boardStore)
-	boardController := controller.NewBoardController(boardService)
 
 	userStore := data.NewUserStore(db)
 	userService := service.NewUserService(userStore)
 	userController := controller.NewUserController(userService)
+
+	boardStore := data.NewBoardStore(db)
+	boardService := service.NewBoardService(boardStore, userService)
+	boardController := controller.NewBoardController(boardService)
+
 	r := server.NewServer(boardController, userController)
 
 	ts := httptest.NewServer(r)
@@ -94,10 +96,9 @@ func createTestUser(t *testing.T, ts *TestServer) *model.User {
 // Helper function to create a test board
 func createTestBoard(t *testing.T, ts *TestServer, userID string) *model.Board {
 	board := map[string]string{
-		"title":   "Test Board",
-		"owner":   "test_owner",
-		"data":    `{"example": "data"}`,
-		"user_id": userID,
+		"title": "Test Board",
+		"owner": userID,
+		"data":  `{"example": "data"}`,
 	}
 
 	rr := makeRequest(t, ts, "POST", "/api/board/", board)

@@ -31,13 +31,13 @@ func main() {
 	}
 	defer db.Close()
 
-	boardStore := data.NewBoardStore(db)
-	boardService := service.NewBoardService(boardStore)
-	boardController := controller.NewBoardController(boardService)
-
 	userStore := data.NewUserStore(db)
 	userService := service.NewUserService(userStore)
 	userController := controller.NewUserController(userService)
+
+	boardStore := data.NewBoardStore(db)
+	boardService := service.NewBoardService(boardStore, userService)
+	boardController := controller.NewBoardController(boardService)
 
 	r := server.NewServer(boardController, userController)
 

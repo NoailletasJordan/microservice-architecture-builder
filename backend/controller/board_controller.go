@@ -44,11 +44,11 @@ func isValidJSON(s string) bool {
 
 // CreateBoard godoc
 // @Summary Create a new board
-// @Description Create a new board. Allowed fields: title (required), owner (required), data (required), password (optional), user_id (required). No other fields allowed.
+// @Description Create a new board. Allowed fields: title (required), owner (required), data (required), password (optional). No other fields allowed.
 // @Tags boards
 // @Accept json
 // @Produce json
-// @Param board body model.Board true "Board object (only title, owner, data, password, user_id allowed)"
+// @Param board body model.Board true "Board object (only title, owner, data, password allowed)"
 // @Success 201 {object} model.Board
 // @Failure 400 {object} ErrorResponse "Bad Request. Example: {\"error\": \"unexpected fields: [foo, bar]\"}"
 // @Router /board/ [post]
@@ -74,7 +74,6 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 		"owner":    "required,type-string,min=2,max=50,isLatinOnly,notOnlyWhitespace",
 		"data":     "required,type-string,isLatinOnly,notOnlyWhitespace",
 		"password": "omitnil,type-string,isLatinOnly,notOnlyWhitespace",
-		"user_id":  "required,type-string,min=2,max=100,isLatinOnly,notOnlyWhitespace",
 	}
 
 	// Check for unknown keys
@@ -91,6 +90,11 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 
 	board, err := c.service.CreateBoard(&raw)
 	if err != nil {
+		if err.Error() == model.ErrorMessages.OwnerNotFound {
+			sendError(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
 		sendError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -143,12 +147,12 @@ func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
 
 // UpdateBoard godoc
 // @Summary Update a board by ID
-// @Description Update a board's details by its unique ID. Allowed fields: title, data, password, user_id. At least one must be present. No other fields allowed.
+// @Description Update a board's details by its unique ID. Allowed fields: title, data, password. At least one must be present. No other fields allowed.
 // @Tags boards
 // @Accept json
 // @Produce json
 // @Param id path string true "Board ID"
-// @Param board body model.Board true "Board object (only title, data, password, user_id allowed)"
+// @Param board body model.Board true "Board object (only title, data, password allowed)"
 // @Success 200 {object} model.Board
 // @Failure 400 {object} ErrorResponse "Bad Request. Example: {\"error\": \"unexpected fields: [foo, bar]\"} or {\"error\": \"at least one of title, data, password is required\"}"
 // @Failure 404 {object} ErrorResponse

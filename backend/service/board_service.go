@@ -7,20 +7,30 @@ import (
 	"reflect"
 	"time"
 
+	"errors"
+
 	"github.com/google/uuid"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
 
 type BoardService struct {
-	store data.BoardStore
+	store       data.BoardStore
+	userService *UserService
 }
 
-func NewBoardService(store *data.BoardStore) *BoardService {
-	return &BoardService{store: *store}
+func NewBoardService(store *data.BoardStore, userService *UserService) *BoardService {
+	return &BoardService{store: *store, userService: userService}
 }
 
 func (s *BoardService) CreateBoard(entries *map[string]any) (*model.Board, error) {
+	owner := (*entries)["owner"].(string)
+
+	_, err := s.userService.GetUserByID(owner)
+	if err != nil {
+		return nil, errors.New(model.ErrorMessages.OwnerNotFound)
+	}
+
 	board := &model.Board{
 		Title: (*entries)["title"].(string),
 		Owner: (*entries)["owner"].(string),

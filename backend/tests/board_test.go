@@ -71,6 +71,14 @@ func TestGetBoard(t *testing.T) {
 			}
 		})
 	}
+
+	// Unauthorized test: missing user ID
+	t.Run("Unauthorized - missing user ID", func(t *testing.T) {
+		rr := makeRequest(t, ts, "GET", "/api/board/"+board.ID, nil, nil)
+		if rr.Code != http.StatusUnauthorized {
+			t.Errorf("Expected 401 Unauthorized when user ID is missing, got %d", rr.Code)
+		}
+	})
 }
 
 func TestUpdateBoard(t *testing.T) {
@@ -199,6 +207,14 @@ func TestUpdateBoard(t *testing.T) {
 			t.Errorf("Expected error for missing allowed fields, got '%s'", errMsg)
 		}
 	})
+
+	// Unauthorized test: missing user ID
+	t.Run("Unauthorized - missing user ID", func(t *testing.T) {
+		rr := makeRequest(t, ts, "PATCH", "/api/board/"+board.ID, map[string]string{"title": "Should Fail"}, nil)
+		if rr.Code != http.StatusUnauthorized {
+			t.Errorf("Expected 401 Unauthorized when user ID is missing, got %d", rr.Code)
+		}
+	})
 }
 
 func TestDeleteBoard(t *testing.T) {
@@ -264,6 +280,14 @@ func TestDeleteBoard(t *testing.T) {
 			}
 		})
 	}
+
+	// Unauthorized test: missing user ID
+	t.Run("Unauthorized - missing user ID", func(t *testing.T) {
+		rr := makeRequest(t, ts, "DELETE", "/api/board/"+board.ID, nil, nil)
+		if rr.Code != http.StatusUnauthorized {
+			t.Errorf("Expected 401 Unauthorized when user ID is missing, got %d", rr.Code)
+		}
+	})
 }
 
 func TestListBoards(t *testing.T) {
@@ -357,6 +381,14 @@ func TestListBoards(t *testing.T) {
 		t.Errorf("Not all expected boards were found. Board1 found: %v, Board2 found: %v",
 			found1, found2)
 	}
+
+	// Unauthorized test: missing user ID
+	t.Run("Unauthorized - missing user ID", func(t *testing.T) {
+		rr := makeRequest(t, ts, "GET", "/api/board/", nil, nil)
+		if rr.Code != http.StatusUnauthorized {
+			t.Errorf("Expected 401 Unauthorized when user ID is missing, got %d", rr.Code)
+		}
+	})
 }
 
 func TestMain(m *testing.M) {

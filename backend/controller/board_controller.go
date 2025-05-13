@@ -337,15 +337,24 @@ type BoardShareFragmentResponse struct {
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id}/sharefragment [get]
 func (c *BoardController) GetBoardShareFragment(w http.ResponseWriter, r *http.Request) {
-	if _, ok := r.Context().Value(UserContextKey).(*model.User); !ok {
+	requestUser, ok := r.Context().Value(UserContextKey).(*model.User)
+	if !ok {
 		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
 		return
 	}
 
 	id := chi.URLParam(r, "id")
-	shareFragment, err := c.service.GetBoardShareFragment(id)
+	shareFragment, err := c.service.GetBoardShareFragment(id, requestUser.ID)
 	if err != nil {
-		sendError(w, http.StatusNotFound, model.ErrorMessages.NotFound)
+		if err.Error() == model.ErrorMessages.Forbidden {
+			sendError(w, http.StatusForbidden, err.Error())
+			return
+		}
+		if errors.Is(err, sql.ErrNoRows) {
+			sendError(w, http.StatusNotFound, model.ErrorMessages.NotFound)
+			return
+		}
+		sendError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	sendJSON(w, http.StatusOK, BoardShareFragmentResponse{ShareFragment: shareFragment})

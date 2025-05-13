@@ -447,6 +447,88 @@ func TestListBoards(t *testing.T) {
 	})
 }
 
+// TestGetBoardShareFragment tests BoardService.GetBoardShareFragment
+func TestGetBoardShareFragment(t *testing.T) {
+	ts := NewTestServer()
+	defer ts.Close()
+
+	user := createTestUser(t, ts)
+	board := createTestBoard(t, ts, user.ID)
+
+	// 1. Valid board: should return 200 and a non-empty share_fragment
+	rr := makeRequest(t, ts, "GET", "/api/board/"+board.ID+"/sharefragment", nil, &user.ID)
+	if rr.Code != http.StatusOK {
+		t.Fatalf("Expected 200 OK, got %d", rr.Code)
+	}
+	var resp struct {
+		ShareFragment *string `json:"share_fragment"`
+	}
+	if err := json.NewDecoder(rr.Body).Decode(&resp); err != nil {
+		t.Fatalf("Failed to decode response: %v", err)
+	}
+	if resp.ShareFragment == nil || *resp.ShareFragment == "" {
+		t.Errorf("Expected non-empty share_fragment, got: %v", resp.ShareFragment)
+	}
+
+	// 2. Second call: should return the same share_fragment
+	rr2 := makeRequest(t, ts, "GET", "/api/board/"+board.ID+"/sharefragment", nil, &user.ID)
+	if rr2.Code != http.StatusOK {
+		t.Fatalf("Expected 200 OK, got %d", rr2.Code)
+	}
+	var resp2 struct {
+		ShareFragment *string `json:"share_fragment"`
+	}
+	if err := json.NewDecoder(rr2.Body).Decode(&resp2); err != nil {
+		t.Fatalf("Failed to decode response: %v", err)
+	}
+	if resp2.ShareFragment == nil || *resp2.ShareFragment != *resp.ShareFragment {
+		t.Errorf("Expected same share_fragment, got: %v, want: %v", resp2.ShareFragment, resp.ShareFragment)
+	}
+
+	// 3. Non-existent board: should return 404 and error message
+	rr3 := makeRequest(t, ts, "GET", "/api/board/non-existent-id/sharefragment", nil, &user.ID)
+	if rr3.Code != http.StatusNotFound {
+		t.Errorf("Expected 404 for non-existent board, got %d", rr3.Code)
+	}
+	var errResp3 map[string]string
+	_ = json.NewDecoder(rr3.Body).Decode(&errResp3)
+	if errMsg, ok := errResp3["error"]; !ok || !strings.Contains(errMsg, model.ErrorMessages.NotFound) {
+		t.Errorf("Expected error containing '%s', got '%s'", model.ErrorMessages.NotFound, errMsg)
+	}
+
+	// 4. Deleted board: should return 404 and error message
+	if err := ts.Board.Service.DeleteBoard(board.ID, user.ID); err != nil {
+		t.Fatalf("Failed to delete board: %v", err)
+	}
+	rr4 := makeRequest(t, ts, "GET", "/api/board/"+board.ID+"/sharefragment", nil, &user.ID)
+	if rr4.Code != http.StatusNotFound {
+		t.Errorf("Expected 404 for deleted board, got %d", rr4.Code)
+	}
+	var errResp4 map[string]string
+	_ = json.NewDecoder(rr4.Body).Decode(&errResp4)
+	if errMsg, ok := errResp4["error"]; !ok || !strings.Contains(errMsg, model.ErrorMessages.NotFound) {
+		t.Errorf("Expected error containing '%s', got '%s'", model.ErrorMessages.NotFound, errMsg)
+	}
+
+	// 5. Unauthorized: should return 401 if user ID is missing
+	rr5 := makeRequest(t, ts, "GET", "/api/board/"+board.ID+"/sharefragment", nil, nil)
+	if rr5.Code != http.StatusUnauthorized {
+		t.Errorf("Expected 401 Unauthorized when user ID is missing, got %d", rr5.Code)
+	}
+
+	// 6. Forbidden: another user cannot get the share fragment of a board they do not own
+	anotherUser := createTestUser(t, ts)
+	rr6 := makeRequest(t, ts, "GET", "/api/board/"+board.ID+"/sharefragment", nil, &anotherUser.ID)
+	if rr6.Code != http.StatusForbidden {
+		t.Errorf("Expected 403 Forbidden for another user, got %d", rr6.Code)
+	}
+	var errResp6 map[string]string
+	_ = json.NewDecoder(rr6.Body).Decode(&errResp6)
+	if errMsg, ok := errResp6["error"]; !ok || !strings.Contains(errMsg, model.ErrorMessages.Forbidden) {
+		t.Errorf("Expected error containing '%s', got '%s'", model.ErrorMessages.Forbidden, errMsg)
+	}
+}
+
 func TestMain(m *testing.M) {
 	var testDSN = os.Getenv("POSTGRES_TEST_DSN")
 	db, err := server.NewPostgresDB(testDSN)

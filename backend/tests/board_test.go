@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"microservice-architecture-builder/backend/data"
 	"microservice-architecture-builder/backend/model"
+	"microservice-architecture-builder/backend/server"
 )
 
 func TestGetBoard(t *testing.T) {
@@ -355,11 +355,11 @@ func TestListBoards(t *testing.T) {
 
 func TestMain(m *testing.M) {
 	var testDSN = os.Getenv("POSTGRES_TEST_DSN")
-	store, err := data.NewPostgresStore(testDSN)
+	db, err := server.NewPostgresDB(testDSN)
 	if err != nil {
 		panic(err)
 	}
-	defer store.DB().Close()
+	defer db.Close()
 
 	cleanupTestBoards() // Clean before tests
 	code := m.Run()

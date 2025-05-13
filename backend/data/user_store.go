@@ -4,8 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"microservice-architecture-builder/backend/model"
-
-	"github.com/google/uuid"
+	"time"
 )
 
 type UserStore struct {
@@ -17,22 +16,24 @@ func NewUserStore(db *sql.DB) *UserStore {
 }
 
 func (s *UserStore) Create(user *model.User) error {
-	return nil
+	query := `INSERT INTO users (id, username, provider, created_at) VALUES ($1, $2, $3, $4)`
+	_, err := s.db.Exec(query, user.ID, user.Username, user.Provider, user.CreatedAt)
+	return err
 }
 
 func (s *UserStore) GetByID(id string) (*model.User, error) {
-	var user model.User
+	user := model.User{
+		ID: id,
+	}
 	var deletedAt sql.NullTime
-	var uuidVal uuid.UUID
-	query := `SELECT id, username, provider, created_at, deleted_at FROM users WHERE id = $1`
-	err := s.db.QueryRow(query, id).Scan(&uuidVal, &user.Username, &user.Provider, &user.CreatedAt, &deletedAt)
+	query := `SELECT username, provider, created_at, deleted_at FROM users WHERE id = $1`
+	err := s.db.QueryRow(query, id).Scan(&user.Username, &user.Provider, &user.CreatedAt, &deletedAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.New("user not found")
 		}
 		return nil, err
 	}
-	user.ID = uuidVal
 	if deletedAt.Valid {
 		user.DeletedAt = &deletedAt.Time
 	}
@@ -40,9 +41,13 @@ func (s *UserStore) GetByID(id string) (*model.User, error) {
 }
 
 func (s *UserStore) Update(id string, user *model.User) error {
-	return errors.New("not implemented")
+	query := `UPDATE users SET username = $1, provider = $2 WHERE id = $3`
+	_, err := s.db.Exec(query, user.Username, user.Provider, id)
+	return err
 }
 
 func (s *UserStore) Delete(id string) error {
-	return errors.New("not implemented")
+	query := `UPDATE users SET deleted_at = $1 WHERE id = $2`
+	_, err := s.db.Exec(query, time.Now(), id)
+	return err
 }

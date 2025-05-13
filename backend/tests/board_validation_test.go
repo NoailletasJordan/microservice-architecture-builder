@@ -59,7 +59,7 @@ func TestBoardValidation(t *testing.T) {
 				"title":   "Test Board",
 				"owner":   "test_owner",
 				"data":    `{"test": "data"}`,
-				"user_id": generateLongString(101),
+				"user_id": generateRandomStringOfLength(101),
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorContains: "user_id",
@@ -99,7 +99,7 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Title Too Long",
 			board: map[string]string{
-				"title":   generateLongString(101),
+				"title":   generateRandomStringOfLength(101),
 				"owner":   "test_owner",
 				"data":    `{"test": "data"}`,
 				"user_id": "valid_user_123",
@@ -144,7 +144,7 @@ func TestBoardValidation(t *testing.T) {
 			name: "Owner Too Long",
 			board: map[string]string{
 				"title":   "Test Board",
-				"owner":   generateLongString(51),
+				"owner":   generateRandomStringOfLength(51),
 				"data":    `{"test": "data"}`,
 				"user_id": "valid_user_123",
 			},
@@ -290,7 +290,7 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Title At Min Length",
 			board: map[string]string{
-				"title":   generateLongString(2),
+				"title":   generateRandomStringOfLength(2),
 				"owner":   "test_owner",
 				"data":    `{"test": "data"}`,
 				"user_id": "valid_user_123",
@@ -300,7 +300,7 @@ func TestBoardValidation(t *testing.T) {
 		{
 			name: "Title At Max Length",
 			board: map[string]string{
-				"title":   generateLongString(100),
+				"title":   generateRandomStringOfLength(100),
 				"owner":   "test_owner",
 				"data":    `{"test": "data"}`,
 				"user_id": "valid_user_123",
@@ -311,7 +311,7 @@ func TestBoardValidation(t *testing.T) {
 			name: "Owner At Min Length",
 			board: map[string]string{
 				"title":   "Test Board",
-				"owner":   generateLongString(2),
+				"owner":   generateRandomStringOfLength(2),
 				"data":    `{"test": "data"}`,
 				"user_id": "valid_user_123",
 			},
@@ -321,7 +321,7 @@ func TestBoardValidation(t *testing.T) {
 			name: "Owner At Max Length",
 			board: map[string]string{
 				"title":   "Test Board",
-				"owner":   generateLongString(50),
+				"owner":   generateRandomStringOfLength(50),
 				"data":    `{"test": "data"}`,
 				"user_id": "valid_user_123",
 			},
@@ -517,7 +517,8 @@ func TestBoardUpdateValidation(t *testing.T) {
 	defer ts.Close()
 
 	// Create a test board for update tests
-	board := createTestBoard(t, ts)
+	user := createTestUser(t, ts)
+	board := createTestBoard(t, ts, user.ID)
 
 	tests := []struct {
 		name          string
@@ -611,7 +612,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 		{
 			name: "Update Title At Min Length",
 			updates: map[string]string{
-				"title": generateLongString(2),
+				"title": generateRandomStringOfLength(2),
 				"data":  `{"test": "data"}`,
 			},
 			expectedCode: http.StatusOK,
@@ -620,7 +621,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 		{
 			name: "Update Title At Max Length",
 			updates: map[string]string{
-				"title": generateLongString(100),
+				"title": generateRandomStringOfLength(100),
 				"data":  `{"test": "data"}`,
 			},
 			expectedCode: http.StatusOK,

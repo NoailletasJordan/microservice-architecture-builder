@@ -3,11 +3,14 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+	"time"
 
 	"microservice-architecture-builder/backend/controller"
 	"microservice-architecture-builder/backend/data"
@@ -15,15 +18,25 @@ import (
 	"microservice-architecture-builder/backend/server"
 	"microservice-architecture-builder/backend/service"
 
+	"crypto/rand"
+
 	"github.com/go-chi/chi/v5"
 	_ "github.com/lib/pq"
 )
 
+type BoardTestResources struct {
+	Service *service.BoardService
+}
+
+type UserTestResources struct {
+	Data *data.UserStore
+}
+
 type TestServer struct {
-	Server     *httptest.Server
-	Router     *chi.Mux
-	Service    *service.BoardService
-	Controller *controller.BoardController
+	Server *httptest.Server
+	Router *chi.Mux
+	Board  BoardTestResources
+	User   UserTestResources
 }
 
 func NewTestServer() *TestServer {
@@ -46,10 +59,14 @@ func NewTestServer() *TestServer {
 	ts := httptest.NewServer(r)
 
 	return &TestServer{
-		Server:     ts,
-		Router:     r,
-		Service:    boardService,
-		Controller: boardController,
+		Server: ts,
+		Router: r,
+		Board: BoardTestResources{
+			Service: boardService,
+		},
+		User: UserTestResources{
+			Data: userStore,
+		},
 	}
 }
 
@@ -57,13 +74,30 @@ func (ts *TestServer) Close() {
 	ts.Server.Close()
 }
 
+func createTestUser(t *testing.T, ts *TestServer) *model.User {
+	randomID := "test_user_" + generateRandomStringOfLength(10)
+	randomUsername := "user_" + generateRandomStringOfLength(8)
+	user := model.User{
+		ID:        randomID,
+		Username:  randomUsername,
+		Provider:  "google",
+		CreatedAt: time.Now(),
+	}
+
+	err := ts.User.Data.Create(&user)
+	if err != nil {
+		t.Fatalf("Failed to create test user: %v", err)
+	}
+	return &user
+}
+
 // Helper function to create a test board
-func createTestBoard(t *testing.T, ts *TestServer) *model.Board {
+func createTestBoard(t *testing.T, ts *TestServer, userID string) *model.Board {
 	board := map[string]string{
 		"title":   "Test Board",
 		"owner":   "test_owner",
 		"data":    `{"example": "data"}`,
-		"user_id": "test_user_123",
+		"user_id": userID,
 	}
 
 	rr := makeRequest(t, ts, "POST", "/api/board/", board)
@@ -98,17 +132,34 @@ func makeRequest(t *testing.T, ts *TestServer, method, path string, body interfa
 	return rr
 }
 
-func cleanupTestBoards() {
+func cleanupTestOnTables() {
 	testDSN := os.Getenv("POSTGRES_TEST_DSN")
 	store, err := server.NewPostgresDB(testDSN)
 	if err != nil {
 		panic(err)
 	}
 	defer store.Close()
-	store.Exec("DELETE FROM boards")
+
+	tables := []string{"boards", "users"}
+	for _, table := range tables {
+		_, err = store.Exec(fmt.Sprintf("DELETE FROM %s", table))
+		if err != nil {
+			panic(err)
+		}
+	}
 }
 
-// Helper function to generate a string of a given length
-func generateLongString(length int) string {
-	return string(bytes.Repeat([]byte("a"), length))
+// Helper function to generate a random string of a given length
+func generateRandomStringOfLength(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	result := make([]byte, length)
+	for i := range result {
+		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		if err != nil {
+			result[i] = 'a'
+			continue
+		}
+		result[i] = charset[num.Int64()]
+	}
+	return string(result)
 }

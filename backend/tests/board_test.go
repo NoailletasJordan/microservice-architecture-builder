@@ -15,8 +15,10 @@ func TestGetBoard(t *testing.T) {
 	ts := NewTestServer()
 	defer ts.Close()
 
+	user := createTestUser(t, ts)
+
 	// Create a test board
-	board := createTestBoard(t, ts)
+	board := createTestBoard(t, ts, user.ID)
 
 	tests := []struct {
 		name          string
@@ -75,8 +77,9 @@ func TestUpdateBoard(t *testing.T) {
 	ts := NewTestServer()
 	defer ts.Close()
 
+	user := createTestUser(t, ts)
 	// Create a test board
-	board := createTestBoard(t, ts)
+	board := createTestBoard(t, ts, user.ID)
 
 	tests := []struct {
 		name          string
@@ -203,7 +206,8 @@ func TestDeleteBoard(t *testing.T) {
 	defer ts.Close()
 
 	// Create a test board
-	board := createTestBoard(t, ts)
+	user := createTestUser(t, ts)
+	board := createTestBoard(t, ts, user.ID)
 
 	tests := []struct {
 		name          string
@@ -266,7 +270,7 @@ func TestListBoards(t *testing.T) {
 	ts := NewTestServer()
 	defer ts.Close()
 
-	cleanupTestBoards()
+	cleanupTestOnTables()
 
 	// Test that GET /api/board/ returns an empty array when there are no boards
 	rr := makeRequest(t, ts, "GET", "/api/board/", nil)
@@ -284,27 +288,29 @@ func TestListBoards(t *testing.T) {
 		t.Errorf("Expected 0 boards, got %d", len(boards))
 	}
 
+	user := createTestUser(t, ts)
+
 	// Create multiple test boards
-	board1 := createTestBoard(t, ts)
-	board2 := createTestBoard(t, ts)
-	board3 := createTestBoard(t, ts)
+	board1 := createTestBoard(t, ts, user.ID)
+	board2 := createTestBoard(t, ts, user.ID)
+	board3 := createTestBoard(t, ts, user.ID)
 
 	t.Logf("Created boards: %s, %s, %s", board1.ID, board2.ID, board3.ID)
 
 	// NEW: Check if board3 exists before deletion
-	fetched, err := ts.Service.GetBoard(board3.ID)
+	fetched, err := ts.Board.Service.GetBoard(board3.ID)
 	if err != nil {
 		t.Fatalf("Board3 not found immediately after creation: %v", err)
 	}
 	t.Logf("Fetched board3 before deletion: %+v", fetched)
 
 	// Delete one board to test it's not returned
-	if err := ts.Service.DeleteBoard(board3.ID); err != nil {
+	if err := ts.Board.Service.DeleteBoard(board3.ID); err != nil {
 		t.Fatalf("Failed to delete test board: %v", err)
 	}
 
 	// Verify the board is not found after deletion
-	_, err = ts.Service.GetBoard(board3.ID)
+	_, err = ts.Board.Service.GetBoard(board3.ID)
 	if err == nil {
 		t.Errorf("Expected error when getting deleted board")
 	}
@@ -361,8 +367,8 @@ func TestMain(m *testing.M) {
 	}
 	defer db.Close()
 
-	cleanupTestBoards() // Clean before tests
+	cleanupTestOnTables() // Clean before tests
 	code := m.Run()
-	cleanupTestBoards() // Clean after tests
+	cleanupTestOnTables() // Clean after tests
 	os.Exit(code)
 }

@@ -39,7 +39,6 @@ func (s *BoardService) CreateBoard(entries *map[string]any) (*model.Board, error
 }
 
 func (s *BoardService) GetAllBoards() ([]*model.Board, error) {
-
 	return s.store.GetAll()
 }
 

@@ -56,7 +56,7 @@ func NewTestServer() *TestServer {
 	boardService := service.NewBoardService(boardStore, userService)
 	boardController := controller.NewBoardController(boardService)
 
-	r := server.NewServer(boardController, userController)
+	r := server.NewServer(boardController, userController, userService)
 
 	ts := httptest.NewServer(r)
 
@@ -101,7 +101,7 @@ func createTestBoard(t *testing.T, ts *TestServer, userID string) *model.Board {
 		"data":  `{"example": "data"}`,
 	}
 
-	rr := makeRequest(t, ts, "POST", "/api/board/", board)
+	rr := makeRequest(t, ts, "POST", "/api/board/", board, &userID)
 	if rr.Code != http.StatusCreated {
 		t.Fatalf("Failed to create test board: status %d, body %s", rr.Code, rr.Body.String())
 	}
@@ -113,7 +113,7 @@ func createTestBoard(t *testing.T, ts *TestServer, userID string) *model.Board {
 }
 
 // Helper function to make HTTP requests
-func makeRequest(t *testing.T, ts *TestServer, method, path string, body interface{}) *httptest.ResponseRecorder {
+func makeRequest(t *testing.T, ts *TestServer, method, path string, body any, userID *string) *httptest.ResponseRecorder {
 	var reqBody []byte
 	var err error
 
@@ -125,6 +125,9 @@ func makeRequest(t *testing.T, ts *TestServer, method, path string, body interfa
 	}
 
 	req := httptest.NewRequest(method, path, bytes.NewBuffer(reqBody))
+	if userID != nil {
+		req.Header.Set("X-User-ID", *userID)
+	}
 	req.Header.Set("Content-Type", "application/json")
 
 	rr := httptest.NewRecorder()

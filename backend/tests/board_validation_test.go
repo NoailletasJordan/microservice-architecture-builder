@@ -358,7 +358,7 @@ func TestBoardValidation(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rr := makeRequest(t, ts, "POST", "/api/board/", tt.board)
+			rr := makeRequest(t, ts, "POST", "/api/board/", tt.board, &validOwner)
 
 			if tt.errorContains != "" {
 				if rr.Code != tt.expectedCode {
@@ -618,7 +618,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rr := makeRequest(t, ts, "PATCH", "/api/board/"+board.ID, tt.updates)
+			rr := makeRequest(t, ts, "PATCH", "/api/board/"+board.ID, tt.updates, &user.ID)
 
 			if tt.expectError {
 				if rr.Code != tt.expectedCode {
@@ -651,7 +651,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 		raw := map[string]string{
 			"owner": "should not be allowed",
 		}
-		rr := makeRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw)
+		rr := makeRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw, &user.ID)
 		if rr.Code != http.StatusBadRequest {
 			t.Errorf("Expected 400 for forbidden field, got %d", rr.Code)
 		}

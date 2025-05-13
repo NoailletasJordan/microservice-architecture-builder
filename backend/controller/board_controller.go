@@ -14,6 +14,10 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+type ContextKey string
+
+const UserContextKey ContextKey = "user"
+
 type BoardController struct {
 	service *service.BoardService
 }
@@ -67,6 +71,11 @@ type CreateBoardRequest struct {
 // @Failure 400 {object} ErrorResponse "Bad Request. Example: {\"error\": \"unexpected fields: [foo, bar]\"}"
 // @Router /board/ [post]
 func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
+	if _, ok := r.Context().Value(UserContextKey).(*model.User); !ok {
+		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
+		return
+	}
+
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		var maxBytesErr *http.MaxBytesError
@@ -125,6 +134,11 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} model.Board
 // @Router /board/ [get]
 func (c *BoardController) GetAllBoards(w http.ResponseWriter, r *http.Request) {
+	if _, ok := r.Context().Value(UserContextKey).(*model.User); !ok {
+		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
+		return
+	}
+
 	boards, err := c.service.GetAllBoards()
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, err.Error())
@@ -145,6 +159,11 @@ func (c *BoardController) GetAllBoards(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id} [get]
 func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
+	if _, ok := r.Context().Value(UserContextKey).(*model.User); !ok {
+		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
+		return
+	}
+
 	id := chi.URLParam(r, "id")
 	board, err := c.service.GetBoard(id)
 	if err != nil {
@@ -183,6 +202,11 @@ type UpdateBoardRequest struct {
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id} [patch]
 func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
+	if _, ok := r.Context().Value(UserContextKey).(*model.User); !ok {
+		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
+		return
+	}
+
 	yBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		var maxBytesErr *http.MaxBytesError
@@ -262,6 +286,11 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id} [delete]
 func (c *BoardController) DeleteBoard(w http.ResponseWriter, r *http.Request) {
+	if _, ok := r.Context().Value(UserContextKey).(*model.User); !ok {
+		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
+		return
+	}
+
 	id := chi.URLParam(r, "id")
 	if err := c.service.DeleteBoard(id); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -292,6 +321,11 @@ type BoardShareFragmentResponse struct {
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id}/sharefragment [get]
 func (c *BoardController) GetBoardShareFragment(w http.ResponseWriter, r *http.Request) {
+	if _, ok := r.Context().Value(UserContextKey).(*model.User); !ok {
+		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
+		return
+	}
+
 	id := chi.URLParam(r, "id")
 	shareFragment, err := c.service.GetBoardShareFragment(id)
 	if err != nil {

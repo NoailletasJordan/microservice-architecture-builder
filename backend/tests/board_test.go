@@ -44,7 +44,7 @@ func TestGetBoard(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rr := makeRequest(t, ts, "GET", "/api/board/"+tt.boardID, nil)
+			rr := makeRequest(t, ts, "GET", "/api/board/"+tt.boardID, nil, &user.ID)
 
 			if tt.expectError {
 				if rr.Code != tt.expectedCode {
@@ -133,7 +133,7 @@ func TestUpdateBoard(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rr := makeRequest(t, ts, "PATCH", "/api/board/"+tt.boardID, tt.updates)
+			rr := makeRequest(t, ts, "PATCH", "/api/board/"+tt.boardID, tt.updates, &user.ID)
 
 			if tt.expectError {
 				if rr.Code != tt.expectedCode {
@@ -169,7 +169,7 @@ func TestUpdateBoard(t *testing.T) {
 			"foo":   "123",
 			"bar":   "baz",
 		}
-		rr := makeRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw)
+		rr := makeRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw, &user.ID)
 		if rr.Code != http.StatusBadRequest {
 			t.Errorf("Expected 400 for extra keys, got %d", rr.Code)
 		}
@@ -187,7 +187,7 @@ func TestUpdateBoard(t *testing.T) {
 		raw := map[string]string{
 			"owner": "should not be allowed",
 		}
-		rr := makeRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw)
+		rr := makeRequest(t, ts, "PATCH", "/api/board/"+board.ID, raw, &user.ID)
 		if rr.Code != http.StatusBadRequest {
 			t.Errorf("Expected 400 for missing allowed fields, got %d", rr.Code)
 		}
@@ -240,7 +240,7 @@ func TestDeleteBoard(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rr := makeRequest(t, ts, "DELETE", "/api/board/"+tt.boardID, nil)
+			rr := makeRequest(t, ts, "DELETE", "/api/board/"+tt.boardID, nil, &user.ID)
 
 			if tt.expectError {
 				if rr.Code != tt.expectedCode {
@@ -272,8 +272,10 @@ func TestListBoards(t *testing.T) {
 
 	cleanupTestOnTables()
 
+	user := createTestUser(t, ts)
+
 	// Test that GET /api/board/ returns an empty array when there are no boards
-	rr := makeRequest(t, ts, "GET", "/api/board/", nil)
+	rr := makeRequest(t, ts, "GET", "/api/board/", nil, &user.ID)
 	if rr.Code != http.StatusOK {
 		t.Errorf("Expected status code %d, got %d", http.StatusOK, rr.Code)
 	}
@@ -287,8 +289,6 @@ func TestListBoards(t *testing.T) {
 	if len(boards) != 0 {
 		t.Errorf("Expected 0 boards, got %d", len(boards))
 	}
-
-	user := createTestUser(t, ts)
 
 	// Create multiple test boards
 	board1 := createTestBoard(t, ts, user.ID)
@@ -315,7 +315,7 @@ func TestListBoards(t *testing.T) {
 		t.Errorf("Expected error when getting deleted board")
 	}
 
-	rr = makeRequest(t, ts, "GET", "/api/board/", nil)
+	rr = makeRequest(t, ts, "GET", "/api/board/", nil, &user.ID)
 
 	if rr.Code != http.StatusOK {
 		t.Errorf("Expected status code %d, got %d", http.StatusOK, rr.Code)

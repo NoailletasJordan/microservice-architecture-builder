@@ -1,8 +1,10 @@
 package server
 
 import (
+	"context"
 	"database/sql"
 	"microservice-architecture-builder/backend/controller"
+	"microservice-architecture-builder/backend/service"
 
 	"net/http"
 
@@ -25,13 +27,37 @@ func MaxBodySizeMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+func grabAssociatedUserMiddleware(userService *service.UserService) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			userID := r.Header.Get("X-User-ID")
+			if userID == "" {
+				next.ServeHTTP(w, r)
+				return
+			}
+
+			user, err := userService.GetUserByID(userID)
+			if err != nil {
+				http.Error(w, "Error retrieving user", http.StatusUnauthorized)
+				return
+			}
+
+			// Add user to request context
+			ctx := r.Context()
+			ctx = context.WithValue(ctx, controller.UserContextKey, user)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
+}
+
 // NewServer creates a new chi.Mux with all middleware and routes registered.
-func NewServer(boardController *controller.BoardController, userController *controller.UserController) *chi.Mux {
+func NewServer(boardController *controller.BoardController, userController *controller.UserController, userService *service.UserService) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(chimiddleware.Logger)
 	r.Use(chimiddleware.Recoverer)
 	r.Use(MaxBodySizeMiddleware)
+	r.Use(grabAssociatedUserMiddleware(userService))
 
 	r.Route("/api/board", func(r chi.Router) {
 		r.Post("/", boardController.CreateBoard)

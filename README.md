@@ -43,7 +43,6 @@ VITE_POSTHOG_REVERSE_PROXY_URL=<frontend-url>/ingest
 POSTGRES_DSN=host=db_local port=5432 user=postgres password=postgres dbname=mas sslmode=disable
 POSTGRES_TEST_DSN=host=db_local port=5432 user=postgres password=postgres dbname=test sslmode=disable
 
-
 # Postgres
 POSTGRES_USER=
 POSTGRES_PASSWORD=

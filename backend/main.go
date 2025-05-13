@@ -39,7 +39,7 @@ func main() {
 	boardService := service.NewBoardService(boardStore, userService)
 	boardController := controller.NewBoardController(boardService)
 
-	r := server.NewServer(boardController, userController)
+	r := server.NewServer(boardController, userController, userService)
 
 	// Start server
 	port := ":8080"

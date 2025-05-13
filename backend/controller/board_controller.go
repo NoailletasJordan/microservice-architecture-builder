@@ -275,6 +275,12 @@ func (c *BoardController) DeleteBoard(w http.ResponseWriter, r *http.Request) {
 	sendJSON(w, http.StatusOK, map[string]string{"message": "Board deleted successfully"})
 }
 
+// BoardShareFragmentResponse is used for the share fragment response
+// for Swagger/docs only
+type BoardShareFragmentResponse struct {
+	ShareFragment *string `json:"share_fragment"`
+}
+
 // GetBoardShareFragment godoc
 // @Summary Get the share fragment of a board by ID
 // @Description Get only the share_fragment field for a board by its unique ID
@@ -282,7 +288,7 @@ func (c *BoardController) DeleteBoard(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Board ID"
-// @Success 200 {object} map[string]*string
+// @Success 200 {object} controller.BoardShareFragmentResponse
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id}/sharefragment [get]
 func (c *BoardController) GetBoardShareFragment(w http.ResponseWriter, r *http.Request) {
@@ -292,5 +298,5 @@ func (c *BoardController) GetBoardShareFragment(w http.ResponseWriter, r *http.R
 		sendError(w, http.StatusNotFound, model.ErrorMessages.BoardNotFound)
 		return
 	}
-	sendJSON(w, http.StatusOK, map[string]*string{"share_fragment": shareFragment})
+	sendJSON(w, http.StatusOK, BoardShareFragmentResponse{ShareFragment: shareFragment})
 }

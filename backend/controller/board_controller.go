@@ -45,7 +45,7 @@ func isValidJSON(s string) bool {
 // CreateBoardRequest is used for board creation requests (Swagger/docs only)
 type CreateBoardRequest struct {
 	Title    string  `json:"title" example:"My Board"`
-	Owner    string  `json:"owner" example:"user123"`
+	Owner    string  `json:"owner"`
 	Data     string  `json:"data" example:"{\"nodes\":[],\"edges\":[]}"`
 	Password *string `json:"password,omitempty" example:"secret"`
 }
@@ -149,7 +149,7 @@ func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
 	board, err := c.service.GetBoard(id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			sendError(w, http.StatusNotFound, model.ErrorMessages.BoardNotFound)
+			sendError(w, http.StatusNotFound, model.ErrorMessages.NotFound)
 			return
 		}
 		sendError(w, http.StatusInternalServerError, err.Error())
@@ -240,7 +240,7 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 	board, err := c.service.UpdateBoard(id, &body)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			sendError(w, http.StatusNotFound, model.ErrorMessages.BoardNotFound)
+			sendError(w, http.StatusNotFound, model.ErrorMessages.NotFound)
 			return
 		}
 		sendError(w, http.StatusInternalServerError, err.Error())
@@ -265,7 +265,7 @@ func (c *BoardController) DeleteBoard(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if err := c.service.DeleteBoard(id); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			sendError(w, http.StatusNotFound, model.ErrorMessages.BoardNotFound)
+			sendError(w, http.StatusNotFound, model.ErrorMessages.NotFound)
 			return
 		}
 		sendError(w, http.StatusInternalServerError, err.Error())
@@ -295,7 +295,7 @@ func (c *BoardController) GetBoardShareFragment(w http.ResponseWriter, r *http.R
 	id := chi.URLParam(r, "id")
 	shareFragment, err := c.service.GetBoardShareFragment(id)
 	if err != nil {
-		sendError(w, http.StatusNotFound, model.ErrorMessages.BoardNotFound)
+		sendError(w, http.StatusNotFound, model.ErrorMessages.NotFound)
 		return
 	}
 	sendJSON(w, http.StatusOK, BoardShareFragmentResponse{ShareFragment: shareFragment})

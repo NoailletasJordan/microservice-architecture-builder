@@ -38,7 +38,7 @@ func TestGetBoard(t *testing.T) {
 			boardID:       "non-existent-id",
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
-			errorContains: model.ErrorMessages.BoardNotFound,
+			errorContains: model.ErrorMessages.NotFound,
 		},
 	}
 
@@ -127,7 +127,7 @@ func TestUpdateBoard(t *testing.T) {
 			},
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
-			errorContains: model.ErrorMessages.BoardNotFound,
+			errorContains: model.ErrorMessages.NotFound,
 		},
 	}
 
@@ -227,14 +227,14 @@ func TestDeleteBoard(t *testing.T) {
 			boardID:       "non-existent-id",
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
-			errorContains: model.ErrorMessages.BoardNotFound,
+			errorContains: model.ErrorMessages.NotFound,
 		},
 		{
 			name:          "Already DeletedAt Board",
 			boardID:       board.ID,
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
-			errorContains: model.ErrorMessages.BoardNotFound,
+			errorContains: model.ErrorMessages.NotFound,
 		},
 	}
 

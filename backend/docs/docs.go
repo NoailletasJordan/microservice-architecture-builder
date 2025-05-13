@@ -275,8 +275,7 @@ const docTemplate = `{
                     "example": "{\"nodes\":[],\"edges\":[]}"
                 },
                 "owner": {
-                    "type": "string",
-                    "example": "user123"
+                    "type": "string"
                 },
                 "password": {
                     "type": "string",

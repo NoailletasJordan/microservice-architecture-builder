@@ -2,7 +2,7 @@ package model
 
 // Centralized user-facing error messages
 var ErrorMessages = struct {
-	BoardNotFound           string
+	NotFound                string
 	BadRequest              string
 	Unauthorized            string
 	Forbidden               string
@@ -12,7 +12,7 @@ var ErrorMessages = struct {
 	AtLeastOneFieldRequired string
 	OwnerNotFound           string
 }{
-	BoardNotFound:           "board not found",
+	NotFound:                "entity not found",
 	BadRequest:              "bad request",
 	Unauthorized:            "unauthorized",
 	Forbidden:               "forbidden",

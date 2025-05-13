@@ -40,10 +40,6 @@ func (s *BoardService) CreateBoard(entries *map[string]any, ownerID string) (*mo
 	return board, s.store.Create(board)
 }
 
-func (s *BoardService) GetAllBoards() ([]*model.Board, error) {
-	return s.store.GetAll()
-}
-
 func (s *BoardService) GetBoard(id string, userID string) (*model.Board, error) {
 	board, err := s.store.GetByID(id)
 	if err != nil {
@@ -129,4 +125,8 @@ func (s *BoardService) GetBoardShareFragment(id string) (*string, error) {
 	}
 
 	return board.ShareFragment, nil
+}
+
+func (s *BoardService) GetAllBoardsForUser(userID string) ([]*model.Board, error) {
+	return s.store.GetAllFromUser(userID)
 }

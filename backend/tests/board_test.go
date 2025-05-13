@@ -413,6 +413,31 @@ func TestListBoards(t *testing.T) {
 			found1, found2)
 	}
 
+	// Create a second user and boards for them
+	anotherUser := createTestUser(t, ts)
+	_ = createTestBoard(t, ts, anotherUser.ID)
+	_ = createTestBoard(t, ts, anotherUser.ID)
+
+	// Test that another user cannot see boards from the first user
+	t.Run("Another user cannot see boards from others", func(t *testing.T) {
+		rr := makeRequest(t, ts, "GET", "/api/board/", nil, &anotherUser.ID)
+		if rr.Code != http.StatusOK {
+			t.Errorf("Expected status code %d, got %d", http.StatusOK, rr.Code)
+		}
+		var boards []*model.Board
+		if err := json.NewDecoder(rr.Body).Decode(&boards); err != nil {
+			t.Fatalf("Failed to decode response: %v", err)
+		}
+		if len(boards) != 2 {
+			t.Errorf("Expected 2 boards for another user, got %d", len(boards))
+		}
+		for _, b := range boards {
+			if b.Owner != anotherUser.ID {
+				t.Errorf("User should not see boards from other users. Got board with owner %s", b.Owner)
+			}
+		}
+	})
+
 	// Unauthorized test: missing user ID
 	t.Run("Unauthorized - missing user ID", func(t *testing.T) {
 		rr := makeRequest(t, ts, "GET", "/api/board/", nil, nil)

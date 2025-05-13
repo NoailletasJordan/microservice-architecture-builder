@@ -134,12 +134,13 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} model.Board
 // @Router /board/ [get]
 func (c *BoardController) GetAllBoards(w http.ResponseWriter, r *http.Request) {
-	if _, ok := r.Context().Value(UserContextKey).(*model.User); !ok {
+	requestUser, ok := r.Context().Value(UserContextKey).(*model.User)
+	if !ok {
 		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
 		return
 	}
 
-	boards, err := c.service.GetAllBoards()
+	boards, err := c.service.GetAllBoardsForUser(requestUser.ID)
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, err.Error())
 		return

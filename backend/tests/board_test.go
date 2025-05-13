@@ -16,9 +16,11 @@ func TestGetBoard(t *testing.T) {
 	defer ts.Close()
 
 	user := createTestUser(t, ts)
+	anotherUser := createTestUser(t, ts)
 
 	// Create a test board
 	board := createTestBoard(t, ts, user.ID)
+	boardFromAnotherUser := createTestBoard(t, ts, anotherUser.ID)
 
 	tests := []struct {
 		name          string
@@ -39,6 +41,13 @@ func TestGetBoard(t *testing.T) {
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
 			errorContains: model.ErrorMessages.NotFound,
+		},
+		{
+			name:          "Board from another user",
+			boardID:       boardFromAnotherUser.ID,
+			expectedCode:  http.StatusForbidden,
+			expectError:   true,
+			errorContains: model.ErrorMessages.Forbidden,
 		},
 	}
 
@@ -86,8 +95,10 @@ func TestUpdateBoard(t *testing.T) {
 	defer ts.Close()
 
 	user := createTestUser(t, ts)
+	anotherUser := createTestUser(t, ts)
 	// Create a test board
 	board := createTestBoard(t, ts, user.ID)
+	boardFromAnotherUser := createTestBoard(t, ts, anotherUser.ID)
 
 	tests := []struct {
 		name          string
@@ -136,6 +147,17 @@ func TestUpdateBoard(t *testing.T) {
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
 			errorContains: model.ErrorMessages.NotFound,
+		},
+		{
+			name:    "Board from another user",
+			boardID: boardFromAnotherUser.ID,
+			updates: map[string]string{
+				"title": "Updated Title",
+				"data":  `{"example": "data"}`,
+			},
+			expectedCode:  http.StatusForbidden,
+			expectError:   true,
+			errorContains: model.ErrorMessages.Forbidden,
 		},
 	}
 
@@ -223,7 +245,9 @@ func TestDeleteBoard(t *testing.T) {
 
 	// Create a test board
 	user := createTestUser(t, ts)
+	anotherUser := createTestUser(t, ts)
 	board := createTestBoard(t, ts, user.ID)
+	boardFromAnotherUser := createTestBoard(t, ts, anotherUser.ID)
 
 	tests := []struct {
 		name          string
@@ -251,6 +275,13 @@ func TestDeleteBoard(t *testing.T) {
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
 			errorContains: model.ErrorMessages.NotFound,
+		},
+		{
+			name:          "Board from another user",
+			boardID:       boardFromAnotherUser.ID,
+			expectedCode:  http.StatusForbidden,
+			expectError:   true,
+			errorContains: model.ErrorMessages.Forbidden,
 		},
 	}
 
@@ -322,19 +353,19 @@ func TestListBoards(t *testing.T) {
 	t.Logf("Created boards: %s, %s, %s", board1.ID, board2.ID, board3.ID)
 
 	// NEW: Check if board3 exists before deletion
-	fetched, err := ts.Board.Service.GetBoard(board3.ID)
+	fetched, err := ts.Board.Service.GetBoard(board3.ID, user.ID)
 	if err != nil {
 		t.Fatalf("Board3 not found immediately after creation: %v", err)
 	}
 	t.Logf("Fetched board3 before deletion: %+v", fetched)
 
 	// Delete one board to test it's not returned
-	if err := ts.Board.Service.DeleteBoard(board3.ID); err != nil {
+	if err := ts.Board.Service.DeleteBoard(board3.ID, user.ID); err != nil {
 		t.Fatalf("Failed to delete test board: %v", err)
 	}
 
 	// Verify the board is not found after deletion
-	_, err = ts.Board.Service.GetBoard(board3.ID)
+	_, err = ts.Board.Service.GetBoard(board3.ID, user.ID)
 	if err == nil {
 		t.Errorf("Expected error when getting deleted board")
 	}

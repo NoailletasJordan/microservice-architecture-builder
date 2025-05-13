@@ -97,7 +97,6 @@ func createTestUser(t *testing.T, ts *TestServer) *model.User {
 func createTestBoard(t *testing.T, ts *TestServer, userID string) *model.Board {
 	board := map[string]string{
 		"title": "Test Board",
-		"owner": userID,
 		"data":  `{"example": "data"}`,
 	}
 

@@ -71,7 +71,8 @@ type CreateBoardRequest struct {
 // @Failure 400 {object} ErrorResponse "Bad Request. Example: {\"error\": \"unexpected fields: [foo, bar]\"}"
 // @Router /board/ [post]
 func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
-	if _, ok := r.Context().Value(UserContextKey).(*model.User); !ok {
+	requestUser, ok := r.Context().Value(UserContextKey).(*model.User)
+	if !ok {
 		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
 		return
 	}
@@ -94,7 +95,6 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 	// Define rules for POST
 	rules := map[string]any{
 		"title":    "required,type-string,min=2,max=100,isLatinOnly,notOnlyWhitespace",
-		"owner":    "required,type-string,min=2,max=50,isLatinOnly,notOnlyWhitespace",
 		"data":     "required,type-string,isLatinOnly,notOnlyWhitespace",
 		"password": "omitnil,type-string,isLatinOnly,notOnlyWhitespace",
 	}
@@ -111,7 +111,7 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	board, err := c.service.CreateBoard(&raw)
+	board, err := c.service.CreateBoard(&raw, requestUser.ID)
 	if err != nil {
 		if err.Error() == model.ErrorMessages.OwnerNotFound {
 			sendError(w, http.StatusBadRequest, err.Error())
@@ -159,16 +159,21 @@ func (c *BoardController) GetAllBoards(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id} [get]
 func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
-	if _, ok := r.Context().Value(UserContextKey).(*model.User); !ok {
+	requestUser, ok := r.Context().Value(UserContextKey).(*model.User)
+	if !ok {
 		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
 		return
 	}
 
 	id := chi.URLParam(r, "id")
-	board, err := c.service.GetBoard(id)
+	board, err := c.service.GetBoard(id, requestUser.ID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			sendError(w, http.StatusNotFound, model.ErrorMessages.NotFound)
+			return
+		}
+		if err.Error() == model.ErrorMessages.Forbidden {
+			sendError(w, http.StatusForbidden, err.Error())
 			return
 		}
 		sendError(w, http.StatusInternalServerError, err.Error())
@@ -202,7 +207,8 @@ type UpdateBoardRequest struct {
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id} [patch]
 func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
-	if _, ok := r.Context().Value(UserContextKey).(*model.User); !ok {
+	requestUser, ok := r.Context().Value(UserContextKey).(*model.User)
+	if !ok {
 		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
 		return
 	}
@@ -261,10 +267,14 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 
-	board, err := c.service.UpdateBoard(id, &body)
+	board, err := c.service.UpdateBoard(id, &body, requestUser.ID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			sendError(w, http.StatusNotFound, model.ErrorMessages.NotFound)
+			return
+		}
+		if err.Error() == model.ErrorMessages.Forbidden {
+			sendError(w, http.StatusForbidden, err.Error())
 			return
 		}
 		sendError(w, http.StatusInternalServerError, err.Error())
@@ -286,15 +296,20 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id} [delete]
 func (c *BoardController) DeleteBoard(w http.ResponseWriter, r *http.Request) {
-	if _, ok := r.Context().Value(UserContextKey).(*model.User); !ok {
+	requestUser, ok := r.Context().Value(UserContextKey).(*model.User)
+	if !ok {
 		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
 		return
 	}
 
 	id := chi.URLParam(r, "id")
-	if err := c.service.DeleteBoard(id); err != nil {
+	if err := c.service.DeleteBoard(id, requestUser.ID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			sendError(w, http.StatusNotFound, model.ErrorMessages.NotFound)
+			return
+		}
+		if err.Error() == model.ErrorMessages.Forbidden {
+			sendError(w, http.StatusForbidden, err.Error())
 			return
 		}
 		sendError(w, http.StatusInternalServerError, err.Error())

@@ -1,13 +1,12 @@
 package service
 
 import (
+	"errors"
 	"log"
 	"microservice-architecture-builder/backend/data"
 	"microservice-architecture-builder/backend/model"
 	"reflect"
 	"time"
-
-	"errors"
 
 	"github.com/google/uuid"
 	"golang.org/x/text/cases"
@@ -23,17 +22,10 @@ func NewBoardService(store *data.BoardStore, userService *UserService) *BoardSer
 	return &BoardService{store: *store, userService: userService}
 }
 
-func (s *BoardService) CreateBoard(entries *map[string]any) (*model.Board, error) {
-	owner := (*entries)["owner"].(string)
-
-	_, err := s.userService.GetUserByID(owner)
-	if err != nil {
-		return nil, errors.New(model.ErrorMessages.OwnerNotFound)
-	}
-
+func (s *BoardService) CreateBoard(entries *map[string]any, ownerID string) (*model.Board, error) {
 	board := &model.Board{
 		Title: (*entries)["title"].(string),
-		Owner: (*entries)["owner"].(string),
+		Owner: ownerID,
 		Data:  (*entries)["data"].(string),
 	}
 
@@ -52,14 +44,27 @@ func (s *BoardService) GetAllBoards() ([]*model.Board, error) {
 	return s.store.GetAll()
 }
 
-func (s *BoardService) GetBoard(id string) (*model.Board, error) {
-	return s.store.GetByID(id)
+func (s *BoardService) GetBoard(id string, userID string) (*model.Board, error) {
+	board, err := s.store.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if board.Owner != userID {
+		return nil, errors.New(model.ErrorMessages.Forbidden)
+	}
+
+	return board, nil
 }
 
-func (s *BoardService) UpdateBoard(id string, entries *map[string]any) (*model.Board, error) {
+func (s *BoardService) UpdateBoard(id string, entries *map[string]any, userID string) (*model.Board, error) {
 	boardToUpdate, err := s.store.GetByID(id)
 	if err != nil {
 		return nil, err
+	}
+
+	if boardToUpdate.Owner != userID {
+		return nil, errors.New(model.ErrorMessages.Forbidden)
 	}
 
 	// Apply updates to the existing board
@@ -89,11 +94,15 @@ func (s *BoardService) UpdateBoard(id string, entries *map[string]any) (*model.B
 	return boardToUpdate, nil
 }
 
-func (s *BoardService) DeleteBoard(id string) error {
+func (s *BoardService) DeleteBoard(id string, userID string) error {
 	// Check if board exists before deleting
-	_, err := s.store.GetByID(id)
+	board, err := s.store.GetByID(id)
 	if err != nil {
 		return err
+	}
+
+	if board.Owner != userID {
+		return errors.New(model.ErrorMessages.Forbidden)
 	}
 
 	err = s.store.Delete(id)

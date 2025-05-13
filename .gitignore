@@ -34,3 +34,5 @@
 **/postgres/data/
 **/postgres/dbeaver/
 **/tmp/
+
+**/temp_test.go

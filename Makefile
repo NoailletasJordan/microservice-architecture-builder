@@ -12,3 +12,6 @@ prod:
 
 temp: 
 	docker compose exec backend go test $(ARGS) ./tests/temp_test.go ./tests/test_helpers.go 
+
+docs-backend:
+	cd backend && ~/go/bin/swag init --output docs 

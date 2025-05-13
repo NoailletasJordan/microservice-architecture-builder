@@ -42,13 +42,27 @@ func isValidJSON(s string) bool {
 	return json.Unmarshal([]byte(s), &js) == nil
 }
 
+// CreateBoardRequest is used for board creation requests (Swagger/docs only)
+type CreateBoardRequest struct {
+	Title    string  `json:"title" example:"My Board"`
+	Owner    string  `json:"owner" example:"user123"`
+	Data     string  `json:"data" example:"{\"nodes\":[],\"edges\":[]}"`
+	Password *string `json:"password,omitempty" example:"secret"`
+}
+
 // CreateBoard godoc
 // @Summary Create a new board
-// @Description Create a new board. Allowed fields: title (required), owner (required), data (required), password (optional). No other fields allowed.
+// @Description Create a new board. Allowed fields in the request body:
+//   - title (string, required): Board title, 2-100 Latin characters, not only whitespace
+//   - owner (string, required): Board owner, 2-50 Latin characters, not only whitespace
+//   - data (string, required): Board data (must be valid JSON string), not only whitespace
+//   - password (string, optional): Board password, not only whitespace
+//
+// No other fields are allowed. Extra fields will result in a 400 error.
 // @Tags boards
 // @Accept json
 // @Produce json
-// @Param board body model.Board true "Board object (only title, owner, data, password allowed)"
+// @Param board body controller.CreateBoardRequest true "Board creation payload"
 // @Success 201 {object} model.Board
 // @Failure 400 {object} ErrorResponse "Bad Request. Example: {\"error\": \"unexpected fields: [foo, bar]\"}"
 // @Router /board/ [post]
@@ -145,14 +159,25 @@ func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
 	sendJSON(w, http.StatusOK, board)
 }
 
+type UpdateBoardRequest struct {
+	Title    *string `json:"title,omitempty" example:"Updated Board"`
+	Data     *string `json:"data,omitempty" example:"{\"nodes\":[],\"edges\":[]}"`
+	Password *string `json:"password,omitempty" example:"newsecret"`
+}
+
 // UpdateBoard godoc
 // @Summary Update a board by ID
-// @Description Update a board's details by its unique ID. Allowed fields: title, data, password. At least one must be present. No other fields allowed.
+// @Description Update a board's details by its unique ID. Allowed fields in the request body:
+//   - title (string, optional): Board title, 2-100 Latin characters, not only whitespace
+//   - data (string, optional): Board data (must be valid JSON string), not only whitespace
+//   - password (string, optional): Board password, not only whitespace
+//
+// At least one of these fields must be present. No other fields are allowed. Extra fields will result in a 400 error.
 // @Tags boards
 // @Accept json
 // @Produce json
 // @Param id path string true "Board ID"
-// @Param board body model.Board true "Board object (only title, data, password allowed)"
+// @Param board body UpdateBoardRequest true "Board update payload"
 // @Success 200 {object} model.Board
 // @Failure 400 {object} ErrorResponse "Bad Request. Example: {\"error\": \"unexpected fields: [foo, bar]\"} or {\"error\": \"at least one of title, data, password is required\"}"
 // @Failure 404 {object} ErrorResponse

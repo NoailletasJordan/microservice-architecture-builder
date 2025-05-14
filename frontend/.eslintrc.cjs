@@ -28,5 +28,6 @@ module.exports = {
       },
     ],
     'react-compiler/react-compiler': 'warn',
+    'no-extra-semi': 'off',
   },
 }

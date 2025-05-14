@@ -29,6 +29,7 @@ import {
 } from 'react-router-dom'
 import { ReactFlowProvider } from 'reactflow'
 import { CSSVAR, customColors, themeDarkColorVariables } from './contants'
+import AuthProvider from './contexts/Auth/AuthProvider'
 import BoardPage from './pages/BoardPage'
 
 const accessEnvVariable = (
@@ -87,10 +88,12 @@ export default function App() {
             color: CSSVAR['--text'],
           }}
         >
-          <MantineProvider theme={theme}>
-            <RouterProvider router={router} />
-            <Notifications />
-          </MantineProvider>
+          <AuthProvider>
+            <MantineProvider theme={theme}>
+              <RouterProvider router={router} />
+              <Notifications />
+            </MantineProvider>
+          </AuthProvider>
         </div>
       </PostHogProvider>
     </>

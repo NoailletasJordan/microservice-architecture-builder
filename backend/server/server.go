@@ -88,6 +88,8 @@ func NewServer(boardController *controller.BoardController, userController *cont
 	r.Use(MaxBodySizeMiddleware)
 	r.Use(grabAssociatedUserMiddleware(userService))
 
+	oauthController := controller.NewOauthController()
+
 	r.Route("/api/board", func(r chi.Router) {
 		r.Post("/", boardController.CreateBoard)
 		r.Get("/", boardController.GetAllBoards)
@@ -98,10 +100,12 @@ func NewServer(boardController *controller.BoardController, userController *cont
 	})
 
 	r.Route("/api/users", func(r chi.Router) {
-		r.Get("/{id}", userController.GetUserByID)
+		r.Get("/me", userController.GetMe)
 	})
-	r.Get("/auth/google/login", userController.GoogleLoginHandler)
-	r.Get("/auth/google/callback", userController.GoogleCallbackHandler)
+
+	// Use OauthController for these routes
+	r.Get("/auth/google/login", oauthController.GoogleLoginRedirect)
+	r.Get("/auth/google/callback", oauthController.GoogleCallbackHandler)
 	r.Get("/docs/*", httpSwagger.WrapHandler)
 
 	return r

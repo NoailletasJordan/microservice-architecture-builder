@@ -38,10 +38,15 @@ npm run dev
 VITE_POSTHOG_KEY=
 VITE_POSTHOG_HOST=
 VITE_POSTHOG_REVERSE_PROXY_URL=<frontend-url>/ingest
+VITE_API_URL=
 
 # Backend api
 POSTGRES_DSN=host=db_local port=5432 user=postgres password=postgres dbname=mas sslmode=disable
 POSTGRES_TEST_DSN=host=db_local port=5432 user=postgres password=postgres dbname=test sslmode=disable
+OAUTH_GOOGLE_CLIENT_ID=
+OAUTH_GOOGLE_SECRET=
+JWT_SECRET=
+FRONTEND_URL=
 
 # Postgres
 POSTGRES_USER=

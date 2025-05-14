@@ -68,8 +68,11 @@ func NewServer(boardController *controller.BoardController, userController *cont
 		r.Delete("/{id}", boardController.DeleteBoard)
 	})
 
-	r.Get("/users/{id}", userController.GetUserByID)
-
+	r.Route("/api/users", func(r chi.Router) {
+		r.Get("/{id}", userController.GetUserByID)
+	})
+	r.Get("/auth/google/login", userController.GoogleLoginHandler)
+	r.Get("/auth/google/callback", userController.GoogleCallbackHandler)
 	r.Get("/docs/*", httpSwagger.WrapHandler)
 
 	return r

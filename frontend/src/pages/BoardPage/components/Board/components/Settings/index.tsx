@@ -6,6 +6,7 @@ import { IconMenu2 } from '@tabler/icons-react'
 import { useContext, useEffect } from 'react'
 import { Panel } from 'reactflow'
 import Github from './components/Github'
+import LogIn from './components/LogIn'
 import ResetBoard from './components/ResetBoard'
 import SwitchDropHints from './components/SwitchDropHints'
 
@@ -37,6 +38,7 @@ export default function Settings({ openResetModal }: Props) {
         <Menu.Dropdown p="xs">
           <ResetBoard openResetModal={openResetModal} />
           <Github />
+          <LogIn />
           <Divider my="xs" />
 
           <SwitchDropHints />

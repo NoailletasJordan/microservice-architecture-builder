@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"io"
+	"microservice-architecture-builder/backend/helpers"
 	"microservice-architecture-builder/backend/model"
 	"microservice-architecture-builder/backend/service"
 	"net/http"
@@ -140,14 +141,9 @@ func (uc *UserController) GoogleCallbackHandler(w http.ResponseWriter, r *http.R
 	}
 
 	// Parse the id_token JWT (without verifying signature, just to get claims)
-	parsed, _, err := new(jwt.Parser).ParseUnverified(tokenResp.IDToken, jwt.MapClaims{})
+	claims, err := helpers.ParseJWTUnverified(tokenResp.IDToken)
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, "Failed to parse id_token")
-		return
-	}
-	claims, ok := parsed.Claims.(jwt.MapClaims)
-	if !ok {
-		sendError(w, http.StatusInternalServerError, "Invalid id_token claims")
 		return
 	}
 
@@ -186,11 +182,7 @@ func (uc *UserController) GoogleCallbackHandler(w http.ResponseWriter, r *http.R
 		sendError(w, http.StatusInternalServerError, "JWT secret not configured")
 		return
 	}
-	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id": userId,
-	})
-
-	signedToken, err := unsignedToken.SignedString([]byte(jwtSecret))
+	signedToken, err := helpers.CreateAndSignJWT(jwt.MapClaims{"id": userId})
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, "Failed to sign JWT")
 		return
@@ -198,6 +190,6 @@ func (uc *UserController) GoogleCallbackHandler(w http.ResponseWriter, r *http.R
 
 	// Redirect to frontend with token in hash
 	frontendURL := os.Getenv("FRONTEND_URL")
-	redirectURL := frontendURL + "#/auth/callback?token=" + signedToken
+	redirectURL := frontendURL + "#token=" + signedToken
 	http.Redirect(w, r, redirectURL, http.StatusFound)
 }

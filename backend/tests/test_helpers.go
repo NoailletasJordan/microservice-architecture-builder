@@ -14,6 +14,7 @@ import (
 
 	"microservice-architecture-builder/backend/controller"
 	"microservice-architecture-builder/backend/data"
+	"microservice-architecture-builder/backend/helpers"
 	"microservice-architecture-builder/backend/model"
 	"microservice-architecture-builder/backend/server"
 	"microservice-architecture-builder/backend/service"
@@ -130,10 +131,7 @@ func makeRequest(t *testing.T, ts *TestServer, method, path string, body any, us
 		if jwtSecret == "" {
 			t.Fatalf("JWT_SECRET not set in environment")
 		}
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"id": *userID,
-		})
-		signedToken, err := token.SignedString([]byte(jwtSecret))
+		signedToken, err := helpers.CreateAndSignJWT(jwt.MapClaims{"id": *userID})
 		if err != nil {
 			t.Fatalf("Failed to sign JWT: %v", err)
 		}

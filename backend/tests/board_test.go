@@ -496,18 +496,16 @@ func TestGetBoardShareFragment(t *testing.T) {
 		t.Errorf("Expected error containing '%s', got '%s'", model.ErrorMessages.NotFound, errMsg)
 	}
 
-	// 4. Deleted board: should return 404 and error message
-	if err := ts.Board.Service.DeleteBoard(board.ID, user.ID); err != nil {
-		t.Fatalf("Failed to delete board: %v", err)
-	}
-	rr4 := makeRequest(t, ts, "GET", "/api/board/"+board.ID+"/sharefragment", nil, &user.ID)
-	if rr4.Code != http.StatusNotFound {
-		t.Errorf("Expected 404 for deleted board, got %d", rr4.Code)
+	// 4. Forbidden: another user cannot get the share fragment of a board they do not own
+	anotherUser := createTestUser(t, ts)
+	rr4 := makeRequest(t, ts, "GET", "/api/board/"+board.ID+"/sharefragment", nil, &anotherUser.ID)
+	if rr4.Code != http.StatusForbidden {
+		t.Errorf("Expected 403 Forbidden for another user, got %d", rr4.Code)
 	}
 	var errResp4 map[string]string
 	_ = json.NewDecoder(rr4.Body).Decode(&errResp4)
-	if errMsg, ok := errResp4["error"]; !ok || !strings.Contains(errMsg, model.ErrorMessages.NotFound) {
-		t.Errorf("Expected error containing '%s', got '%s'", model.ErrorMessages.NotFound, errMsg)
+	if errMsg, ok := errResp4["error"]; !ok || !strings.Contains(errMsg, model.ErrorMessages.Forbidden) {
+		t.Errorf("Expected error containing '%s', got '%s'", model.ErrorMessages.Forbidden, errMsg)
 	}
 
 	// 5. Unauthorized: should return 401 if user ID is missing
@@ -516,16 +514,18 @@ func TestGetBoardShareFragment(t *testing.T) {
 		t.Errorf("Expected 401 Unauthorized when user ID is missing, got %d", rr5.Code)
 	}
 
-	// 6. Forbidden: another user cannot get the share fragment of a board they do not own
-	anotherUser := createTestUser(t, ts)
-	rr6 := makeRequest(t, ts, "GET", "/api/board/"+board.ID+"/sharefragment", nil, &anotherUser.ID)
-	if rr6.Code != http.StatusForbidden {
-		t.Errorf("Expected 403 Forbidden for another user, got %d", rr6.Code)
+	// 6. Deleted board: should return 404 and error message
+	if err := ts.Board.Service.DeleteBoard(board.ID, user.ID); err != nil {
+		t.Fatalf("Failed to delete board: %v", err)
+	}
+	rr6 := makeRequest(t, ts, "GET", "/api/board/"+board.ID+"/sharefragment", nil, &user.ID)
+	if rr6.Code != http.StatusNotFound {
+		t.Errorf("Expected 404 for deleted board, got %d", rr6.Code)
 	}
 	var errResp6 map[string]string
 	_ = json.NewDecoder(rr6.Body).Decode(&errResp6)
-	if errMsg, ok := errResp6["error"]; !ok || !strings.Contains(errMsg, model.ErrorMessages.Forbidden) {
-		t.Errorf("Expected error containing '%s', got '%s'", model.ErrorMessages.Forbidden, errMsg)
+	if errMsg, ok := errResp6["error"]; !ok || !strings.Contains(errMsg, model.ErrorMessages.NotFound) {
+		t.Errorf("Expected error containing '%s', got '%s'", model.ErrorMessages.NotFound, errMsg)
 	}
 }
 

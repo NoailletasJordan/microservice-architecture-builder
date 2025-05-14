@@ -111,7 +111,7 @@ func (s *BoardService) DeleteBoard(id string, userID string) error {
 func (s *BoardService) GetBoardShareFragment(id string, userID string) (*string, error) {
 	board, err := s.store.GetByID(id)
 	if err != nil {
-		// return nil, errors.New("temp error")
+		log.Printf("BoardService.GetBoardShareFragment: error: %v", err)
 		return nil, err
 	}
 

@@ -7,9 +7,12 @@ import (
 	"microservice-architecture-builder/backend/service"
 
 	"net/http"
+	"os"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/golang-jwt/jwt/v5"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
@@ -30,19 +33,45 @@ func MaxBodySizeMiddleware(next http.Handler) http.Handler {
 func grabAssociatedUserMiddleware(userService *service.UserService) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			userID := r.Header.Get("X-User-ID")
-			if userID == "" {
+			authHeader := r.Header.Get("Authorization")
+			if !strings.HasPrefix(authHeader, "Bearer ") {
+				next.ServeHTTP(w, r)
+				return
+			}
+			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+			jwtSecret := os.Getenv("JWT_SECRET")
+			if jwtSecret == "" {
+				next.ServeHTTP(w, r)
+				return
+			}
+			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+					return nil, jwt.ErrSignatureInvalid
+				}
+				return []byte(jwtSecret), nil
+			})
+			if err != nil || !token.Valid {
+				next.ServeHTTP(w, r)
+				return
+			}
+			claims, ok := token.Claims.(jwt.MapClaims)
+			if !ok {
 				next.ServeHTTP(w, r)
 				return
 			}
 
-			user, err := userService.GetUserByID(userID)
-			if err != nil {
-				http.Error(w, "Error retrieving user", http.StatusUnauthorized)
+			userId, ok := claims["id"].(string)
+			if !ok || userId == "" {
+				next.ServeHTTP(w, r)
 				return
 			}
 
-			// Add user to request context
+			user, err := userService.GetUserByID(userId)
+			if err != nil {
+				next.ServeHTTP(w, r)
+				return
+			}
+
 			ctx := r.Context()
 			ctx = context.WithValue(ctx, controller.UserContextKey, user)
 			next.ServeHTTP(w, r.WithContext(ctx))

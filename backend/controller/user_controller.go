@@ -187,10 +187,9 @@ func (uc *UserController) GoogleCallbackHandler(w http.ResponseWriter, r *http.R
 		return
 	}
 	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub":      userId,
-		"email":    email,
-		"provider": "google",
+		"id": userId,
 	})
+
 	signedToken, err := unsignedToken.SignedString([]byte(jwtSecret))
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, "Failed to sign JWT")

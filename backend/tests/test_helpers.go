@@ -21,6 +21,7 @@ import (
 	"crypto/rand"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/golang-jwt/jwt/v5"
 	_ "github.com/lib/pq"
 )
 
@@ -125,7 +126,18 @@ func makeRequest(t *testing.T, ts *TestServer, method, path string, body any, us
 
 	req := httptest.NewRequest(method, path, bytes.NewBuffer(reqBody))
 	if userID != nil {
-		req.Header.Set("X-User-ID", *userID)
+		jwtSecret := os.Getenv("JWT_SECRET")
+		if jwtSecret == "" {
+			t.Fatalf("JWT_SECRET not set in environment")
+		}
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+			"id": *userID,
+		})
+		signedToken, err := token.SignedString([]byte(jwtSecret))
+		if err != nil {
+			t.Fatalf("Failed to sign JWT: %v", err)
+		}
+		req.Header.Set("Authorization", "Bearer "+signedToken)
 	}
 	req.Header.Set("Content-Type", "application/json")
 

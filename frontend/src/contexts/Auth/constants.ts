@@ -10,11 +10,15 @@ export interface IUser {
 export interface IAuthContext {
   isLogged: boolean
   user?: IUser
+  handleLogout: () => void
+  handleLogin: () => void
 }
 
 export const AuthContext = createContext<IAuthContext>({
   isLogged: false,
   user: undefined,
+  handleLogout: () => {},
+  handleLogin: () => {},
 })
 
 export {}

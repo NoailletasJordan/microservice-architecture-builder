@@ -28,6 +28,7 @@ module.exports = {
       },
     ],
     'react-compiler/react-compiler': 'warn',
+    'no-extra-boolean-cast': 'off',
     'no-extra-semi': 'off',
   },
 }

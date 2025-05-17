@@ -42,7 +42,7 @@ func main() {
 	boardService := service.NewBoardService(boardStore, userService)
 	boardController := controller.NewBoardController(boardService)
 
-	oauthController := controller.NewOAuthController(helpers.GetUserStructFromGoogle)
+	oauthController := controller.NewOAuthController(helpers.GetUserStructFromGoogle, userService)
 
 	r := server.NewServer(boardController, userController, userService, oauthController)
 

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"microservice-architecture-builder/backend/helpers"
+	"microservice-architecture-builder/backend/service"
 	"net/http"
 	"net/url"
 	"os"
@@ -9,11 +10,13 @@ import (
 
 type OauthController struct {
 	getTokenFromGoogle func(code string) (*helpers.GoogleUserResponse, error)
+	userService        *service.UserService
 }
 
-func NewOAuthController(getUserStructFromGoogle func(code string) (*helpers.GoogleUserResponse, error)) *OauthController {
+func NewOAuthController(getUserStructFromGoogle func(code string) (*helpers.GoogleUserResponse, error), userService *service.UserService) *OauthController {
 	return &OauthController{
-		getUserStructFromGoogle,
+		getTokenFromGoogle: getUserStructFromGoogle,
+		userService:        userService,
 	}
 }
 
@@ -75,7 +78,12 @@ func (oc *OauthController) GoogleCallbackHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	// User creation/check logic should be handled elsewhere if needed
+	// User creation/check logic
+	_, err = oc.userService.GetOrCreateUserFromOAuth(userId, claims, "google")
+	if err != nil {
+		sendError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	// Create JWT
 	jwtSecret := os.Getenv("JWT_SECRET")

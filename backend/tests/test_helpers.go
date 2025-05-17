@@ -58,7 +58,9 @@ func NewTestServer() *TestServer {
 	boardService := service.NewBoardService(boardStore, userService)
 	boardController := controller.NewBoardController(boardService)
 
-	r := server.NewServer(boardController, userController, userService)
+	oauthController := controller.NewOAuthController(GetUserStructFromGoogleMock)
+
+	r := server.NewServer(boardController, userController, userService, oauthController)
 
 	ts := httptest.NewServer(r)
 
@@ -175,4 +177,16 @@ func generateRandomStringOfLength(length int) string {
 		result[i] = charset[num.Int64()]
 	}
 	return string(result)
+}
+
+// GetUserStructFromGoogleMock returns a mock GoogleUserResponse for testing purposes.
+func GetUserStructFromGoogleMock(code string) (*helpers.GoogleUserResponse, error) {
+	return &helpers.GoogleUserResponse{
+		IDToken:      "mock_id_token",
+		AccessToken:  "mock_access_token",
+		ExpiresIn:    3600,
+		TokenType:    "Bearer",
+		Scope:        "openid email profile",
+		RefreshToken: "mock_refresh_token",
+	}, nil
 }

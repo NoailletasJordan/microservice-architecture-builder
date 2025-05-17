@@ -8,6 +8,7 @@ import (
 
 	"microservice-architecture-builder/backend/controller"
 	"microservice-architecture-builder/backend/data"
+	helpers "microservice-architecture-builder/backend/helpers"
 	"microservice-architecture-builder/backend/server"
 	"microservice-architecture-builder/backend/service"
 
@@ -41,7 +42,9 @@ func main() {
 	boardService := service.NewBoardService(boardStore, userService)
 	boardController := controller.NewBoardController(boardService)
 
-	r := server.NewServer(boardController, userController, userService)
+	oauthController := controller.NewOAuthController(helpers.GetUserStructFromGoogle)
+
+	r := server.NewServer(boardController, userController, userService, oauthController)
 
 	// Add CORS middleware to allow frontend dev server
 	frontendOrigin := os.Getenv("FRONTEND_URL")

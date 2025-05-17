@@ -1,4 +1,8 @@
+import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
+import { ThemeIcon } from '@mantine/core'
 import { readLocalStorageValue, useHash, useLocalStorage } from '@mantine/hooks'
+import { notifications } from '@mantine/notifications'
+import { IconX } from '@tabler/icons-react'
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { AuthContext, IUser } from './constants'
 
@@ -29,12 +33,14 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     removeAuthToken()
   }, [removeAuthToken])
 
-  const handleLogin = () => {
+  const handlePushToGoogleOauth = () => {
     window.location.href = `${import.meta.env.VITE_API_URL}/auth/google/login`
   }
 
   return (
-    <AuthContext.Provider value={{ isLogged, user, handleLogout, handleLogin }}>
+    <AuthContext.Provider
+      value={{ isLogged, user, handleLogout, handlePushToGoogleOauth }}
+    >
       {children}
     </AuthContext.Provider>
   )
@@ -107,6 +113,16 @@ async function fetchUser({
     return userObj
   } catch (err) {
     console.error('Auth error:', err)
+    notifications.show({
+      icon: (
+        <ThemeIcon radius="xl" color="pink" variant="outline">
+          <IconX style={ICON_STYLE} />
+        </ThemeIcon>
+      ),
+      message: err instanceof Error ? err.message : 'Unknown error',
+      title: 'Error loading user',
+      autoClose: 6000,
+    })
     return undefined
   }
 }

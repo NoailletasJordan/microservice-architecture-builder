@@ -5,12 +5,13 @@ import { IconUser } from '@tabler/icons-react'
 import { useContext } from 'react'
 
 export default function LogIn() {
-  const { isLogged, handleLogout, handleLogin } = useContext(AuthContext)
+  const { isLogged, handleLogout, handlePushToGoogleOauth } =
+    useContext(AuthContext)
 
   return (
     <Menu.Item
       leftSection={<IconUser stroke={1} style={ICON_STYLE} />}
-      onClick={isLogged ? handleLogout : handleLogin}
+      onClick={isLogged ? handleLogout : handlePushToGoogleOauth}
     >
       <Text component="span" size="sm">
         {isLogged ? 'Log out' : 'Log in'}

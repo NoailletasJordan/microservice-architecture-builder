@@ -1,19 +1,20 @@
 package controller
 
 import (
-	"encoding/json"
-	"io"
 	"microservice-architecture-builder/backend/helpers"
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
 )
 
-type OauthController struct{}
+type OauthController struct {
+	getTokenFromGoogle func(code string) (*helpers.GoogleUserResponse, error)
+}
 
-func NewOauthController() *OauthController {
-	return &OauthController{}
+func NewOAuthController(getUserStructFromGoogle func(code string) (*helpers.GoogleUserResponse, error)) *OauthController {
+	return &OauthController{
+		getUserStructFromGoogle,
+	}
 }
 
 // GoogleLoginHandler handles GET /auth/google/login
@@ -50,43 +51,9 @@ func (oc *OauthController) GoogleCallbackHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	tokenURL := url.URL{
-		Scheme: "https",
-		Host:   "oauth2.googleapis.com",
-		Path:   "/token",
-	}
-
-	data := url.Values{}
-	data.Set("code", code)
-	data.Set("client_id", os.Getenv("OAUTH_GOOGLE_CLIENT_ID"))
-	data.Set("client_secret", os.Getenv("OAUTH_GOOGLE_SECRET"))
-	data.Set("redirect_uri", os.Getenv("OAUTH_GOOGLE_REDIRECT_URI"))
-	data.Set("grant_type", "authorization_code")
-
-	resp, err := http.Post(tokenURL.String(), "application/x-www-form-urlencoded", strings.NewReader(data.Encode()))
+	tokenResp, err := helpers.GetUserStructFromGoogle(code)
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, "Failed to exchange code for token")
-		return
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		sendError(w, http.StatusInternalServerError, "Failed to read response body")
-		return
-	}
-
-	var tokenResp struct {
-		IDToken      string `json:"id_token"`
-		AccessToken  string `json:"access_token"`
-		ExpiresIn    int    `json:"expires_in"`
-		TokenType    string `json:"token_type"`
-		Scope        string `json:"scope"`
-		RefreshToken string `json:"refresh_token"`
-	}
-
-	if err := json.Unmarshal(body, &tokenResp); err != nil {
-		sendError(w, http.StatusInternalServerError, "Failed to parse token response")
 		return
 	}
 

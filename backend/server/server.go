@@ -80,15 +80,13 @@ func grabAssociatedUserMiddleware(userService *service.UserService) func(http.Ha
 }
 
 // NewServer creates a new chi.Mux with all middleware and routes registered.
-func NewServer(boardController *controller.BoardController, userController *controller.UserController, userService *service.UserService) *chi.Mux {
+func NewServer(boardController *controller.BoardController, userController *controller.UserController, userService *service.UserService, oauthController *controller.OauthController) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Use(chimiddleware.Logger)
 	r.Use(chimiddleware.Recoverer)
 	r.Use(MaxBodySizeMiddleware)
 	r.Use(grabAssociatedUserMiddleware(userService))
-
-	oauthController := controller.NewOauthController()
 
 	r.Route("/api/board", func(r chi.Router) {
 		r.Post("/", boardController.CreateBoard)

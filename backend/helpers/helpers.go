@@ -1,8 +1,13 @@
 package helpers
 
 import (
+	"encoding/json"
 	"errors"
+	"io"
+	"net/http"
+	"net/url"
 	"os"
+	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -34,3 +39,46 @@ var (
 	ErrJWTSecretNotSet  = errors.New("jwt_secret not set in environment")
 	ErrInvalidJWTClaims = errors.New("invalid JWT claims")
 )
+
+type GoogleUserResponse struct {
+	IDToken      string `json:"id_token"`
+	AccessToken  string `json:"access_token"`
+	ExpiresIn    int    `json:"expires_in"`
+	TokenType    string `json:"token_type"`
+	Scope        string `json:"scope"`
+	RefreshToken string `json:"refresh_token"`
+}
+
+// (For prod) Will really request Google's token response.
+func GetUserStructFromGoogle(code string) (*GoogleUserResponse, error) {
+	tokenURL := url.URL{
+		Scheme: "https",
+		Host:   "oauth2.googleapis.com",
+		Path:   "/token",
+	}
+
+	data := url.Values{}
+	data.Set("code", code)
+	data.Set("client_id", os.Getenv("OAUTH_GOOGLE_CLIENT_ID"))
+	data.Set("client_secret", os.Getenv("OAUTH_GOOGLE_SECRET"))
+	data.Set("redirect_uri", os.Getenv("OAUTH_GOOGLE_REDIRECT_URI"))
+	data.Set("grant_type", "authorization_code")
+
+	resp, err := http.Post(tokenURL.String(), "application/x-www-form-urlencoded", strings.NewReader(data.Encode()))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var googleUserResponse GoogleUserResponse
+	if err := json.Unmarshal(body, &googleUserResponse); err != nil {
+		return nil, err
+	}
+
+	return &googleUserResponse, nil
+}

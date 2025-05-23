@@ -1,4 +1,4 @@
-import { AuthContext } from '@/contexts/User/constants'
+import { userContext } from '@/contexts/User/constants'
 import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import { Menu, Text } from '@mantine/core'
 import { IconUser } from '@tabler/icons-react'
@@ -6,7 +6,7 @@ import { useContext } from 'react'
 
 export default function LogIn() {
   const { isLogged, handleLogout, handlePushToGoogleOauth } =
-    useContext(AuthContext)
+    useContext(userContext)
 
   return (
     <Menu.Item

@@ -91,14 +91,14 @@ export default function App() {
             color: CSSVAR['--text'],
           }}
         >
-          <UserProvider>
-            <MantineProvider theme={theme}>
-              <QueryClientProvider client={queryClient}>
+          <QueryClientProvider client={queryClient}>
+            <UserProvider>
+              <MantineProvider theme={theme}>
                 <RouterProvider router={router} />
                 <Notifications />
-              </QueryClientProvider>
-            </MantineProvider>
-          </UserProvider>
+              </MantineProvider>
+            </UserProvider>
+          </QueryClientProvider>
         </div>
       </PostHogProvider>
     </>

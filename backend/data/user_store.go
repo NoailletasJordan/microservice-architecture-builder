@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"microservice-architecture-builder/backend/model"
+	"microservice-architecture-builder/backend/helpers"
 	"time"
 )
 
@@ -30,7 +31,7 @@ func (s *UserStore) GetByID(id string) (*model.User, error) {
 	err := s.db.QueryRow(query, id).Scan(&user.Username, &user.Provider, &user.CreatedAt, &deletedAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, errors.New(model.ErrorMessages.NotFound)
+			return nil, errors.New(helpers.ErrorMessages.NotFound)
 		}
 		return nil, err
 	}

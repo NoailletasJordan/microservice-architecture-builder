@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"microservice-architecture-builder/backend/model"
+	"microservice-architecture-builder/backend/helpers"
 	"net/http/httptest"
 )
 
@@ -42,7 +43,7 @@ func TestGetMe_Unauthorized(t *testing.T) {
 		if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 			t.Fatalf("Failed to decode error response: %v", err)
 		}
-		if errMsg, ok := errResp["error"]; !ok || !strings.Contains(errMsg, model.ErrorMessages.Unauthorized) {
+		if errMsg, ok := errResp["error"]; !ok || !strings.Contains(errMsg, helpers.ErrorMessages.Unauthorized) {
 			t.Errorf("Expected unauthorized error, got: %s", errMsg)
 		}
 	})
@@ -60,7 +61,7 @@ func TestGetMe_Unauthorized(t *testing.T) {
 		if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 			t.Fatalf("Failed to decode error response: %v", err)
 		}
-		if errMsg, ok := errResp["error"]; !ok || !strings.Contains(errMsg, model.ErrorMessages.Unauthorized) {
+		if errMsg, ok := errResp["error"]; !ok || !strings.Contains(errMsg, helpers.ErrorMessages.Unauthorized) {
 			t.Errorf("Expected unauthorized error, got: %s", errMsg)
 		}
 	})
@@ -78,7 +79,7 @@ func TestGetMe_Unauthorized(t *testing.T) {
 		if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 			t.Fatalf("Failed to decode error response: %v", err)
 		}
-		if errMsg, ok := errResp["error"]; !ok || !strings.Contains(errMsg, model.ErrorMessages.Unauthorized) {
+		if errMsg, ok := errResp["error"]; !ok || !strings.Contains(errMsg, helpers.ErrorMessages.Unauthorized) {
 			t.Errorf("Expected unauthorized error, got: %s", errMsg)
 		}
 	})
@@ -96,7 +97,7 @@ func TestGetMe_Unauthorized(t *testing.T) {
 		if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 			t.Fatalf("Failed to decode error response: %v", err)
 		}
-		if errMsg, ok := errResp["error"]; !ok || !strings.Contains(errMsg, model.ErrorMessages.Unauthorized) {
+		if errMsg, ok := errResp["error"]; !ok || !strings.Contains(errMsg, helpers.ErrorMessages.Unauthorized) {
 			t.Errorf("Expected unauthorized error, got: %s", errMsg)
 		}
 	})
@@ -114,7 +115,7 @@ func TestGetMe_Unauthorized(t *testing.T) {
 		if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
 			t.Fatalf("Failed to decode error response: %v", err)
 		}
-		if errMsg, ok := errResp["error"]; !ok || !strings.Contains(errMsg, model.ErrorMessages.Unauthorized) {
+		if errMsg, ok := errResp["error"]; !ok || !strings.Contains(errMsg, helpers.ErrorMessages.Unauthorized) {
 			t.Errorf("Expected unauthorized error, got: %s", errMsg)
 		}
 	})

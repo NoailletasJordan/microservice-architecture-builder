@@ -5,6 +5,7 @@ import (
 	"log"
 	"microservice-architecture-builder/backend/data"
 	"microservice-architecture-builder/backend/model"
+	"microservice-architecture-builder/backend/helpers" 
 	"reflect"
 	"time"
 
@@ -47,7 +48,7 @@ func (s *BoardService) GetBoard(id string, userID string) (*model.Board, error) 
 	}
 
 	if board.Owner != userID {
-		return nil, errors.New(model.ErrorMessages.Forbidden)
+		return nil, errors.New(helpers.ErrorMessages.Forbidden)
 	}
 
 	return board, nil
@@ -60,7 +61,7 @@ func (s *BoardService) UpdateBoard(id string, entries *map[string]any, userID st
 	}
 
 	if boardToUpdate.Owner != userID {
-		return nil, errors.New(model.ErrorMessages.Forbidden)
+		return nil, errors.New(helpers.ErrorMessages.Forbidden)
 	}
 
 	// Apply updates to the existing board
@@ -98,7 +99,7 @@ func (s *BoardService) DeleteBoard(id string, userID string) error {
 	}
 
 	if board.Owner != userID {
-		return errors.New(model.ErrorMessages.Forbidden)
+		return errors.New(helpers.ErrorMessages.Forbidden)
 	}
 
 	err = s.store.Delete(id)
@@ -116,7 +117,7 @@ func (s *BoardService) GetBoardShareFragment(id string, userID string) (*string,
 	}
 
 	if board.Owner != userID {
-		return nil, errors.New(model.ErrorMessages.Forbidden)
+		return nil, errors.New(helpers.ErrorMessages.Forbidden)
 	}
 
 	if board.ShareFragment == nil || *board.ShareFragment == "" {

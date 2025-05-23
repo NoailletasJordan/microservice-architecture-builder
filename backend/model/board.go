@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
+	"microservice-architecture-builder/backend/helpers"
 )
 
 type Board struct {
@@ -113,7 +114,7 @@ func ValidateMapCustom(validate *validator.Validate, body map[string]any, rulesM
 				return err
 			}
 			if _, ok := err.(validator.ValidationErrors); ok {
-				return errors.New(ValidationErrorOnField(key, err.(validator.ValidationErrors)[0].ActualTag()))
+				return errors.New(helpers.ValidationErrorOnField(key, err.(validator.ValidationErrors)[0].ActualTag()))
 			}
 		}
 
@@ -121,7 +122,7 @@ func ValidateMapCustom(validate *validator.Validate, body map[string]any, rulesM
 	// Check for extra fields in body that aren't in rules
 	for key := range body {
 		if _, exists := rulesMap[key]; !exists {
-			return errors.New(UnexpectedFieldError(key))
+			return errors.New(helpers.UnexpectedFieldError(key))
 		}
 	}
 

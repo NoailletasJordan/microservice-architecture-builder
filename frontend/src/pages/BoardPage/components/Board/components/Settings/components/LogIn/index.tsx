@@ -1,4 +1,4 @@
-import { AuthContext } from '@/contexts/Auth/constants'
+import { AuthContext } from '@/contexts/User/constants'
 import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import { Menu, Text } from '@mantine/core'
 import { IconUser } from '@tabler/icons-react'

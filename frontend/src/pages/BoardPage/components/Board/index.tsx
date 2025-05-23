@@ -2,6 +2,7 @@ import DroppableIndicator from '@/components/DroppableIndicator'
 import GuidanceTextsMain from '@/components/GuidanceTextsComponents/GuidanceTextsMain'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
+import { userContext } from '@/contexts/User/constants'
 import { Box } from '@mantine/core'
 import { useDisclosure, useElementSize } from '@mantine/hooks'
 import { cloneDeep, omit } from 'lodash'
@@ -38,6 +39,7 @@ import {
   handleDeleteNode,
   storeInLocal,
 } from '../../configs/helpers'
+import { IConnexion, TCustomEdge } from './components/connexionContants'
 import ConnexionPreview from './components/ConnexionPreview'
 import CustomEdge from './components/CustomEdge'
 import CustomNode from './components/CustomNode/'
@@ -50,7 +52,7 @@ import PrimaryActionsPanel from './components/PrimaryActionsPanel'
 import Settings from './components/Settings/index'
 import ShareModal from './components/ShareModal'
 import Toolbar from './components/Toolbar'
-import { IConnexion, TCustomEdge } from './components/connexionContants'
+import UserBoards from './components/UserBoards'
 
 const DEBOUNCE_SAVE_MS = 600
 
@@ -109,17 +111,7 @@ export default function Board({
     )
   }
 
-  // Save board to localstorage, debounced
-  useEffect(() => {
-    const handle = setTimeout(() => {
-      const dataToStore = { nodes, edges, timestamp: new Date() }
-      storeInLocal(STORAGE_DATA_INDEX_KEY, dataToStore)
-    }, DEBOUNCE_SAVE_MS)
-
-    return () => {
-      clearTimeout(handle)
-    }
-  }, [nodes, edges])
+  useSaveBoardLocallyOrRemotely({ nodes, edges })
 
   const onConnect = useCallback(
     ({ source, sourceHandle, target, targetHandle }: Connection) => {
@@ -155,6 +147,7 @@ export default function Board({
   // Dirty fix on async loading fitview behavior
   const loadedWidthNodes = useMemo(() => !!nodes.length, [])
   const boardInitialized = useStore((state) => !!state.height)
+  const { authToken } = useContext(userContext)
 
   return (
     <>
@@ -208,6 +201,7 @@ export default function Board({
             </ReactFlow>
             <Settings openResetModal={resetModalHandlers.open} />
             <PrimaryActionsPanel openShareModal={shareModalHanders.open} />
+            {authToken && <UserBoards authToken={authToken} />}
             <DraggableGhost />
           </Box>
         </DroppableArea>
@@ -230,4 +224,24 @@ export default function Board({
       />
     </>
   )
+}
+
+function useSaveBoardLocallyOrRemotely({
+  nodes,
+  edges,
+}: {
+  nodes: TCustomNode[]
+  edges: TCustomEdge[]
+}) {
+  // Save board to localstorage, debounced
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      const dataToStore = { nodes, edges, timestamp: new Date() }
+      storeInLocal(STORAGE_DATA_INDEX_KEY, dataToStore)
+    }, DEBOUNCE_SAVE_MS)
+
+    return () => {
+      clearTimeout(handle)
+    }
+  }, [nodes, edges])
 }

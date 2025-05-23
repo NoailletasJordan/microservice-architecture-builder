@@ -3,6 +3,7 @@ package service
 import (
 	"microservice-architecture-builder/backend/data"
 	"microservice-architecture-builder/backend/model"
+	"microservice-architecture-builder/backend/helpers"
 	"time"
 )
 
@@ -27,7 +28,7 @@ func (s *UserService) GetOrCreateUserFromOAuth(userId string, claims map[string]
 	if err == nil {
 		return user, nil
 	}
-	if err.Error() != model.ErrorMessages.NotFound {
+	if err.Error() != helpers.ErrorMessages.NotFound {
 		return nil, err
 	}
 	// User does not exist, create it

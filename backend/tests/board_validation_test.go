@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"microservice-architecture-builder/backend/model"
+	"microservice-architecture-builder/backend/helpers"
 )
 
 func TestBoardValidation(t *testing.T) {
@@ -98,7 +99,7 @@ func TestBoardValidation(t *testing.T) {
 				"data":  `{invalid json}`,
 			},
 			expectedCode:  http.StatusBadRequest,
-			errorContains: model.ErrorMessages.DataMustBeValidJSON,
+			errorContains: helpers.ErrorMessages.DataMustBeValidJSON,
 		},
 		{
 			name: "Valid JSON Data",
@@ -343,7 +344,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
-			errorContains: model.ErrorMessages.DataMustBeValidJSON,
+			errorContains: helpers.ErrorMessages.DataMustBeValidJSON,
 		},
 		// Valid update
 		{
@@ -448,7 +449,7 @@ func TestBoardUpdateValidation(t *testing.T) {
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
-			errorContains: model.ErrorMessages.DataMustBeValidJSON,
+			errorContains: helpers.ErrorMessages.DataMustBeValidJSON,
 		},
 		{
 			name: "PATCH With Only Forbidden Field",

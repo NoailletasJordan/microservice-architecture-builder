@@ -8,6 +8,7 @@ import (
 
 	"microservice-architecture-builder/backend/model"
 	"microservice-architecture-builder/backend/service"
+	"microservice-architecture-builder/backend/helpers"
 
 	"errors"
 
@@ -73,7 +74,7 @@ type CreateBoardRequest struct {
 func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 	requestUser, ok := r.Context().Value(UserContextKey).(*model.User)
 	if !ok {
-		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
+		sendError(w, http.StatusUnauthorized, helpers.ErrorMessages.Unauthorized)
 		return
 	}
 
@@ -84,12 +85,12 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 			sendError(w, http.StatusRequestEntityTooLarge, "request body too large")
 			return
 		}
-		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
+		sendError(w, http.StatusBadRequest, helpers.ErrorMessages.InvalidRequestBody)
 		return
 	}
 	var raw map[string]interface{}
 	if err := json.Unmarshal(body, &raw); err != nil {
-		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
+		sendError(w, http.StatusBadRequest, helpers.ErrorMessages.InvalidRequestBody)
 		return
 	}
 	// Define rules for POST
@@ -107,13 +108,13 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 
 	// Validate the data field as JSON
 	if !isValidJSON(raw["data"].(string)) {
-		sendError(w, http.StatusBadRequest, model.ErrorMessages.DataMustBeValidJSON)
+		sendError(w, http.StatusBadRequest, helpers.ErrorMessages.DataMustBeValidJSON)
 		return
 	}
 
 	board, err := c.service.CreateBoard(&raw, requestUser.ID)
 	if err != nil {
-		if err.Error() == model.ErrorMessages.OwnerNotFound {
+		if err.Error() == helpers.ErrorMessages.OwnerNotFound {
 			sendError(w, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -136,7 +137,7 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 func (c *BoardController) GetAllBoards(w http.ResponseWriter, r *http.Request) {
 	requestUser, ok := r.Context().Value(UserContextKey).(*model.User)
 	if !ok {
-		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
+		sendError(w, http.StatusUnauthorized, helpers.ErrorMessages.Unauthorized)
 		return
 	}
 
@@ -162,7 +163,7 @@ func (c *BoardController) GetAllBoards(w http.ResponseWriter, r *http.Request) {
 func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
 	requestUser, ok := r.Context().Value(UserContextKey).(*model.User)
 	if !ok {
-		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
+		sendError(w, http.StatusUnauthorized, helpers.ErrorMessages.Unauthorized)
 		return
 	}
 
@@ -170,10 +171,10 @@ func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
 	board, err := c.service.GetBoard(id, requestUser.ID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			sendError(w, http.StatusNotFound, model.ErrorMessages.NotFound)
+			sendError(w, http.StatusNotFound, helpers.ErrorMessages.NotFound)
 			return
 		}
-		if err.Error() == model.ErrorMessages.Forbidden {
+		if err.Error() == helpers.ErrorMessages.Forbidden {
 			sendError(w, http.StatusForbidden, err.Error())
 			return
 		}
@@ -210,7 +211,7 @@ type UpdateBoardRequest struct {
 func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 	requestUser, ok := r.Context().Value(UserContextKey).(*model.User)
 	if !ok {
-		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
+		sendError(w, http.StatusUnauthorized, helpers.ErrorMessages.Unauthorized)
 		return
 	}
 
@@ -221,13 +222,13 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 			sendError(w, http.StatusRequestEntityTooLarge, "request body too large")
 			return
 		}
-		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
+		sendError(w, http.StatusBadRequest, helpers.ErrorMessages.InvalidRequestBody)
 		return
 	}
 
 	var body map[string]interface{}
 	if err := json.Unmarshal(yBody, &body); err != nil {
-		sendError(w, http.StatusBadRequest, model.ErrorMessages.InvalidRequestBody)
+		sendError(w, http.StatusBadRequest, helpers.ErrorMessages.InvalidRequestBody)
 		return
 	}
 
@@ -248,14 +249,14 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !hasAtLeastOneRuleKey {
-		sendError(w, http.StatusBadRequest, model.ErrorMessages.AtLeastOneFieldRequired)
+		sendError(w, http.StatusBadRequest, helpers.ErrorMessages.AtLeastOneFieldRequired)
 		return
 	}
 
 	// Validate the data field as JSON
 	if data, ok := body["data"]; ok {
 		if !isValidJSON(data.(string)) {
-			sendError(w, http.StatusBadRequest, model.ErrorMessages.DataMustBeValidJSON)
+			sendError(w, http.StatusBadRequest, helpers.ErrorMessages.DataMustBeValidJSON)
 			return
 		}
 	}
@@ -271,10 +272,10 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 	board, err := c.service.UpdateBoard(id, &body, requestUser.ID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			sendError(w, http.StatusNotFound, model.ErrorMessages.NotFound)
+			sendError(w, http.StatusNotFound, helpers.ErrorMessages.NotFound)
 			return
 		}
-		if err.Error() == model.ErrorMessages.Forbidden {
+		if err.Error() == helpers.ErrorMessages.Forbidden {
 			sendError(w, http.StatusForbidden, err.Error())
 			return
 		}
@@ -299,17 +300,17 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 func (c *BoardController) DeleteBoard(w http.ResponseWriter, r *http.Request) {
 	requestUser, ok := r.Context().Value(UserContextKey).(*model.User)
 	if !ok {
-		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
+		sendError(w, http.StatusUnauthorized, helpers.ErrorMessages.Unauthorized)
 		return
 	}
 
 	id := chi.URLParam(r, "id")
 	if err := c.service.DeleteBoard(id, requestUser.ID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			sendError(w, http.StatusNotFound, model.ErrorMessages.NotFound)
+			sendError(w, http.StatusNotFound, helpers.ErrorMessages.NotFound)
 			return
 		}
-		if err.Error() == model.ErrorMessages.Forbidden {
+		if err.Error() == helpers.ErrorMessages.Forbidden {
 			sendError(w, http.StatusForbidden, err.Error())
 			return
 		}
@@ -339,19 +340,19 @@ type BoardShareFragmentResponse struct {
 func (c *BoardController) GetBoardShareFragment(w http.ResponseWriter, r *http.Request) {
 	requestUser, ok := r.Context().Value(UserContextKey).(*model.User)
 	if !ok {
-		sendError(w, http.StatusUnauthorized, model.ErrorMessages.Unauthorized)
+		sendError(w, http.StatusUnauthorized, helpers.ErrorMessages.Unauthorized)
 		return
 	}
 
 	id := chi.URLParam(r, "id")
 	shareFragment, err := c.service.GetBoardShareFragment(id, requestUser.ID)
 	if err != nil {
-		if err.Error() == model.ErrorMessages.Forbidden {
+		if err.Error() == helpers.ErrorMessages.Forbidden {
 			sendError(w, http.StatusForbidden, err.Error())
 			return
 		}
 		if errors.Is(err, sql.ErrNoRows) {
-			sendError(w, http.StatusNotFound, model.ErrorMessages.NotFound)
+			sendError(w, http.StatusNotFound, helpers.ErrorMessages.NotFound)
 			return
 		}
 		sendError(w, http.StatusInternalServerError, err.Error())

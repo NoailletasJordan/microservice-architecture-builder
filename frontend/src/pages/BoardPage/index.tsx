@@ -46,10 +46,11 @@ export default function BoardPage() {
                 edgeState={edgeState}
                 nodeState={nodeState}
               />
-              <LoaderModal
+              {/* temp */}
+              {/* <LoaderModal
                 close={() => setOpenLoader(false)}
                 isOpen={openLoader}
-              />
+              /> */}
             </OnboardingContextProvider>
           </ClickCanvaProvider>
         </AppShell.Main>
@@ -57,6 +58,7 @@ export default function BoardPage() {
     </AppShell>
   )
 }
+
 function LoaderModal({
   close,
   isOpen,

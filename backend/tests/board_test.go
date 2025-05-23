@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"microservice-architecture-builder/backend/model"
+	"microservice-architecture-builder/backend/helpers"
 	"microservice-architecture-builder/backend/server"
 )
 
@@ -40,14 +41,14 @@ func TestGetBoard(t *testing.T) {
 			boardID:       "non-existent-id",
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
-			errorContains: model.ErrorMessages.NotFound,
+			errorContains: helpers.ErrorMessages.NotFound,
 		},
 		{
 			name:          "Board from another user",
 			boardID:       boardFromAnotherUser.ID,
 			expectedCode:  http.StatusForbidden,
 			expectError:   true,
-			errorContains: model.ErrorMessages.Forbidden,
+			errorContains: helpers.ErrorMessages.Forbidden,
 		},
 	}
 
@@ -127,7 +128,7 @@ func TestUpdateBoard(t *testing.T) {
 			},
 			expectedCode:  http.StatusBadRequest,
 			expectError:   true,
-			errorContains: model.ErrorMessages.DataMustBeValidJSON,
+			errorContains: helpers.ErrorMessages.DataMustBeValidJSON,
 		},
 		{
 			name:          "Missing Required Fields",
@@ -146,7 +147,7 @@ func TestUpdateBoard(t *testing.T) {
 			},
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
-			errorContains: model.ErrorMessages.NotFound,
+			errorContains: helpers.ErrorMessages.NotFound,
 		},
 		{
 			name:    "Board from another user",
@@ -157,7 +158,7 @@ func TestUpdateBoard(t *testing.T) {
 			},
 			expectedCode:  http.StatusForbidden,
 			expectError:   true,
-			errorContains: model.ErrorMessages.Forbidden,
+			errorContains: helpers.ErrorMessages.Forbidden,
 		},
 	}
 
@@ -267,21 +268,21 @@ func TestDeleteBoard(t *testing.T) {
 			boardID:       "non-existent-id",
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
-			errorContains: model.ErrorMessages.NotFound,
+			errorContains: helpers.ErrorMessages.NotFound,
 		},
 		{
 			name:          "Already DeletedAt Board",
 			boardID:       board.ID,
 			expectedCode:  http.StatusNotFound,
 			expectError:   true,
-			errorContains: model.ErrorMessages.NotFound,
+			errorContains: helpers.ErrorMessages.NotFound,
 		},
 		{
 			name:          "Board from another user",
 			boardID:       boardFromAnotherUser.ID,
 			expectedCode:  http.StatusForbidden,
 			expectError:   true,
-			errorContains: model.ErrorMessages.Forbidden,
+			errorContains: helpers.ErrorMessages.Forbidden,
 		},
 	}
 
@@ -492,8 +493,8 @@ func TestGetBoardShareFragment(t *testing.T) {
 	}
 	var errResp3 map[string]string
 	_ = json.NewDecoder(rr3.Body).Decode(&errResp3)
-	if errMsg, ok := errResp3["error"]; !ok || !strings.Contains(errMsg, model.ErrorMessages.NotFound) {
-		t.Errorf("Expected error containing '%s', got '%s'", model.ErrorMessages.NotFound, errMsg)
+	if errMsg, ok := errResp3["error"]; !ok || !strings.Contains(errMsg, helpers.ErrorMessages.NotFound) {
+		t.Errorf("Expected error containing '%s', got '%s'", helpers.ErrorMessages.NotFound, errMsg)
 	}
 
 	// 4. Forbidden: another user cannot get the share fragment of a board they do not own
@@ -504,8 +505,8 @@ func TestGetBoardShareFragment(t *testing.T) {
 	}
 	var errResp4 map[string]string
 	_ = json.NewDecoder(rr4.Body).Decode(&errResp4)
-	if errMsg, ok := errResp4["error"]; !ok || !strings.Contains(errMsg, model.ErrorMessages.Forbidden) {
-		t.Errorf("Expected error containing '%s', got '%s'", model.ErrorMessages.Forbidden, errMsg)
+	if errMsg, ok := errResp4["error"]; !ok || !strings.Contains(errMsg, helpers.ErrorMessages.Forbidden) {
+		t.Errorf("Expected error containing '%s', got '%s'", helpers.ErrorMessages.Forbidden, errMsg)
 	}
 
 	// 5. Unauthorized: should return 401 if user ID is missing
@@ -524,8 +525,8 @@ func TestGetBoardShareFragment(t *testing.T) {
 	}
 	var errResp6 map[string]string
 	_ = json.NewDecoder(rr6.Body).Decode(&errResp6)
-	if errMsg, ok := errResp6["error"]; !ok || !strings.Contains(errMsg, model.ErrorMessages.NotFound) {
-		t.Errorf("Expected error containing '%s', got '%s'", model.ErrorMessages.NotFound, errMsg)
+	if errMsg, ok := errResp6["error"]; !ok || !strings.Contains(errMsg, helpers.ErrorMessages.NotFound) {
+		t.Errorf("Expected error containing '%s', got '%s'", helpers.ErrorMessages.NotFound, errMsg)
 	}
 }
 

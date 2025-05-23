@@ -19,6 +19,7 @@ import {
 } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
 import { RichTextEditor } from '@mantine/tiptap'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { PostHogProvider } from 'posthog-js/react'
 import { useEffect } from 'react'
 import {
@@ -29,7 +30,7 @@ import {
 } from 'react-router-dom'
 import { ReactFlowProvider } from 'reactflow'
 import { CSSVAR, customColors, themeDarkColorVariables } from './contants'
-import AuthProvider from './contexts/Auth/AuthProvider'
+import UserProvider from './contexts/User/UserProvider'
 import BoardPage from './pages/BoardPage'
 
 const accessEnvVariable = (
@@ -64,6 +65,8 @@ const router = createBrowserRouter(
   ),
 )
 
+const queryClient = new QueryClient()
+
 export default function App() {
   useEffect(() => {
     // Inject css colors in root
@@ -88,12 +91,14 @@ export default function App() {
             color: CSSVAR['--text'],
           }}
         >
-          <AuthProvider>
+          <UserProvider>
             <MantineProvider theme={theme}>
-              <RouterProvider router={router} />
-              <Notifications />
+              <QueryClientProvider client={queryClient}>
+                <RouterProvider router={router} />
+                <Notifications />
+              </QueryClientProvider>
             </MantineProvider>
-          </AuthProvider>
+          </UserProvider>
         </div>
       </PostHogProvider>
     </>

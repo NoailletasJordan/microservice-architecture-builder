@@ -1,16 +1,11 @@
 import { createContext } from 'react'
-
-export interface TUserBoard {
-  id: string
-  title: string
-}
+import { useUser } from './hooks'
 
 export interface IUser {
   id: string
   username: string
   provider: string
   created_at: string
-  boards?: TUserBoard[]
 }
 
 export interface TBoardModel {
@@ -24,16 +19,23 @@ export interface TBoardModel {
 
 export interface IUserContext {
   isLogged: boolean
-  user?: IUser
+  userQuery?: ReturnType<typeof useUser>
   authToken?: string
   handleLogout: () => void
   handlePushToGoogleOauth: () => void
 }
 
+export const TOKEN_PREFIX = '#auth-token='
+export const AUTH_TOKEN_KEY = 'auth-token'
+
 export const userContext = createContext<IUserContext>({
   isLogged: false,
-  user: undefined,
+  userQuery: undefined,
   authToken: undefined,
   handleLogout: () => {},
   handlePushToGoogleOauth: () => {},
 })
+
+export const handlePushToGoogleOauth = () => {
+  window.location.href = `${import.meta.env.VITE_API_URL}/auth/google/login`
+}

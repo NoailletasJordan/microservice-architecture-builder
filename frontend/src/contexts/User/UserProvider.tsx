@@ -1,41 +1,30 @@
 import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import { ThemeIcon } from '@mantine/core'
-import { useHash, useLocalStorage } from '@mantine/hooks'
+import { useLocalStorage } from '@mantine/hooks'
 import { notifications } from '@mantine/notifications'
 import { IconX } from '@tabler/icons-react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { ReactNode, useCallback, useEffect, useRef } from 'react'
-import { userContext } from './constants'
-
-const TOKEN_PREFIX = '#auth-token='
-const AUTH_TOKEN_KEY = 'auth-token'
+import { useQueryClient } from '@tanstack/react-query'
+import { ReactNode, useCallback } from 'react'
+import {
+  AUTH_TOKEN_KEY,
+  handlePushToGoogleOauth,
+  userContext,
+} from './constants'
+import { useHandleUserGoogleLogin, useUser } from './hooks'
 
 export default function UserProvider({ children }: { children: ReactNode }) {
   const [authToken, setAuthToken, removeAuthToken] = useLocalStorage({
     key: AUTH_TOKEN_KEY,
   })
 
-  const {
-    data: user,
-    isPending,
-    error,
-  } = useQuery({
-    enabled: !!authToken,
-    queryKey: ['user', authToken],
-    queryFn: () =>
-      fetch(`${import.meta.env.VITE_API_URL}/api/users/me`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      })
-        .then((res) => res.json())
-        .catch((err) => {
-          showNotificationError(err)
-          return
-        }),
-  })
+  const userQuery = useUser()
 
-  const isLogged = !!user
+  if (userQuery.error) {
+    showNotificationError(userQuery.error)
+    removeAuthToken()
+  }
+
+  const isLogged = !!userQuery.data
 
   useHandleUserGoogleLogin({
     storeInLocalStorage: (token) => setAuthToken(token),
@@ -47,15 +36,11 @@ export default function UserProvider({ children }: { children: ReactNode }) {
     removeAuthToken()
   }, [authToken, queryClient, removeAuthToken])
 
-  const handlePushToGoogleOauth = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google/login`
-  }
-
   return (
     <userContext.Provider
       value={{
         isLogged,
-        user,
+        userQuery,
         authToken,
         handleLogout,
         handlePushToGoogleOauth,
@@ -64,26 +49,6 @@ export default function UserProvider({ children }: { children: ReactNode }) {
       {children}
     </userContext.Provider>
   )
-}
-
-const useHandleUserGoogleLogin = ({
-  storeInLocalStorage,
-}: {
-  storeInLocalStorage: (token: string) => void
-}) => {
-  const [hash, setHash] = useHash()
-  const storeInLocalStorageRef = useRef(storeInLocalStorage)
-  storeInLocalStorageRef.current = storeInLocalStorage
-
-  useEffect(() => {
-    ;(async () => {
-      if (hash.startsWith(TOKEN_PREFIX)) {
-        const token = hash.slice(TOKEN_PREFIX.length)
-        storeInLocalStorageRef.current(token)
-        setHash('')
-      }
-    })()
-  }, [hash, setHash])
 }
 
 function showNotificationError(err: unknown) {

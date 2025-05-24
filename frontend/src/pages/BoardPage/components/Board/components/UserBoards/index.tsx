@@ -1,4 +1,3 @@
-import { TBoardModel } from '@/contexts/User/constants'
 import {
   ActionIcon,
   Card,
@@ -9,49 +8,13 @@ import {
   Text,
 } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
-import { useQuery } from '@tanstack/react-query'
 import { Panel } from 'reactflow'
 import { ICON_STYLE } from '../../../../configs/constants'
 import BoardItem from './components/BoardItem'
 
-type Props = {
-  authToken: string
-}
-
-export default function UserBoards({ authToken }: Props) {
-  const { data, isPending, error } = useQuery({
-    queryKey: ['boards', authToken],
-    queryFn: () =>
-      fetch(`${import.meta.env.VITE_API_URL}/api/board`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      }).then((res) => res.json()),
-  })
-
-  // temp
-  console.log({ data })
-
-  const boards: TBoardModel[] = [
-    {
-      id: '1',
-      title: 'Board 1',
-      owner: '1',
-      data: '{}',
-    },
-    {
-      id: '2',
-      title: 'Board 2',
-      owner: '1',
-      data: '{}',
-    },
-    {
-      id: '3',
-      title: 'Board 3',
-      owner: '1',
-      data: '{}',
-    },
-  ]
+export default function UserBoards() {
+  // const { data: boards } = useBoards()
+  const boards: any = []
 
   return (
     <Panel position="bottom-left">
@@ -64,15 +27,15 @@ export default function UserBoards({ authToken }: Props) {
         </Group>
 
         <Divider my="sm" />
-        {error ? (
-          <ErrorStateComponent />
-        ) : isPending ? (
-          <LoadingStateComponent />
-        ) : (
+        {boards ? (
           <Stack gap="xs">
-            {boards.map((board) => (
+            {boards.map((board: any) => (
               <BoardItem board={board} />
             ))}
+          </Stack>
+        ) : (
+          <Stack>
+            <Text>No boards</Text>
           </Stack>
         )}
       </Card>

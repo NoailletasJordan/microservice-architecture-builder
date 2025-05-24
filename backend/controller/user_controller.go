@@ -15,7 +15,17 @@ func NewUserController(service *service.UserService) *UserController {
 	return &UserController{service: service}
 }
 
-// GetMe handles GET /users/me
+// GetMe godoc
+// @Summary Get current user
+// @Description Get the details of the currently authenticated user
+// @Tags users
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param Authorization header string true "Bearer token"
+// @Success 200 {object} model.User
+// @Failure 401 {object} ErrorResponse "Unauthorized"
+// @Router /users/me [get]
 func (uc *UserController) GetMe(w http.ResponseWriter, r *http.Request) {
 	user, ok := r.Context().Value(UserContextKey).(*model.User)
 	if !ok || user == nil {

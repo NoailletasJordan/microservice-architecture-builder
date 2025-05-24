@@ -1,4 +1,4 @@
-import { TBoardModel } from '@/contexts/User/constants'
+import { TBoardModel } from '@/contexts/UserBoards/constants'
 import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import { ActionIcon, Group, Title } from '@mantine/core'
 import { IconEdit, IconTrash } from '@tabler/icons-react'

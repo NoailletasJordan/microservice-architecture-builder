@@ -1,6 +1,12 @@
 import { createContext } from 'react'
 import { useUser } from './hooks'
 
+export type BackendQueryResponse<T> =
+  | (T & { error?: undefined })
+  | {
+      error: string
+    }
+
 export interface IUser {
   id: string
   username: string

@@ -67,9 +67,12 @@ type CreateBoardRequest struct {
 // @Tags boards
 // @Accept json
 // @Produce json
-// @Param board body controller.CreateBoardRequest true "Board creation payload"
+// @Security Bearer
+// @Param Authorization header string true "Bearer token"
+// @Param board body CreateBoardRequest true "Board creation payload"
 // @Success 201 {object} model.Board
 // @Failure 400 {object} ErrorResponse "Bad Request. Example: {\"error\": \"unexpected fields: [foo, bar]\"}"
+// @Failure 401 {object} ErrorResponse "Unauthorized"
 // @Router /board/ [post]
 func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 	requestUser, ok := r.Context().Value(UserContextKey).(*model.User)
@@ -132,7 +135,10 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 // @Tags boards
 // @Accept json
 // @Produce json
+// @Security Bearer
+// @Param Authorization header string true "Bearer token"
 // @Success 200 {array} model.Board
+// @Failure 401 {object} ErrorResponse "Unauthorized"
 // @Router /board/ [get]
 func (c *BoardController) GetAllBoards(w http.ResponseWriter, r *http.Request) {
 	requestUser, ok := r.Context().Value(UserContextKey).(*model.User)
@@ -155,9 +161,11 @@ func (c *BoardController) GetAllBoards(w http.ResponseWriter, r *http.Request) {
 // @Tags boards
 // @Accept json
 // @Produce json
+// @Security Bearer
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Board ID"
 // @Success 200 {object} model.Board
-// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse "Unauthorized"
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id} [get]
 func (c *BoardController) GetBoard(w http.ResponseWriter, r *http.Request) {
@@ -202,10 +210,13 @@ type UpdateBoardRequest struct {
 // @Tags boards
 // @Accept json
 // @Produce json
+// @Security Bearer
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Board ID"
 // @Param board body UpdateBoardRequest true "Board update payload"
 // @Success 200 {object} model.Board
 // @Failure 400 {object} ErrorResponse "Bad Request. Example: {\"error\": \"unexpected fields: [foo, bar]\"} or {\"error\": \"at least one of title, data, password is required\"}"
+// @Failure 401 {object} ErrorResponse "Unauthorized"
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id} [patch]
 func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
@@ -292,9 +303,11 @@ func (c *BoardController) UpdateBoard(w http.ResponseWriter, r *http.Request) {
 // @Tags boards
 // @Accept json
 // @Produce json
+// @Security Bearer
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Board ID"
 // @Success 200 {object} map[string]string
-// @Failure 400 {object} ErrorResponse
+// @Failure 401 {object} ErrorResponse "Unauthorized"
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id} [delete]
 func (c *BoardController) DeleteBoard(w http.ResponseWriter, r *http.Request) {
@@ -333,8 +346,11 @@ type BoardShareFragmentResponse struct {
 // @Tags boards
 // @Accept json
 // @Produce json
+// @Security Bearer
+// @Param Authorization header string true "Bearer token"
 // @Param id path string true "Board ID"
-// @Success 200 {object} controller.BoardShareFragmentResponse
+// @Success 200 {object} BoardShareFragmentResponse
+// @Failure 401 {object} ErrorResponse "Unauthorized"
 // @Failure 404 {object} ErrorResponse
 // @Router /board/{id}/sharefragment [get]
 func (c *BoardController) GetBoardShareFragment(w http.ResponseWriter, r *http.Request) {

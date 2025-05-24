@@ -16,11 +16,12 @@ export default function UserProvider({ children }: { children: ReactNode }) {
   const [authToken, setAuthToken, removeAuthToken] = useLocalStorage({
     key: AUTH_TOKEN_KEY,
   })
-
   const userQuery = useUser()
+  const queryClient = useQueryClient()
 
-  if (userQuery.error) {
-    showNotificationError(userQuery.error)
+  if ((userQuery.data && 'error' in userQuery.data) || userQuery.error) {
+    queryClient.setQueryData(['user', authToken], undefined)
+    showNotificationError('Error loading user', userQuery.error)
     removeAuthToken()
   }
 
@@ -30,7 +31,6 @@ export default function UserProvider({ children }: { children: ReactNode }) {
     storeInLocalStorage: (token) => setAuthToken(token),
   })
 
-  const queryClient = useQueryClient()
   const handleLogout = useCallback(() => {
     queryClient.setQueryData(['user', authToken], undefined)
     removeAuthToken()
@@ -51,7 +51,7 @@ export default function UserProvider({ children }: { children: ReactNode }) {
   )
 }
 
-function showNotificationError(err: unknown) {
+export function showNotificationError(title: string, err?: unknown) {
   notifications.show({
     icon: (
       <ThemeIcon radius="xl" color="pink" variant="outline">
@@ -59,7 +59,7 @@ function showNotificationError(err: unknown) {
       </ThemeIcon>
     ),
     message: err instanceof Error ? err.message : 'Unknown error',
-    title: 'Error loading user',
+    title,
     autoClose: 6000,
   })
 }

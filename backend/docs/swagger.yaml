@@ -55,6 +55,19 @@ definitions:
       title:
         type: string
     type: object
+  model.User:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      provider:
+        type: string
+      username:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -68,6 +81,12 @@ paths:
       consumes:
       - application/json
       description: Get a list of all boards
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -77,6 +96,12 @@ paths:
             items:
               $ref: '#/definitions/model.Board'
             type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Get all boards
       tags:
       - boards
@@ -85,6 +110,11 @@ paths:
       - application/json
       description: 'Create a new board. Allowed fields in the request body:'
       parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Board creation payload
         in: body
         name: board
@@ -103,6 +133,12 @@ paths:
             bar]\"}'
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Create a new board
       tags:
       - boards
@@ -112,6 +148,11 @@ paths:
       - application/json
       description: Delete a board by its unique ID
       parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Board ID
         in: path
         name: id
@@ -126,14 +167,16 @@ paths:
             additionalProperties:
               type: string
             type: object
-        "400":
-          description: Bad Request
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Delete a board by ID
       tags:
       - boards
@@ -142,6 +185,11 @@ paths:
       - application/json
       description: Get a board by its unique ID
       parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Board ID
         in: path
         name: id
@@ -154,14 +202,16 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.Board'
-        "400":
-          description: Bad Request
+        "401":
+          description: Unauthorized
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Get a board by ID
       tags:
       - boards
@@ -171,6 +221,11 @@ paths:
       description: 'Update a board''s details by its unique ID. Allowed fields in
         the request body:'
       parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Board ID
         in: path
         name: id
@@ -194,10 +249,16 @@ paths:
             bar]\"} or {\"error\": \"at least one of title, data, password is required\"}'
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Update a board by ID
       tags:
       - boards
@@ -207,6 +268,11 @@ paths:
       - application/json
       description: Get only the share_fragment field for a board by its unique ID
       parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Board ID
         in: path
         name: id
@@ -219,11 +285,50 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/controller.BoardShareFragmentResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Get the share fragment of a board by ID
       tags:
       - boards
+  /users/me:
+    get:
+      consumes:
+      - application/json
+      description: Get the details of the currently authenticated user
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get current user
+      tags:
+      - users
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

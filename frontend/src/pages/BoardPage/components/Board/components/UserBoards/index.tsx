@@ -1,4 +1,4 @@
-import { useUserBoards } from '@/contexts/UserBoards/hooks'
+import { TBoardModel, userBoardsContext } from '@/contexts/UserBoards/constants'
 import {
   ActionIcon,
   Card,
@@ -9,13 +9,21 @@ import {
   Text,
 } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
+import { useContext } from 'react'
 import { Panel } from 'reactflow'
 import { ICON_STYLE } from '../../../../configs/constants'
 import BoardItem from './components/BoardItem'
 
 export default function UserBoards() {
-  const { data: boards } = useUserBoards()
-  console.log('boards:', boards)
+  const { boardsQuery } = useContext(userBoardsContext)
+
+  let component = null
+  if (boardsQuery?.isError) component = null
+  else if (boardsQuery?.isFetching) component = <LoadingStateComponent />
+  else if (boardsQuery?.data)
+    component = (
+      <BoardList boards={boardsQuery.data as Partial<TBoardModel>[]} />
+    )
 
   return (
     <Panel position="bottom-left">
@@ -28,19 +36,19 @@ export default function UserBoards() {
         </Group>
 
         <Divider my="sm" />
-        {boards ? (
-          <Stack gap="xs">
-            {boards.map((board: any) => (
-              <BoardItem board={board} />
-            ))}
-          </Stack>
-        ) : (
-          <Stack>
-            <Text>No boards</Text>
-          </Stack>
-        )}
+        {component}
       </Card>
     </Panel>
+  )
+}
+
+function BoardList({ boards }: { boards: Partial<TBoardModel>[] }) {
+  return (
+    <Stack gap="xs">
+      {boards.map((board: any) => (
+        <BoardItem key={board.id} board={board} />
+      ))}
+    </Stack>
   )
 }
 
@@ -48,14 +56,6 @@ function LoadingStateComponent() {
   return (
     <Stack>
       <Skeleton height={50} width={100} />
-    </Stack>
-  )
-}
-
-function ErrorStateComponent() {
-  return (
-    <Stack>
-      <Text>Error</Text>
     </Stack>
   )
 }

@@ -31,6 +31,7 @@ import {
 import { ReactFlowProvider } from 'reactflow'
 import { CSSVAR, customColors, themeDarkColorVariables } from './contants'
 import UserProvider from './contexts/User/UserProvider'
+import UserBoardsProvider from './contexts/UserBoards/UserBoardsProvider'
 import BoardPage from './pages/BoardPage'
 
 const accessEnvVariable = (
@@ -93,10 +94,12 @@ export default function App() {
         >
           <QueryClientProvider client={queryClient}>
             <UserProvider>
-              <MantineProvider theme={theme}>
-                <RouterProvider router={router} />
-                <Notifications />
-              </MantineProvider>
+              <UserBoardsProvider>
+                <MantineProvider theme={theme}>
+                  <RouterProvider router={router} />
+                  <Notifications />
+                </MantineProvider>
+              </UserBoardsProvider>
             </UserProvider>
           </QueryClientProvider>
         </div>

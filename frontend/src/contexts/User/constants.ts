@@ -8,15 +8,6 @@ export interface IUser {
   created_at: string
 }
 
-export interface TBoardModel {
-  id: string
-  title: string
-  owner: string
-  data: string
-  created_at?: string
-  share_fragment?: string
-}
-
 export interface IUserContext {
   isLogged: boolean
   userQuery?: ReturnType<typeof useUser>

@@ -1,3 +1,4 @@
+import { useUserBoards } from '@/contexts/UserBoards/hooks'
 import {
   ActionIcon,
   Card,
@@ -13,8 +14,8 @@ import { ICON_STYLE } from '../../../../configs/constants'
 import BoardItem from './components/BoardItem'
 
 export default function UserBoards() {
-  // const { data: boards } = useBoards()
-  const boards: any = []
+  const { data: boards } = useUserBoards()
+  console.log('boards:', boards)
 
   return (
     <Panel position="bottom-left">

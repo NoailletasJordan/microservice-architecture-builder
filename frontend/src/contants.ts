@@ -1,3 +1,7 @@
+import { useCallback, useInsertionEffect, useRef } from 'react'
+import { TCustomEdge } from './pages/BoardPage/components/Board/components/connexionContants'
+import { TCustomNode } from './pages/BoardPage/configs/constants'
+
 export const customColors = {
   //  from accent DCFF46 https://www.radix-ui.com/customColors/custom
   primary: [
@@ -83,3 +87,27 @@ export const CSSVAR = Object.keys(themeDarkColorVariables).reduce(
   (acc, cur) => ({ ...acc, [cur]: `var(${cur})` }),
   {},
 ) as Record<keyof typeof themeDarkColorVariables, string>
+
+export function getDataToStoreObject(
+  nodes: TCustomNode[],
+  edges: TCustomEdge[],
+) {
+  const dataToStore = { nodes, edges, timestamp: new Date() }
+
+  return dataToStore
+}
+
+// UseEffectEvent polyfill
+export function useEffectEventP<T extends (...args: any[]) => any>(
+  fn: T,
+): (...args: Parameters<T>) => ReturnType<T> {
+  const ref = useRef<T>(fn)
+  useInsertionEffect(() => {
+    ref.current = fn
+  }, [fn])
+
+  return useCallback((...args: Parameters<T>): ReturnType<T> => {
+    const f = ref.current
+    return f(...args)
+  }, [])
+}

@@ -2,7 +2,7 @@ test-b:
 	docker compose exec backend go test $(ARGS) ./tests/...
 
 test-f:
-	docker compose exec frontend bun test
+	cd frontend && npx playwright test ./...
 
 dev:
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build 

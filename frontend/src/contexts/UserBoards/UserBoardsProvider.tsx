@@ -1,11 +1,10 @@
-import { ReactNode, useContext, useEffect, useState } from 'react'
+import { ReactNode, useContext, useState } from 'react'
 import { userContext } from '../User/constants'
-import { showNotificationError } from '../User/UserProvider'
 import { userBoardsContext } from './constants'
 import {
-  useCreateBoard,
   useCreateBoardIfUserHaveNone,
   useHandleBoardsOnLogout,
+  useShowNotificationOnMutationError,
   useUserBoards,
 } from './hooks'
 
@@ -19,17 +18,11 @@ export default function UserBoardsProvider({ children }: IProps) {
   )
   const { isLogged } = useContext(userContext)
 
-  useHandleBoardsOnLogout(isLogged)
   const boardsQuery = useUserBoards()
 
-  const mutationResult = useCreateBoard()
-  useCreateBoardIfUserHaveNone(boardsQuery, mutationResult)
-
-  useEffect(() => {
-    if (mutationResult.isError || mutationResult.error) {
-      showNotificationError('Error creating board', mutationResult.error)
-    }
-  }, [mutationResult.isError, mutationResult.error])
+  useHandleBoardsOnLogout(isLogged)
+  useCreateBoardIfUserHaveNone(boardsQuery)
+  useShowNotificationOnMutationError()
 
   return (
     <userBoardsContext.Provider

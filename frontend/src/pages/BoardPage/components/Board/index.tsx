@@ -6,7 +6,7 @@ import { userContext } from '@/contexts/User/constants'
 import { Box } from '@mantine/core'
 import { useDisclosure, useElementSize } from '@mantine/hooks'
 import { cloneDeep, omit } from 'lodash'
-import { useCallback, useContext, useEffect, useMemo } from 'react'
+import { useCallback, useContext, useMemo } from 'react'
 import ReactFlow, {
   Background,
   BackgroundVariant,
@@ -30,15 +30,10 @@ import {
   NO_DRAG_REACTFLOW_CLASS,
   NO_PAN_REACTFLOW_CLASS,
   NO_WhEEL_REACTFLOW_CLASS,
-  STORAGE_DATA_INDEX_KEY,
   SubService,
   TCustomNode,
 } from '../../configs/constants'
-import {
-  getNodeOverlapped,
-  handleDeleteNode,
-  storeInLocal,
-} from '../../configs/helpers'
+import { getNodeOverlapped, handleDeleteNode } from '../../configs/helpers'
 import { IConnexion, TCustomEdge } from './components/connexionContants'
 import ConnexionPreview from './components/ConnexionPreview'
 import CustomEdge from './components/CustomEdge'
@@ -53,8 +48,6 @@ import Settings from './components/Settings/index'
 import ShareModal from './components/ShareModal'
 import Toolbar from './components/Toolbar'
 import UserBoards from './components/UserBoards'
-
-const DEBOUNCE_SAVE_MS = 600
 
 const nodeTypes: NodeTypes = {
   service: CustomNode,
@@ -110,8 +103,6 @@ export default function Board({
       ),
     )
   }
-
-  useSaveBoardLocallyOrRemotely({ nodes, edges })
 
   const onConnect = useCallback(
     ({ source, sourceHandle, target, targetHandle }: Connection) => {
@@ -201,7 +192,7 @@ export default function Board({
             </ReactFlow>
             <Settings openResetModal={resetModalHandlers.open} />
             <PrimaryActionsPanel openShareModal={shareModalHanders.open} />
-            {authToken && <UserBoards authToken={authToken} />}
+            {authToken && <UserBoards />}
             <DraggableGhost />
           </Box>
         </DroppableArea>
@@ -224,24 +215,4 @@ export default function Board({
       />
     </>
   )
-}
-
-function useSaveBoardLocallyOrRemotely({
-  nodes,
-  edges,
-}: {
-  nodes: TCustomNode[]
-  edges: TCustomEdge[]
-}) {
-  // Save board to localstorage, debounced
-  useEffect(() => {
-    const handle = setTimeout(() => {
-      const dataToStore = { nodes, edges, timestamp: new Date() }
-      storeInLocal(STORAGE_DATA_INDEX_KEY, dataToStore)
-    }, DEBOUNCE_SAVE_MS)
-
-    return () => {
-      clearTimeout(handle)
-    }
-  }, [nodes, edges])
 }

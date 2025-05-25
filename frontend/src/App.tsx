@@ -54,14 +54,7 @@ const options = {
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
-      <Route
-        index
-        element={
-          <ReactFlowProvider>
-            <BoardPage />
-          </ReactFlowProvider>
-        }
-      />
+      <Route index element={<BoardPage />} />
     </Route>,
   ),
 )
@@ -92,16 +85,18 @@ export default function App() {
             color: CSSVAR['--text'],
           }}
         >
-          <QueryClientProvider client={queryClient}>
-            <UserProvider>
-              <UserBoardsProvider>
-                <MantineProvider theme={theme}>
-                  <RouterProvider router={router} />
-                  <Notifications />
-                </MantineProvider>
-              </UserBoardsProvider>
-            </UserProvider>
-          </QueryClientProvider>
+          <ReactFlowProvider>
+            <QueryClientProvider client={queryClient}>
+              <UserProvider>
+                <UserBoardsProvider>
+                  <MantineProvider theme={theme}>
+                    <RouterProvider router={router} />
+                    <Notifications />
+                  </MantineProvider>
+                </UserBoardsProvider>
+              </UserProvider>
+            </QueryClientProvider>
+          </ReactFlowProvider>
         </div>
       </PostHogProvider>
     </>

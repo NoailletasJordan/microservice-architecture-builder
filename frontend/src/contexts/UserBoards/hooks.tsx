@@ -1,11 +1,14 @@
+import { getDataToStoreObject, useEffectEventP } from '@/contants'
 import { useLocalStorage, usePrevious } from '@mantine/hooks'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useContext, useEffect, useRef } from 'react'
+import { useReactFlow } from 'reactflow'
 import {
   AUTH_TOKEN_KEY,
   BackendQueryResponse,
   userContext,
 } from '../User/constants'
+import { showNotificationError } from '../User/UserProvider'
 import { TBoardModel } from './constants'
 
 export function useUserBoards() {
@@ -49,10 +52,18 @@ export function useHandleBoardsOnLogout(isLogged: boolean) {
 
 export function useCreateBoardIfUserHaveNone(
   boardsQuery: ReturnType<typeof useUserBoards>,
-  boardsMutationQuery: ReturnType<typeof useCreateBoard>,
 ) {
-  const mutationRef = useRef(boardsMutationQuery.mutate)
-  mutationRef.current = boardsMutationQuery.mutate
+  const boardsMutator = useMutateBoards()
+  const mutateBoardRef = useRef(boardsMutator.mutate)
+  mutateBoardRef.current = boardsMutator.mutate
+  const flowInstance = useReactFlow()
+
+  const getNewBoardData = useEffectEventP(() => {
+    return getDataToStoreObject(
+      flowInstance.getNodes(),
+      flowInstance.getEdges(),
+    )
+  })
 
   useEffect(() => {
     if (!boardsQuery.isSuccess) return
@@ -60,31 +71,42 @@ export function useCreateBoardIfUserHaveNone(
     if (!boardsQuery.data || 'error' in boardsQuery.data) return
     const hasOneBoardOrMore = boardsQuery.data.length > 0
     if (hasOneBoardOrMore) return
-    if (boardsMutationQuery.isPending) return
+    if (boardsMutator.isPending) return
 
-    mutationRef.current()
+    const newBoardDataDefault = {
+      title: 'New board',
+      // data: flowInstanceRef.current.getNodes(),
+      data: getNewBoardData(),
+    }
+    mutateBoardRef.current(newBoardDataDefault)
   }, [
     boardsQuery.isSuccess,
     boardsQuery.data,
     boardsQuery.isFetching,
-    boardsMutationQuery.isPending,
+    boardsMutator.isPending,
   ])
 }
 
-export const useCreateBoard = () => {
+export function useShowNotificationOnMutationError() {
+  const boardsMutator = useMutateBoards()
+
+  useEffect(() => {
+    if (boardsMutator.isError || boardsMutator.error) {
+      showNotificationError('Error creating board', boardsMutator.error)
+    }
+  }, [boardsMutator.failureReason, boardsMutator.isError, boardsMutator.error])
+}
+
+// Base mutation
+function useMutateBoards() {
   const queryKey = useQueryKey()
   const queryClient = useQueryClient()
   const [authToken] = useLocalStorage<string>({
     key: AUTH_TOKEN_KEY,
   })
 
-  const newBoardData = {
-    title: 'New board',
-    data: '{}',
-  }
-
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (payload: any) => {
       if (!authToken) throw new Error('No auth token')
 
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/board`, {
@@ -93,7 +115,7 @@ export const useCreateBoard = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${authToken}`,
         },
-        body: JSON.stringify(newBoardData),
+        body: JSON.stringify(payload),
       })
       if (!res.ok) throw new Error('Failed to create board')
       return res.json()

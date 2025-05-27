@@ -134,9 +134,6 @@ export default function Board({ showInitialLoader }: Props) {
   const boardInitialized = useStore((state) => !!state.height)
   const { authToken } = useContext(userContext)
 
-  const { boardStatus } = useContext(boardDataContext)
-  if (boardStatus === 'loading') return <Box>loading</Box>
-
   return (
     <>
       <DroppableHintProvider>

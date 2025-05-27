@@ -18,7 +18,6 @@ import {
   userContext,
 } from '../User/constants'
 import { TBoardModel, userBoardsContext } from '../UserBoards/constants'
-import { useMutateBoards } from '../UserBoards/hooks'
 import { BoardDataContext } from './constants'
 
 const DEBOUNCE_SAVE_MS = 600
@@ -32,13 +31,12 @@ export function useSaveBoardLocallyOrRemotely({
   boardStatus: BoardDataContext['boardStatus']
 }) {
   const { isLogged } = useContext(userContext)
-  const boardmutator = useMutateBoards()
   const { currentUserBoardId } = useContext(userBoardsContext)
 
+  const { update } = useContext(userBoardsContext)
   const nonReactiveState = useEffectEventP(() => ({
     currentUserBoardId,
-    mutateBoard: (body: Parameters<typeof boardmutator.mutate>[0]) =>
-      boardmutator.mutate(body),
+    update,
   }))
 
   // Save board to localstorage, debounced
@@ -46,12 +44,11 @@ export function useSaveBoardLocallyOrRemotely({
     if (boardStatus !== 'success') return
     const handle = setTimeout(() => {
       const dataToStore = getDataToStoreObject(nodes, edges)
-      const { currentUserBoardId, mutateBoard } = nonReactiveState()
+      const { currentUserBoardId, update } = nonReactiveState()
       if (isLogged && currentUserBoardId) {
-        mutateBoard({
-          payload: { data: dataToStore },
-          method: 'PATCH',
+        update({
           boardId: currentUserBoardId,
+          payload: { data: dataToStore },
         })
       } else {
         storeInLocal(STORAGE_DATA_INDEX_KEY, dataToStore)

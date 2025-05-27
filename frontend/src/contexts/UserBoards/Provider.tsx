@@ -3,6 +3,7 @@ import { userContext } from '../User/constants'
 import { userBoardsContext } from './constants'
 import {
   useHandleBoardsOnLogout,
+  useMutateUserBoard,
   useOnBoardsDataFirstLoad,
   useUserBoards,
 } from './hooks'
@@ -28,6 +29,8 @@ export default function UserBoardsProvider({ children }: IProps) {
     setCurrentUserBoardId,
   })
 
+  const { create, remove, update } = useMutateUserBoard()
+
   return (
     <userBoardsContext.Provider
       value={{
@@ -35,6 +38,9 @@ export default function UserBoardsProvider({ children }: IProps) {
         currentUserBoardId,
         handleSetCurrentUserBoardId: (boardId: string) =>
           setCurrentUserBoardId(boardId),
+        create,
+        remove,
+        update,
       }}
     >
       {children}

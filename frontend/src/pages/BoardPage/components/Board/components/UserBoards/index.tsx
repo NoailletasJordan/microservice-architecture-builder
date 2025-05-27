@@ -1,5 +1,4 @@
 import { TBoardModel, userBoardsContext } from '@/contexts/UserBoards/constants'
-import { useMutateBoards } from '@/contexts/UserBoards/hooks'
 import {
   ActionIcon,
   Card,
@@ -17,7 +16,8 @@ import BoardItem from './components/BoardItem'
 
 export default function UserBoards() {
   const { boardsQuery } = useContext(userBoardsContext)
-  const mutateBoards = useMutateBoards()
+
+  const { create } = useContext(userBoardsContext)
 
   let component = null
   if (boardsQuery?.isError) component = null
@@ -34,12 +34,10 @@ export default function UserBoards() {
           <Text>Boards</Text>
           <ActionIcon
             onClick={() => {
-              mutateBoards.mutate({
-                method: 'POST',
-                payload: {
-                  title: 'My added board',
-                  data: {},
-                },
+              create({
+                title: 'My added board',
+                nodes: [],
+                edges: [],
               })
             }}
           >
@@ -55,8 +53,9 @@ export default function UserBoards() {
 }
 
 function BoardList({ boards }: { boards: Partial<TBoardModel>[] }) {
-  const { currentUserBoardId, handleSetCurrentUserBoardId } =
+  const { update, remove, currentUserBoardId, handleSetCurrentUserBoardId } =
     useContext(userBoardsContext)
+
   return (
     <Stack gap="xs">
       {boards.map((board: any) => (
@@ -65,6 +64,16 @@ function BoardList({ boards }: { boards: Partial<TBoardModel>[] }) {
           key={board.id}
           active={board.id === currentUserBoardId}
           board={board}
+          disableDelete={boards.length === 1}
+          onDelete={() => {
+            remove(board.id)
+          }}
+          onEdit={(value: string) => {
+            update({
+              boardId: board.id,
+              payload: { title: value },
+            })
+          }}
         />
       ))}
     </Stack>

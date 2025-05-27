@@ -3,6 +3,8 @@ import {
   showNotificationError,
   useEffectEventP,
 } from '@/contants'
+import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
+import { TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { useLocalStorage, usePrevious } from '@mantine/hooks'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useContext, useEffect, useRef } from 'react'
@@ -84,8 +86,7 @@ export function useOnBoardsDataFirstLoad({
     ;(() => {
       if (ranOnceRef.current) return
       ranOnceRef.current = true
-      /** Temp */
-      console.log('called:')
+
       const { setCurrentUserBoardId, boardsQuery, flowInstance, mutator } =
         nonReactiveState()
       if (!boardsQuery.isSuccess || 'error' in boardsQuery.data) return
@@ -140,7 +141,51 @@ export function useOnBoardsDataFirstLoad({
   }, [boardsQuery.data, nonReactiveState])
 }
 
-export function useMutateBoards() {
+export function useMutateUserBoard() {
+  const mutateBoard = useMutateBoards()
+
+  return {
+    create: ({
+      title,
+      nodes,
+      edges,
+    }: {
+      title: string
+      nodes: TCustomNode[]
+      edges: TCustomEdge[]
+    }) => {
+      mutateBoard.mutate({
+        method: 'POST',
+        payload: {
+          title,
+          data: getDataToStoreObject(nodes, edges),
+        },
+      })
+    },
+    update: ({
+      boardId,
+      payload,
+    }: {
+      boardId: string
+      payload: Partial<TBoardModel>
+    }) => {
+      mutateBoard.mutate({
+        method: 'PATCH',
+        boardId,
+        payload,
+      })
+    },
+    remove: (boardId: string) => {
+      mutateBoard.mutate({
+        method: 'DELETE',
+        boardId,
+      })
+    },
+  }
+}
+
+// BareMutation
+function useMutateBoards() {
   const queryKey = useQueryKey()
   const queryClient = useQueryClient()
   const [authToken] = useLocalStorage<string>({

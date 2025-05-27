@@ -24,7 +24,7 @@ func (s *BoardStore) Create(board *model.Board) error {
 }
 
 func (s *BoardStore) GetAllFromUser(userID string) ([]*model.Board, error) {
-	rows, err := s.db.Query(`SELECT id, title, owner, data, password, deleted_at, created_at, share_fragment FROM boards WHERE deleted_at IS NULL AND owner = $1`, userID)
+	rows, err := s.db.Query(`SELECT id, title, owner, data, password, deleted_at, created_at, share_fragment FROM boards WHERE deleted_at IS NULL AND owner = $1 ORDER BY created_at DESC`, userID)
 	if err != nil {
 		return nil, err
 	}

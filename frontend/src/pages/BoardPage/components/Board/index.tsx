@@ -90,6 +90,7 @@ export default function Board({ showInitialLoader }: Props) {
       newSubService,
     ]
 
+    // todo one clonedeep possible ?
     setNodes((oldNodes) =>
       oldNodes.map((compNode) =>
         compNode.id === targetNode.id ? cloneDeep(targetNode) : compNode,
@@ -132,6 +133,9 @@ export default function Board({ showInitialLoader }: Props) {
   const loadedWidthNodes = useMemo(() => !!nodes.length, [])
   const boardInitialized = useStore((state) => !!state.height)
   const { authToken } = useContext(userContext)
+
+  const { boardStatus } = useContext(boardDataContext)
+  if (boardStatus === 'loading') return <Box>loading</Box>
 
   return (
     <>

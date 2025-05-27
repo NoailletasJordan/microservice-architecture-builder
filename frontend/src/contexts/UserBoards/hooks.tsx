@@ -1,14 +1,17 @@
-import { getDataToStoreObject, useEffectEventP } from '@/contants'
+import {
+  getDataToStoreObject,
+  showNotificationError,
+  useEffectEventP,
+} from '@/contants'
 import { useLocalStorage, usePrevious } from '@mantine/hooks'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import { useReactFlow } from 'reactflow'
 import {
   AUTH_TOKEN_KEY,
   BackendQueryResponse,
   userContext,
 } from '../User/constants'
-import { showNotificationError } from '../User/UserProvider'
 import { TBoardModel } from './constants'
 
 export function useUserBoards() {
@@ -41,10 +44,10 @@ function useQueryKey() {
 
 export function useHandleBoardsOnLogout({
   isLogged,
-  resetCurrentUserBoard,
+  resetCurrentUserBoardId,
 }: {
   isLogged: boolean
-  resetCurrentUserBoard: () => void
+  resetCurrentUserBoardId: () => void
 }) {
   const previousIsLogged = usePrevious(isLogged)
   const queryKey = useQueryKey()
@@ -53,66 +56,90 @@ export function useHandleBoardsOnLogout({
   if (!isLogged && previousIsLogged) {
     queryClient.removeQueries({ queryKey })
     queryClient.setQueryData(queryKey, undefined)
-    resetCurrentUserBoard()
+    resetCurrentUserBoardId()
   }
 }
 
-export function useCreateBoardIfUserHaveNone(
-  boardsQuery: ReturnType<typeof useUserBoards>,
-) {
-  const flowInstance = useReactFlow()
-  const boardsMutator = useMutateBoards()
-  const mutateBoardsMemo = useEffectEventP(
-    (body: Parameters<typeof boardsMutator.mutate>[0]) =>
-      boardsMutator.mutate(body),
-  )
-
-  const getNewBoardDataMemo = useEffectEventP(() =>
-    getDataToStoreObject(flowInstance.getNodes(), flowInstance.getEdges()),
-  )
-
-  useEffect(() => {
-    if (!boardsQuery.isSuccess) return
-    if (boardsQuery.isFetching) return
-    if (!boardsQuery.data || 'error' in boardsQuery.data) return
-    const hasOneBoardOrMore = boardsQuery.data.length > 0
-    if (hasOneBoardOrMore) return
-    if (boardsMutator.isPending) return
-
-    const newBoardDataDefault = {
-      title: 'New board',
-      data: getNewBoardDataMemo(),
-    }
-    mutateBoardsMemo({ payload: newBoardDataDefault, method: 'POST' })
-  }, [
-    boardsQuery.isSuccess,
-    boardsQuery.data,
-    boardsQuery.isFetching,
-    boardsMutator.isPending,
-    getNewBoardDataMemo,
-    mutateBoardsMemo,
-  ])
-}
-
-export function useSetCurrentUserBoardOnLogging(
-  __setCurrentUserBoard: React.Dispatch<
+export function useOnBoardsDataFirstLoad({
+  boardsQuery,
+  setCurrentUserBoardId,
+}: {
+  boardsQuery: ReturnType<typeof useUserBoards>
+  setCurrentUserBoardId: React.Dispatch<
     React.SetStateAction<string | undefined>
-  >,
-) {
-  const boardsQuery = useUserBoards()
-  const setCurrentUserBoardMemo = useEffectEventP(__setCurrentUserBoard)
+  >
+}) {
+  const flowInstance = useReactFlow()
+  const mutator = useMutateBoards()
+  const ranOnceRef = useRef(false)
+  const nonReactiveState = useEffectEventP(() => ({
+    flowInstance,
+    boardsQuery,
+    mutator,
+    setCurrentUserBoardId,
+    ranOnceRef,
+  }))
+
   useEffect(() => {
-    const hasBoards =
-      boardsQuery.isSuccess &&
-      Array.isArray(boardsQuery.data) &&
-      boardsQuery.data.length > 0
-    if (hasBoards) {
-      setCurrentUserBoardMemo((boardsQuery.data as TBoardModel[])[0].id)
-    }
-  }, [boardsQuery.isSuccess, boardsQuery.data, setCurrentUserBoardMemo])
+    ;(() => {
+      if (ranOnceRef.current) return
+      ranOnceRef.current = true
+      /** Temp */
+      console.log('called:')
+      const { setCurrentUserBoardId, boardsQuery, flowInstance, mutator } =
+        nonReactiveState()
+      if (!boardsQuery.isSuccess || 'error' in boardsQuery.data) return
+      const hadCurrentDataBoard = flowInstance.getNodes().length > 0
+
+      // if user Has board data, create new userboard and load it
+      if (hadCurrentDataBoard) {
+        mutator.mutate(
+          {
+            payload: {
+              data: getDataToStoreObject(
+                flowInstance.getNodes(),
+                flowInstance.getEdges(),
+              ),
+            },
+            method: 'POST',
+          },
+          {
+            onSuccess: (data: TBoardModel) => {
+              setCurrentUserBoardId(data.id)
+            },
+          },
+        )
+        return
+      }
+
+      const userBoards = boardsQuery.data as TBoardModel[]
+      if (userBoards.length === 0) {
+        // If user has no boards, create a new one and load it
+        const newBoardDataDefault = {
+          title: 'New board',
+          data: getDataToStoreObject(
+            flowInstance.getNodes(),
+            flowInstance.getEdges(),
+          ),
+        }
+        mutator.mutate(
+          { payload: newBoardDataDefault, method: 'POST' },
+          {
+            onSuccess: (data: TBoardModel) => {
+              setCurrentUserBoardId(data.id)
+            },
+          },
+        )
+      } else {
+        // If user has boards, load the first one
+        if (userBoards.length > 0) {
+          setCurrentUserBoardId(userBoards[0].id)
+        }
+      }
+    })()
+  }, [boardsQuery.data, nonReactiveState])
 }
 
-// Base mutation
 export function useMutateBoards() {
   const queryKey = useQueryKey()
   const queryClient = useQueryClient()

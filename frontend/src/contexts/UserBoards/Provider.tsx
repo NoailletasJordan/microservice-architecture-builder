@@ -2,9 +2,8 @@ import { ReactNode, useContext, useState } from 'react'
 import { userContext } from '../User/constants'
 import { userBoardsContext } from './constants'
 import {
-  useCreateBoardIfUserHaveNone,
   useHandleBoardsOnLogout,
-  useSetCurrentUserBoardOnLogging,
+  useOnBoardsDataFirstLoad,
   useUserBoards,
 } from './hooks'
 
@@ -13,28 +12,29 @@ interface IProps {
 }
 
 export default function UserBoardsProvider({ children }: IProps) {
-  const [currentUserBoard, setCurrentUserBoard] = useState<string | undefined>(
-    undefined,
-  )
+  const [currentUserBoardId, setCurrentUserBoardId] = useState<
+    string | undefined
+  >(undefined)
   const { isLogged } = useContext(userContext)
-
   const boardsQuery = useUserBoards()
 
-  useSetCurrentUserBoardOnLogging(setCurrentUserBoard)
   useHandleBoardsOnLogout({
     isLogged,
-    resetCurrentUserBoard: () => setCurrentUserBoard(undefined),
+    resetCurrentUserBoardId: () => setCurrentUserBoardId(undefined),
   })
 
-  useCreateBoardIfUserHaveNone(boardsQuery)
+  useOnBoardsDataFirstLoad({
+    boardsQuery,
+    setCurrentUserBoardId,
+  })
 
   return (
     <userBoardsContext.Provider
       value={{
         boardsQuery,
-        currentUserBoard,
-        handleSetCurrentUserBoard: (boardId: string) =>
-          setCurrentUserBoard(boardId),
+        currentUserBoardId,
+        handleSetCurrentUserBoardId: (boardId: string) =>
+          setCurrentUserBoardId(boardId),
       }}
     >
       {children}

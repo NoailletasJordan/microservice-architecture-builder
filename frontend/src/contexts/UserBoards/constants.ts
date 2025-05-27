@@ -3,8 +3,8 @@ import { useUserBoards } from '../UserBoards/hooks'
 
 interface IUserBoardsContext {
   boardsQuery?: ReturnType<typeof useUserBoards>
-  currentUserBoard?: string
-  handleSetCurrentUserBoard: (boardId: string) => void
+  currentUserBoardId?: string
+  handleSetCurrentUserBoardId: (boardId: string) => void
 }
 
 export interface TBoardModel {
@@ -18,6 +18,6 @@ export interface TBoardModel {
 
 export const userBoardsContext = createContext<IUserBoardsContext>({
   boardsQuery: undefined,
-  currentUserBoard: undefined,
-  handleSetCurrentUserBoard: () => {},
+  currentUserBoardId: undefined,
+  handleSetCurrentUserBoardId: () => {},
 })

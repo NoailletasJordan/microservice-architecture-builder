@@ -1,11 +1,17 @@
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
-import { ReactNode, useLayoutEffect, useMemo, useState } from 'react'
+import {
+  ReactNode,
+  useContext,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useLocation } from 'react-router-dom'
+import { boardDataContext } from '../BoardData/constants'
 import { onBoardingContext } from './constants'
 
 interface Props {
   children: ReactNode
-  nodes: TCustomNode[]
 }
 
 function useGuidanceText({
@@ -30,8 +36,9 @@ function useGuidanceText({
   return { showGuidanceTexts }
 }
 
-export default function OnboardingContextProvider({ children, nodes }: Props) {
+export default function OnboardingContextProvider({ children }: Props) {
   const [showOnboarding, setShowOnboarding] = useState(false)
+  const { nodes } = useContext(boardDataContext)
   const { showGuidanceTexts } = useGuidanceText({ nodes, showOnboarding })
 
   return (

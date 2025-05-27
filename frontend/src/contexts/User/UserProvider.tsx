@@ -1,8 +1,5 @@
-import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
-import { ThemeIcon } from '@mantine/core'
+import { showNotificationError } from '@/contants'
 import { useLocalStorage } from '@mantine/hooks'
-import { notifications } from '@mantine/notifications'
-import { IconX } from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { ReactNode, useCallback } from 'react'
 import {
@@ -49,17 +46,4 @@ export default function UserProvider({ children }: { children: ReactNode }) {
       {children}
     </userContext.Provider>
   )
-}
-
-export function showNotificationError(title: string, err?: unknown) {
-  notifications.show({
-    icon: (
-      <ThemeIcon radius="xl" color="pink" variant="outline">
-        <IconX style={ICON_STYLE} />
-      </ThemeIcon>
-    ),
-    message: err instanceof Error ? err.message : 'Unknown error',
-    title,
-    autoClose: 6000,
-  })
 }

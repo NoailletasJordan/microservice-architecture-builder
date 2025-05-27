@@ -1,26 +1,23 @@
-import { getInitialBoardData } from '@/pages/BoardPage/configs/helpers'
-import { ReactNode, useContext, useMemo } from 'react'
-import { useEdgesState, useNodesState } from 'reactflow'
-import { userBoardsContext } from '../UserBoards/constants'
+import { ReactNode } from 'react'
 import { boardDataContext } from './constants'
-import { useSaveBoardLocallyOrRemotely } from './hooks'
+import { useNodesAndEdges, useSaveBoardLocallyOrRemotely } from './hooks'
 
 export default function BoardDataProvider({
   children,
 }: {
   children: ReactNode
 }) {
-  const { nodes: initialnodes, edges: initialEdges } = useMemo(
-    () => getInitialBoardData(),
-    [],
-  )
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialnodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+  const {
+    nodes,
+    edges,
+    setNodes,
+    setEdges,
+    onNodesChange,
+    onEdgesChange,
+    boardStatus,
+  } = useNodesAndEdges()
 
-  const { currentUserBoard } = useContext(userBoardsContext)
-  const { boardsQuery } = useContext(userBoardsContext)
-
-  useSaveBoardLocallyOrRemotely({ nodes, edges })
+  useSaveBoardLocallyOrRemotely({ nodes, edges, boardStatus })
 
   return (
     <boardDataContext.Provider
@@ -31,6 +28,7 @@ export default function BoardDataProvider({
         setEdges,
         onNodesChange,
         onEdgesChange,
+        boardStatus,
       }}
     >
       {children}

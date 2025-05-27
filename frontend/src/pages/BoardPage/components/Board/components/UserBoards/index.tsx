@@ -55,10 +55,17 @@ export default function UserBoards() {
 }
 
 function BoardList({ boards }: { boards: Partial<TBoardModel>[] }) {
+  const { currentUserBoardId, handleSetCurrentUserBoardId } =
+    useContext(userBoardsContext)
   return (
     <Stack gap="xs">
       {boards.map((board: any) => (
-        <BoardItem key={board.id} board={board} />
+        <BoardItem
+          onSelect={() => handleSetCurrentUserBoardId(board.id)}
+          key={board.id}
+          active={board.id === currentUserBoardId}
+          board={board}
+        />
       ))}
     </Stack>
   )

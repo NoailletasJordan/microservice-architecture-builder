@@ -6,7 +6,6 @@ import { IConnexion } from '../components/Board/components/connexionContants'
 import {
   ILocalStorage,
   IService,
-  STORAGE_DATA_INDEX_KEY,
   ServiceIdType,
   SubService,
   TCustomNode,
@@ -44,20 +43,21 @@ export const handleAddNode = (
   flowInstance.setNodes((oldNodes: TCustomNode[]) => [...oldNodes, newNode])
 }
 
-export const getInitialBoardData = (): ILocalStorage => {
-  const storageReference: ILocalStorage | undefined =
-    STORAGE_DATA_INDEX_KEY &&
-    !!localStorage.getItem(STORAGE_DATA_INDEX_KEY) &&
-    JSON.parse(localStorage.getItem(STORAGE_DATA_INDEX_KEY) as string)
+// For reference, -to delete
+// export const getInitialBoardData = (): ILocalStorage => {
+//   const storageReference: ILocalStorage | undefined =
+//     STORAGE_DATA_INDEX_KEY &&
+//     !!localStorage.getItem(STORAGE_DATA_INDEX_KEY) &&
+//     JSON.parse(localStorage.getItem(STORAGE_DATA_INDEX_KEY) as string)
 
-  if (!storageReference) return { timestamp: new Date(), nodes: [], edges: [] }
+//   if (!storageReference) return { timestamp: new Date(), nodes: [], edges: [] }
 
-  return {
-    timestamp: new Date(storageReference.timestamp),
-    nodes: storageReference.nodes,
-    edges: storageReference.edges,
-  }
-}
+//   return {
+//     timestamp: new Date(storageReference.timestamp),
+//     nodes: storageReference.nodes,
+//     edges: storageReference.edges,
+//   }
+// }
 
 export const storeInLocal = (boardId: string, data: ILocalStorage) => {
   localStorage.setItem(boardId as string, JSON.stringify(data))

@@ -122,8 +122,9 @@ export function useHandleSwitchBoardData({
           }
           console.log('currentUserBoardId', currentUserBoardId)
           console.log('response', response)
-          // stateMemo().setNodes(response.data.nodes)
-          // stateMemo().setEdges(response.data.edges)
+          const { nodes, edges } = JSON.parse(response.data)
+          stateMemo().setNodes(nodes)
+          stateMemo().setEdges(edges)
           setBoardStatus('success')
         }
       } catch (error) {

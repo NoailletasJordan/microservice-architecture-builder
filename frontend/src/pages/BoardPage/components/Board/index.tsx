@@ -1,5 +1,6 @@
 import DroppableIndicator from '@/components/DroppableIndicator'
 import GuidanceTextsMain from '@/components/GuidanceTextsComponents/GuidanceTextsMain'
+import { boardDataContext } from '@/contexts/BoardData/constants'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
 import { userContext } from '@/contexts/User/constants'
@@ -16,8 +17,6 @@ import ReactFlow, {
   NodeDragHandler,
   NodeTypes,
   addEdge,
-  useEdgesState,
-  useNodesState,
   useReactFlow,
   useStore,
 } from 'reactflow'
@@ -61,20 +60,14 @@ const preventScrollbarOnPan = { overflow: 'hidden' }
 const droppableType = 'board'
 
 interface Props {
-  nodeState: ReturnType<typeof useNodesState<IService>>
-  edgeState: ReturnType<typeof useEdgesState<IConnexion>>
   showInitialLoader: boolean
 }
 
-export default function Board({
-  showInitialLoader,
-  nodeState,
-  edgeState,
-}: Props) {
+export default function Board({ showInitialLoader }: Props) {
   const { showGuidanceTexts, showOnboarding, updateShowOnboarding } =
     useContext(onBoardingContext)
-  const [nodes, setNodes, onNodesChange] = nodeState
-  const [edges, setEdges, onEdgesChange] = edgeState
+  const { nodes, setNodes, onNodesChange, edges, onEdgesChange, setEdges } =
+    useContext(boardDataContext)
   const [showResetBoardModal, resetModalHandlers] = useDisclosure(false)
   const [showShareModal, shareModalHanders] = useDisclosure(false)
 

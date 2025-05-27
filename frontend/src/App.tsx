@@ -30,8 +30,9 @@ import {
 } from 'react-router-dom'
 import { ReactFlowProvider } from 'reactflow'
 import { CSSVAR, customColors, themeDarkColorVariables } from './contants'
+import BoardDataProvider from './contexts/BoardData/provider'
 import UserProvider from './contexts/User/UserProvider'
-import UserBoardsProvider from './contexts/UserBoards/UserBoardsProvider'
+import UserBoardsProvider from './contexts/UserBoards/Provider'
 import BoardPage from './pages/BoardPage'
 
 const accessEnvVariable = (
@@ -89,10 +90,12 @@ export default function App() {
             <QueryClientProvider client={queryClient}>
               <UserProvider>
                 <UserBoardsProvider>
-                  <MantineProvider theme={theme}>
-                    <RouterProvider router={router} />
-                    <Notifications />
-                  </MantineProvider>
+                  <BoardDataProvider>
+                    <MantineProvider theme={theme}>
+                      <RouterProvider router={router} />
+                      <Notifications />
+                    </MantineProvider>
+                  </BoardDataProvider>
                 </UserBoardsProvider>
               </UserProvider>
             </QueryClientProvider>

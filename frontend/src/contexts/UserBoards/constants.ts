@@ -11,7 +11,7 @@ export interface TBoardModel {
   id: string
   title: string
   owner: string
-  data: string
+  data: any
   created_at?: string
   share_fragment?: string
 }

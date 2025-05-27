@@ -1,4 +1,5 @@
 import { TBoardModel, userBoardsContext } from '@/contexts/UserBoards/constants'
+import { useMutateBoards } from '@/contexts/UserBoards/hooks'
 import {
   ActionIcon,
   Card,
@@ -16,10 +17,11 @@ import BoardItem from './components/BoardItem'
 
 export default function UserBoards() {
   const { boardsQuery } = useContext(userBoardsContext)
+  const mutateBoards = useMutateBoards()
 
   let component = null
   if (boardsQuery?.isError) component = null
-  else if (boardsQuery?.isFetching) component = <LoadingStateComponent />
+  else if (boardsQuery?.isLoading) component = <LoadingStateComponent />
   else if (boardsQuery?.data)
     component = (
       <BoardList boards={boardsQuery.data as Partial<TBoardModel>[]} />
@@ -30,7 +32,17 @@ export default function UserBoards() {
       <Card bg="gray.9">
         <Group justify="space-between">
           <Text>Boards</Text>
-          <ActionIcon>
+          <ActionIcon
+            onClick={() => {
+              mutateBoards.mutate({
+                method: 'POST',
+                payload: {
+                  title: 'My added board',
+                  data: {},
+                },
+              })
+            }}
+          >
             <IconPlus style={ICON_STYLE} />
           </ActionIcon>
         </Group>

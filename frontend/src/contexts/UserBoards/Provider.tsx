@@ -4,7 +4,7 @@ import { userBoardsContext } from './constants'
 import {
   useCreateBoardIfUserHaveNone,
   useHandleBoardsOnLogout,
-  useShowNotificationOnMutationError,
+  useSetCurrentUserBoardOnLogging,
   useUserBoards,
 } from './hooks'
 
@@ -20,9 +20,13 @@ export default function UserBoardsProvider({ children }: IProps) {
 
   const boardsQuery = useUserBoards()
 
-  useHandleBoardsOnLogout(isLogged)
+  useSetCurrentUserBoardOnLogging(setCurrentUserBoard)
+  useHandleBoardsOnLogout({
+    isLogged,
+    resetCurrentUserBoard: () => setCurrentUserBoard(undefined),
+  })
+
   useCreateBoardIfUserHaveNone(boardsQuery)
-  useShowNotificationOnMutationError()
 
   return (
     <userBoardsContext.Provider

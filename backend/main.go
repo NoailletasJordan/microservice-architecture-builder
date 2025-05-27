@@ -59,7 +59,7 @@ func main() {
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{frontendOrigin},
 		AllowCredentials: true,
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"*"},
 	}).Handler(r)
 

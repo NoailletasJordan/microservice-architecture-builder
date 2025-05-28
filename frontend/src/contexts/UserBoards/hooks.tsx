@@ -114,14 +114,8 @@ export function useMutateUserBoard({
           (board) => board.id === boardId,
         )
 
-        console.log('deleteBoardIndex:', deleteBoardIndex)
-        console.log('currentBoardIndex:', currentBoardIndex)
-        console.log('boards:', boards)
-        console.log('toDelete:', currentUserBoardId)
         if (currentBoardIndex === deleteBoardIndex) {
-          console.log('IN:', mightUpdateCurrentId)
           const nextIndex = (currentBoardIndex + 1) % boards.length
-          console.log('nextBoards:', boards[nextIndex].id)
           setCurrentUserBoardId(boards[nextIndex].id)
         }
       }
@@ -210,12 +204,9 @@ export async function handleLoadUserBoards({
     edges: TCustomEdge[]
   }) => Promise<any>
 }) {
-  if (!boardsQuery.isSuccess || 'error' in boardsQuery.data) return
+  const { data, isSuccess } = await boardsQuery.refetch()
+  if (!isSuccess || 'error' in data) return
   const hadCurrentDataBoard = flowInstance.getNodes().length > 0
-
-  await boardsQuery.refetch()
-
-  console.log('called', boardsQuery.data, boardsQuery.isSuccess)
 
   // if user Has board data, create new userboard and load it
   if (hadCurrentDataBoard) {

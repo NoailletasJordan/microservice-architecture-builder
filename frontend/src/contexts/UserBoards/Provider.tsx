@@ -47,9 +47,7 @@ export default function UserBoardsProvider({ children }: IProps) {
       queryClient.setQueryData(queryKey, undefined)
       // Reset boardId
       setCurrentUserBoardId(undefined)
-      console.log('called logof')
     } else {
-      boardsQuery.refetch()
       handleLoadUserBoards({
         setCurrentUserBoardId,
         boardsQuery,
@@ -58,18 +56,6 @@ export default function UserBoardsProvider({ children }: IProps) {
       })
     }
   }, [isLogged, nonReactiveState])
-
-  console.log(':currentfromobj', currentUserBoardId)
-
-  // useHandleBoardsOnLogout({
-  //   isLogged,
-  //   resetCurrentUserBoardId: () => setCurrentUserBoardId(undefined),
-  // })
-
-  // useOnBoardsDataFirstLoad({
-  //   boardsQuery,
-  //   setCurrentUserBoardId,
-  // })
 
   return (
     <userBoardsContext.Provider

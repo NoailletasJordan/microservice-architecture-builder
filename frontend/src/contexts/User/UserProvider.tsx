@@ -1,4 +1,3 @@
-import { showNotificationError } from '@/contants'
 import { useLocalStorage } from '@mantine/hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { ReactNode, useCallback } from 'react'
@@ -16,13 +15,14 @@ export default function UserProvider({ children }: { children: ReactNode }) {
   const userQuery = useUser()
   const queryClient = useQueryClient()
 
-  if ((userQuery.data && 'error' in userQuery.data) || userQuery.error) {
+  if (userQuery.isError) {
     queryClient.setQueryData(['user', authToken], undefined)
-    showNotificationError('Error loading user', userQuery.error)
     removeAuthToken()
   }
 
-  const isLogged = !!userQuery.data
+  const isLogged = Boolean(
+    userQuery.data && !('error' in userQuery.data) && !!userQuery.data?.id,
+  )
 
   useHandleUserGoogleLogin({
     storeInLocalStorage: (token) => setAuthToken(token),

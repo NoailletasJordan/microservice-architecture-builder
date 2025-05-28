@@ -19,7 +19,12 @@ import {
 } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
 import { RichTextEditor } from '@mantine/tiptap'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  MutationCache,
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 import { PostHogProvider } from 'posthog-js/react'
 import { useEffect } from 'react'
 import {
@@ -29,7 +34,12 @@ import {
   createRoutesFromElements,
 } from 'react-router-dom'
 import { ReactFlowProvider } from 'reactflow'
-import { CSSVAR, customColors, themeDarkColorVariables } from './contants'
+import {
+  CSSVAR,
+  customColors,
+  showNotificationError,
+  themeDarkColorVariables,
+} from './contants'
 import BoardDataProvider from './contexts/BoardData/Provider'
 import UserProvider from './contexts/User/UserProvider'
 import UserBoardsProvider from './contexts/UserBoards/Provider'
@@ -60,7 +70,19 @@ const router = createBrowserRouter(
   ),
 )
 
-const queryClient = new QueryClient()
+function onError(error: Error | string) {
+  showNotificationError(
+    'Something went wrong: ' + (error instanceof Error ? error.message : error),
+  )
+}
+const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError,
+  }),
+  mutationCache: new MutationCache({
+    onError,
+  }),
+})
 
 export default function App() {
   useEffect(() => {

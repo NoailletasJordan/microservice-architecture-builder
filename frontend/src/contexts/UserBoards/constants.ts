@@ -1,6 +1,7 @@
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { createContext } from 'react'
+import { BackendQueryResponse } from '../User/constants'
 import { useUserBoards } from '../UserBoards/hooks'
 
 interface IUserBoardsContext {
@@ -14,7 +15,7 @@ interface IUserBoardsContext {
   }: {
     boardId: string
     payload: Partial<TBoardModel>
-  }) => void
+  }) => Promise<BackendQueryResponse<TBoardModel>>
   create: ({
     title,
     nodes,
@@ -23,7 +24,7 @@ interface IUserBoardsContext {
     title: string
     nodes: TCustomNode[]
     edges: TCustomEdge[]
-  }) => void
+  }) => Promise<BackendQueryResponse<TBoardModel>>
 }
 
 export interface TBoardModel {
@@ -40,6 +41,6 @@ export const userBoardsContext = createContext<IUserBoardsContext>({
   currentUserBoardId: undefined,
   setCurrentUserBoardId: () => {},
   remove: () => {},
-  update: () => {},
-  create: () => {},
+  update: () => Promise.resolve({} as BackendQueryResponse<TBoardModel>),
+  create: () => Promise.resolve({} as BackendQueryResponse<TBoardModel>),
 })

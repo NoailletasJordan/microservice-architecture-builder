@@ -16,12 +16,16 @@ export function useUser() {
   return useQuery<BackendQueryResponse<IUser>>({
     enabled: !!authToken,
     queryKey: ['user', authToken],
-    queryFn: () =>
-      fetch(`${import.meta.env.VITE_API_URL}/api/users/me`, {
+    queryFn: async () => {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/me`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
-      }).then((res) => res.json()),
+      })
+      const result = await res.json()
+      if (!res.ok) throw new Error('Failed to fetch user')
+      return result
+    },
     staleTime: Infinity,
   })
 }

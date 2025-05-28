@@ -1,4 +1,4 @@
-import { getDataToStoreObject, showNotificationError } from '@/contants'
+import { getDataToStoreObject } from '@/contants'
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { useLocalStorage, usePrevious } from '@mantine/hooks'
@@ -14,7 +14,6 @@ export function useUserBoards() {
   const queryKey = useQueryKey()
 
   return useQuery<BackendQueryResponse<TBoardModel[]>>({
-    // enabled: !!authToken && isLogged,
     enabled: false,
     queryKey,
     queryFn: () =>
@@ -124,6 +123,58 @@ export function useMutateUserBoard({
   }
 }
 
+export async function handleLoadUserBoards({
+  setCurrentUserBoardId,
+  boardsQuery: oldBoardsQuery,
+  flowInstance,
+  createNewBoard,
+}: {
+  setCurrentUserBoardId: React.Dispatch<
+    React.SetStateAction<string | undefined>
+  >
+  boardsQuery: ReturnType<typeof useUserBoards>
+  flowInstance: ReactFlowInstance
+  createNewBoard: ({
+    title,
+    nodes,
+    edges,
+  }: {
+    title: string
+    nodes: TCustomNode[]
+    edges: TCustomEdge[]
+  }) => Promise<any>
+}) {
+  const { data, isSuccess } = await oldBoardsQuery.refetch()
+  if (!isSuccess || 'error' in data) return
+  const hadCurrentDataBoard = flowInstance.getNodes().length > 0
+
+  // if user Has board data, create new userboard and load it
+  if (hadCurrentDataBoard) {
+    const data = await createNewBoard({
+      title: 'New board',
+      nodes: flowInstance.getNodes(),
+      edges: flowInstance.getEdges(),
+    })
+    setCurrentUserBoardId(data.id)
+    return
+  }
+
+  const userBoards = data as TBoardModel[]
+  if (userBoards.length === 0) {
+    // If user has no boards, create a new one and load it
+    const data = await createNewBoard({
+      title: 'New board',
+      nodes: flowInstance.getNodes(),
+      edges: flowInstance.getEdges(),
+    })
+    setCurrentUserBoardId(data.id)
+    return
+  } else {
+    // If user has boards, load the first one
+    setCurrentUserBoardId(userBoards[0].id)
+  }
+}
+
 // BareMutation
 function useMutateBoards() {
   const queryKey = useQueryKey()
@@ -147,16 +198,16 @@ function useMutateBoards() {
 
       const config = {
         POST: {
-          url: `${import.meta.env.VITE_API_URL}/api/board`,
-          errorMessage: 'Failed to create board',
+          url: `${import.meta.env.vite_api_url}/api/board`,
+          errormessage: 'failed to create board',
         },
         PATCH: {
-          url: `${import.meta.env.VITE_API_URL}/api/board/${boardId}`,
-          errorMessage: 'Failed to update board',
+          url: `${import.meta.env.vite_api_url}/api/board/${boardId}`,
+          errormessage: 'failed to update board',
         },
         DELETE: {
-          url: `${import.meta.env.VITE_API_URL}/api/board/${boardId}`,
-          errorMessage: 'Failed to delete board',
+          url: `${import.meta.env.vite_api_url}/api/board/${boardId}`,
+          errormessage: 'failed to delete board',
         },
       }
 
@@ -170,69 +221,12 @@ function useMutateBoards() {
         },
         body: JSON.stringify(payload),
       })
-      if (!res.ok) throw new Error(config[method].errorMessage)
+      if (!res.ok) throw new Error(config[method].errormessage)
       return res.json()
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey })
       boardsQuery.refetch()
     },
-    onError: (error: unknown) => {
-      showNotificationError('Error creating board', error)
-    },
   })
-}
-
-export async function handleLoadUserBoards({
-  setCurrentUserBoardId,
-  boardsQuery,
-  flowInstance,
-  createNewBoard,
-}: {
-  setCurrentUserBoardId: React.Dispatch<
-    React.SetStateAction<string | undefined>
-  >
-  boardsQuery: ReturnType<typeof useUserBoards>
-  flowInstance: ReactFlowInstance
-  createNewBoard: ({
-    title,
-    nodes,
-    edges,
-  }: {
-    title: string
-    nodes: TCustomNode[]
-    edges: TCustomEdge[]
-  }) => Promise<any>
-}) {
-  const { data, isSuccess } = await boardsQuery.refetch()
-  if (!isSuccess || 'error' in data) return
-  const hadCurrentDataBoard = flowInstance.getNodes().length > 0
-
-  // if user Has board data, create new userboard and load it
-  if (hadCurrentDataBoard) {
-    const data = await createNewBoard({
-      title: 'New board',
-      nodes: flowInstance.getNodes(),
-      edges: flowInstance.getEdges(),
-    })
-    setCurrentUserBoardId(data.id)
-    return
-  }
-
-  const userBoards = boardsQuery.data as TBoardModel[]
-  if (userBoards.length === 0) {
-    // If user has no boards, create a new one and load it
-    const data = await createNewBoard({
-      title: 'New board',
-      nodes: flowInstance.getNodes(),
-      edges: flowInstance.getEdges(),
-    })
-    setCurrentUserBoardId(data.id)
-    return
-  } else {
-    // If user has boards, load the first one
-    if (userBoards.length > 0) {
-      setCurrentUserBoardId(userBoards[0].id)
-    }
-  }
 }

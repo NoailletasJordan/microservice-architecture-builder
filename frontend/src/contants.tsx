@@ -115,15 +115,15 @@ export function useEffectEventP<T extends (...args: any[]) => any>(
   }, [])
 }
 
-export function showNotificationError(title: string, err?: unknown) {
+export function showNotificationError(errorMessage: string) {
   notifications.show({
     icon: (
       <ThemeIcon radius="xl" color="pink" variant="outline">
         <IconX style={ICON_STYLE} />
       </ThemeIcon>
     ),
-    message: err instanceof Error ? err.message : 'Unknown error',
-    title,
+    message: errorMessage,
+    title: 'Something went wrong',
     autoClose: 6000,
   })
 }

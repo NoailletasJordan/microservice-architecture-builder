@@ -105,7 +105,7 @@ export function useHandleSwitchBoardData({
 
       const authToken = readLocalStorageValue({ key: AUTH_TOKEN_KEY })
       if (!authToken && isMounted) {
-        showNotificationError('Error loading board', 'Authentication required')
+        showNotificationError('Authentication required')
         setBoardStatus('error')
         return
       }
@@ -121,21 +121,24 @@ export function useHandleSwitchBoardData({
 
         if (isMounted) {
           if ('error' in response || !response) {
-            showNotificationError('Error loading board', response.error)
+            showNotificationError('Error loading board')
             setBoardStatus('error')
             return
           }
+          // apply remote board and remove local storage
           const { nodes, edges } = JSON.parse(response.data)
           setNodes(nodes)
           setEdges(edges)
+          localStorage.removeItem(STORAGE_DATA_INDEX_KEY)
           setTimeout(() => fitView(), 100)
           setBoardStatus('success')
         }
       } catch (error) {
         if (isMounted) {
           showNotificationError(
-            'Error loading board',
-            error instanceof Error ? error.message : 'Unknown error',
+            error instanceof Error
+              ? error.message
+              : 'Error fetching specific board',
           )
           setBoardStatus('error')
         }

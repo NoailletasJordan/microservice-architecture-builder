@@ -15,7 +15,8 @@ import { ICON_STYLE } from '../../../../configs/constants'
 import BoardItem from './components/BoardItem'
 
 export default function UserBoards() {
-  const { boardsQuery, currentUserBoardId } = useContext(userBoardsContext)
+  const { boardsQuery, currentUserBoardId, setCurrentUserBoardId } =
+    useContext(userBoardsContext)
 
   const { create } = useContext(userBoardsContext)
 
@@ -34,12 +35,15 @@ export default function UserBoards() {
           <Text>Boards</Text>
           <Text>{currentUserBoardId}</Text>
           <ActionIcon
-            onClick={() => {
-              create({
+            onClick={async () => {
+              const data = await create({
                 title: 'My added board',
                 nodes: [],
                 edges: [],
               })
+              if (!('error' in data)) {
+                setCurrentUserBoardId(data.id)
+              }
             }}
           >
             <IconPlus style={ICON_STYLE} />

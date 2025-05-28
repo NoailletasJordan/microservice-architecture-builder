@@ -6,7 +6,7 @@ import { useUserBoards } from '../UserBoards/hooks'
 interface IUserBoardsContext {
   boardsQuery?: ReturnType<typeof useUserBoards>
   currentUserBoardId?: string
-  handleSetCurrentUserBoardId: (boardId: string) => void
+  setCurrentUserBoardId: (boardId: string) => void
   remove: (boardId: string) => void
   update: ({
     boardId,
@@ -38,7 +38,7 @@ export interface TBoardModel {
 export const userBoardsContext = createContext<IUserBoardsContext>({
   boardsQuery: undefined,
   currentUserBoardId: undefined,
-  handleSetCurrentUserBoardId: () => {},
+  setCurrentUserBoardId: () => {},
   remove: () => {},
   update: () => {},
   create: () => {},

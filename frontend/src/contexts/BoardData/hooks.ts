@@ -11,7 +11,7 @@ import {
 import { storeInLocal } from '@/pages/BoardPage/configs/helpers'
 import { readLocalStorageValue } from '@mantine/hooks'
 import { useContext, useEffect, useState } from 'react'
-import { useEdgesState, useNodesState } from 'reactflow'
+import { useEdgesState, useNodesState, useReactFlow } from 'reactflow'
 import {
   AUTH_TOKEN_KEY,
   BackendQueryResponse,
@@ -71,11 +71,14 @@ export function useHandleSwitchBoardData({
   const [boardStatus, setBoardStatus] =
     useState<BoardDataContext['boardStatus']>('loading')
 
+  const { fitView } = useReactFlow()
+
   const { currentUserBoardId } = useContext(userBoardsContext)
 
   const stateMemo = useEffectEventP(() => ({
     setEdges,
     setNodes,
+    fitView: () => fitView({ duration: 700 }),
   }))
   // Switch board data when user logs in or out
   useEffect(() => {
@@ -84,6 +87,7 @@ export function useHandleSwitchBoardData({
     ;(async () => {
       if (!isMounted) return
       setBoardStatus('loading')
+      const { fitView, setNodes, setEdges } = stateMemo()
 
       if (!currentUserBoardId) {
         const localData = readLocalStorageValue({
@@ -91,8 +95,9 @@ export function useHandleSwitchBoardData({
           defaultValue: { timestamp: new Date(), nodes: [], edges: [] },
         })
         if (isMounted) {
-          stateMemo().setNodes(localData.nodes)
-          stateMemo().setEdges(localData.edges)
+          setNodes(localData.nodes)
+          setEdges(localData.edges)
+          setTimeout(() => fitView(), 100)
           setBoardStatus('success')
         }
         return
@@ -120,11 +125,10 @@ export function useHandleSwitchBoardData({
             setBoardStatus('error')
             return
           }
-          console.log('currentUserBoardId', currentUserBoardId)
-          console.log('response', response)
           const { nodes, edges } = JSON.parse(response.data)
-          stateMemo().setNodes(nodes)
-          stateMemo().setEdges(edges)
+          setNodes(nodes)
+          setEdges(edges)
+          setTimeout(() => fitView(), 100)
           setBoardStatus('success')
         }
       } catch (error) {

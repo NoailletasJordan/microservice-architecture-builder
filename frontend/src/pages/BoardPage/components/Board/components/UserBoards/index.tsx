@@ -15,7 +15,7 @@ import { ICON_STYLE } from '../../../../configs/constants'
 import BoardItem from './components/BoardItem'
 
 export default function UserBoards() {
-  const { boardsQuery } = useContext(userBoardsContext)
+  const { boardsQuery, currentUserBoardId } = useContext(userBoardsContext)
 
   const { create } = useContext(userBoardsContext)
 
@@ -32,6 +32,7 @@ export default function UserBoards() {
       <Card bg="gray.9">
         <Group justify="space-between">
           <Text>Boards</Text>
+          <Text>{currentUserBoardId}</Text>
           <ActionIcon
             onClick={() => {
               create({
@@ -53,14 +54,14 @@ export default function UserBoards() {
 }
 
 function BoardList({ boards }: { boards: Partial<TBoardModel>[] }) {
-  const { update, remove, currentUserBoardId, handleSetCurrentUserBoardId } =
+  const { update, remove, currentUserBoardId, setCurrentUserBoardId } =
     useContext(userBoardsContext)
 
   return (
     <Stack gap="xs">
       {boards.map((board: any) => (
         <BoardItem
-          onSelect={() => handleSetCurrentUserBoardId(board.id)}
+          onSelect={() => setCurrentUserBoardId(board.id)}
           key={board.id}
           active={board.id === currentUserBoardId}
           board={board}

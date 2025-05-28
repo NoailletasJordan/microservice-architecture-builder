@@ -30,7 +30,7 @@ import {
 } from 'react-router-dom'
 import { ReactFlowProvider } from 'reactflow'
 import { CSSVAR, customColors, themeDarkColorVariables } from './contants'
-import BoardDataProvider from './contexts/BoardData/provider'
+import BoardDataProvider from './contexts/BoardData/Provider'
 import UserProvider from './contexts/User/UserProvider'
 import UserBoardsProvider from './contexts/UserBoards/Provider'
 import BoardPage from './pages/BoardPage'

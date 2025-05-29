@@ -5,7 +5,7 @@ import {
   TCustomNode,
 } from '@/pages/BoardPage/configs/constants'
 import { storeInLocal } from '@/pages/BoardPage/configs/helpers'
-import { readLocalStorageValue } from '@mantine/hooks'
+import { readLocalStorageValue, useLocalStorage } from '@mantine/hooks'
 import { useQuery } from '@tanstack/react-query'
 import { useContext, useEffect } from 'react'
 import { useEdgesState, useNodesState, useReactFlow } from 'reactflow'
@@ -32,7 +32,7 @@ export function useSaveBoardLocallyOrRemotely({
     update,
   }))
 
-  // Save board to localstorage, debounced
+  // Save board, debounced
   useEffect(() => {
     if (boardStatus !== 'success') return
     const handle = setTimeout(() => {
@@ -54,6 +54,12 @@ export function useSaveBoardLocallyOrRemotely({
   }, [boardStatus, nodes, edges, isLogged, nonReactiveState])
 }
 
+function useTemp() {
+  const [datafromStorage] = useLocalStorage({ key: STORAGE_DATA_INDEX_KEY })
+  /** Temp */
+  console.log('datafromStorage:', datafromStorage)
+}
+
 export function useHandleSwitchBoardData({
   setNodes,
   setEdges,
@@ -64,19 +70,35 @@ export function useHandleSwitchBoardData({
   const FIT_VIEW_DURATION = 700
   let { fitView } = useReactFlow()
   const { currentUserBoardId } = useContext(userBoardsContext)
+  // useTemp()
 
   const { isSuccess, isLoading, refetch } = useQuery({
     enabled: false,
     queryKey: ['board', currentUserBoardId],
     queryFn: async () => {
       // If no board id (including not logged), load local data
+      /** Temp */
+      console.log('calllll0', currentUserBoardId)
       if (!currentUserBoardId) {
-        const localData = readLocalStorageValue({
-          key: STORAGE_DATA_INDEX_KEY,
-          defaultValue: { timestamp: new Date(), nodes: [], edges: [] },
-        })
-        setNodes(localData.nodes)
-        setEdges(localData.edges)
+        // const localData = readLocalStorageValue({
+        //   key: STORAGE_DATA_INDEX_KEY,
+        //   defaultValue: { timestamp: new Date(), nodes: [], edges: [] },
+        // })
+        let localData: any = localStorage.getItem(STORAGE_DATA_INDEX_KEY)
+        if (!localData)
+          localData = JSON.stringify({
+            timestamp: new Date(),
+            nodes: [],
+            edges: [],
+          })
+        localData = JSON.parse(localData)
+
+        /** Temp */
+        console.log('calllll no id:', localData)
+        setNodes([])
+        setEdges([])
+        // setNodes(localData.nodes)
+        // setEdges(localData.edges)
         setTimeout(() => fitView({ duration: FIT_VIEW_DURATION }), 100)
       } else {
         // If logged, load remote data

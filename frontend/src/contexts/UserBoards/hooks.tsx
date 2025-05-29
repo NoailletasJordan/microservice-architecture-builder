@@ -3,7 +3,7 @@ import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/conne
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { useLocalStorage } from '@mantine/hooks'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useContext, useRef } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import { ReactFlowInstance } from 'reactflow'
 import {
   AUTH_TOKEN_KEY,
@@ -48,19 +48,22 @@ export function useHandleBoardsOnLogout({
   const queryKey = useQueryKey()
   const queryClient = useQueryClient()
 
-  const ut = useRef(isLogged)
+  const wasLoggedBefore = useRef(false)
 
-  const trigger = !isLogged && !!ut.current
-  if (trigger) {
-    queryClient.removeQueries({ queryKey })
-    queryClient.setQueryData(queryKey, undefined)
-    resetCurrentUserBoardId()
-    showNotificationSuccess({
-      title: "You're logged out !",
-      message: 'Your previous boards will be waiting for your return',
-    })
-  }
-  ut.current = isLogged
+  useEffect(() => {
+    if (isLogged) wasLoggedBefore.current = true
+
+    if (!isLogged && wasLoggedBefore.current) {
+      wasLoggedBefore.current = false
+      queryClient.removeQueries({ queryKey })
+      queryClient.setQueryData(queryKey, undefined)
+      resetCurrentUserBoardId()
+      showNotificationSuccess({
+        title: "You're logged out !",
+        message: 'Your previous boards will be waiting for your return',
+      })
+    }
+  }, [isLogged])
 }
 
 export function useMutateUserBoard({
@@ -126,6 +129,8 @@ export function useMutateUserBoard({
 
         if (currentBoardIndex === deleteBoardIndex) {
           const nextIndex = (currentBoardIndex + 1) % boards.length
+          /** Temp */
+          console.log('setter 4')
           setCurrentUserBoardId(boards[nextIndex].id)
         }
       }
@@ -171,10 +176,12 @@ export async function handleLoadUserBoards({
       nodes: flowInstance.getNodes(),
       edges: flowInstance.getEdges(),
     })
+    /** Temp */
+    console.log('setter 5')
     setCurrentUserBoardId(data.id)
     showNotificationSuccess({
-      title: "You're in",
-      message: 'I will now store your existing work on the cloud :)',
+      title: 'Connected to the cloud',
+      message: 'I pushed your existing work into a new board :)',
     })
     return
   }
@@ -187,6 +194,8 @@ export async function handleLoadUserBoards({
       nodes: flowInstance.getNodes(),
       edges: flowInstance.getEdges(),
     })
+    /** Temp */
+    console.log('setter 2')
     setCurrentUserBoardId(data.id)
     showNotificationSuccess({
       title: "You're in !",
@@ -194,6 +203,8 @@ export async function handleLoadUserBoards({
     })
   } else {
     // If user has boards, load the first one
+    /** Temp */
+    console.log('setter 3')
     setCurrentUserBoardId(userBoards[0].id)
     showNotificationSuccess({
       title: 'Welcome back',

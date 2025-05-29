@@ -1,13 +1,12 @@
 import CustomModal from '@/components/CustomModal'
+import { showNotificationError, showNotificationSuccess } from '@/contants'
 import {
-  ICON_STYLE,
   TCustomNode,
   shareHashTocken,
 } from '@/pages/BoardPage/configs/constants'
 import { Button, Grid, Group, Space, Text, ThemeIcon } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
-import { notifications } from '@mantine/notifications'
-import { IconAlertTriangle, IconCheck, IconX } from '@tabler/icons-react'
+import { IconAlertTriangle } from '@tabler/icons-react'
 import { useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { getNodesBounds, useReactFlow } from 'reactflow'
@@ -44,29 +43,16 @@ export default function LoadLinkBoardModal({ nodes }: Props) {
       flowInstance.setEdges(() => loadedValues.edges)
       flowInstance.fitBounds(getNodesBounds(loadedValues.nodes))
 
-      notifications.show({
-        icon: (
-          <ThemeIcon radius="xl" color="primary.10" variant="outline">
-            <IconCheck style={ICON_STYLE} />
-          </ThemeIcon>
-        ),
-        message: '',
+      showNotificationSuccess({
         title: 'Board loaded successfully',
-        autoClose: 6000,
+        message: '',
       })
     } catch (error) {
       console.error(error)
-      notifications.show({
+      showNotificationError({
         title: 'Error loading url content',
         message:
           'Continuing on existing content, apologies for the inconvenience',
-
-        autoClose: 6000,
-        icon: (
-          <ThemeIcon radius="xl" variant="outline" color="pink">
-            <IconX style={ICON_STYLE} />
-          </ThemeIcon>
-        ),
       })
     } finally {
       handleCloseModal()

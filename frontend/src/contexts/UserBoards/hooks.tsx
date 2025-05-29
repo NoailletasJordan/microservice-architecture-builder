@@ -198,15 +198,15 @@ function useMutateBoards() {
 
       const config = {
         POST: {
-          url: `${import.meta.env.vite_api_url}/api/board`,
+          url: `${import.meta.env.VITE_API_URL}/api/board`,
           errormessage: 'failed to create board',
         },
         PATCH: {
-          url: `${import.meta.env.vite_api_url}/api/board/${boardId}`,
+          url: `${import.meta.env.VITE_API_URL}/api/board/${boardId}`,
           errormessage: 'failed to update board',
         },
         DELETE: {
-          url: `${import.meta.env.vite_api_url}/api/board/${boardId}`,
+          url: `${import.meta.env.VITE_API_URL}/api/board/${boardId}`,
           errormessage: 'failed to delete board',
         },
       }

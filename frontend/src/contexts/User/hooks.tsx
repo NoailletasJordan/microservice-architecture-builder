@@ -22,8 +22,8 @@ export function useUser() {
           Authorization: `Bearer ${authToken}`,
         },
       })
-      const result = await res.json()
       if (!res.ok) throw new Error('Failed to fetch user')
+      const result = await res.json()
       return result
     },
     staleTime: Infinity,

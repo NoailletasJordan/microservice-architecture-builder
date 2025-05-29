@@ -1,6 +1,6 @@
 import { ThemeIcon } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
-import { IconX } from '@tabler/icons-react'
+import { IconCheck, IconX } from '@tabler/icons-react'
 import { useCallback, useInsertionEffect, useRef } from 'react'
 import { TCustomEdge } from './pages/BoardPage/components/Board/components/connexionContants'
 import { ICON_STYLE, TCustomNode } from './pages/BoardPage/configs/constants'
@@ -115,15 +115,40 @@ export function useEffectEventP<T extends (...args: any[]) => any>(
   }, [])
 }
 
-export function showNotificationError(errorMessage: string) {
+export function showNotificationError({
+  title,
+  message,
+}: {
+  title?: string
+  message?: string
+}) {
   notifications.show({
     icon: (
       <ThemeIcon radius="xl" color="pink" variant="outline">
         <IconX style={ICON_STYLE} />
       </ThemeIcon>
     ),
-    message: errorMessage,
-    title: 'Something went wrong',
-    autoClose: 6000,
+    message,
+    title,
+    autoClose: 12000,
+  })
+}
+
+export function showNotificationSuccess({
+  title,
+  message,
+}: {
+  title?: string
+  message?: string
+}) {
+  notifications.show({
+    icon: (
+      <ThemeIcon radius="xl" color="primary.10" variant="outline">
+        <IconCheck style={ICON_STYLE} />
+      </ThemeIcon>
+    ),
+    message,
+    title,
+    autoClose: 10000,
   })
 }

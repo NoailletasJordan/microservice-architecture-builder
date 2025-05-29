@@ -19,12 +19,6 @@ import {
 } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
 import { RichTextEditor } from '@mantine/tiptap'
-import {
-  MutationCache,
-  QueryCache,
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query'
 import { PostHogProvider } from 'posthog-js/react'
 import { useEffect } from 'react'
 import {
@@ -34,13 +28,9 @@ import {
   createRoutesFromElements,
 } from 'react-router-dom'
 import { ReactFlowProvider } from 'reactflow'
-import {
-  CSSVAR,
-  customColors,
-  showNotificationError,
-  themeDarkColorVariables,
-} from './contants'
+import { CSSVAR, customColors, themeDarkColorVariables } from './contants'
 import BoardDataProvider from './contexts/BoardData/Provider'
+import { ReactQueryProvider } from './contexts/ReactQuery/Provider'
 import UserProvider from './contexts/User/UserProvider'
 import UserBoardsProvider from './contexts/UserBoards/Provider'
 import BoardPage from './pages/BoardPage'
@@ -70,20 +60,6 @@ const router = createBrowserRouter(
   ),
 )
 
-function onError(error: Error | string) {
-  showNotificationError(
-    'Something went wrong: ' + (error instanceof Error ? error.message : error),
-  )
-}
-const queryClient = new QueryClient({
-  queryCache: new QueryCache({
-    onError,
-  }),
-  mutationCache: new MutationCache({
-    onError,
-  }),
-})
-
 export default function App() {
   useEffect(() => {
     // Inject css colors in root
@@ -109,7 +85,7 @@ export default function App() {
           }}
         >
           <ReactFlowProvider>
-            <QueryClientProvider client={queryClient}>
+            <ReactQueryProvider>
               <UserProvider>
                 <UserBoardsProvider>
                   <BoardDataProvider>
@@ -120,7 +96,7 @@ export default function App() {
                   </BoardDataProvider>
                 </UserBoardsProvider>
               </UserProvider>
-            </QueryClientProvider>
+            </ReactQueryProvider>
           </ReactFlowProvider>
         </div>
       </PostHogProvider>

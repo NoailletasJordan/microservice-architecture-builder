@@ -2,7 +2,7 @@ import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/conne
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { createContext } from 'react'
 import { BackendQueryResponse } from '../User/constants'
-import { useUserBoards } from '../UserBoards/hooks'
+import { useUserBoards } from './hooks/useUserBoards'
 
 interface IUserBoardsContext {
   boardsQuery?: ReturnType<typeof useUserBoards>

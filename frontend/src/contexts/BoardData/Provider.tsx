@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { boardDataContext } from './constants'
-import { useNodesAndEdges, useSaveBoardLocallyOrRemotely } from './hooks'
+import { useNodesAndEdges } from './hooks/useNodesAndEdges'
+import { useSaveBoardLocallyOrRemotely } from './hooks/useSaveBoardLocallyOrRemotely'
 
 export default function BoardDataProvider({
   children,

@@ -6,23 +6,15 @@ import {
   handlePushToGoogleOauth,
   userContext,
 } from './constants'
-import { useHandleUserGoogleLogin, useUser } from './hooks'
+import { useHandleUserGoogleLogin } from './hooks/useHandleUserGoogleLogin'
+import { useUser } from './hooks/useUser'
 
 export default function UserProvider({ children }: { children: ReactNode }) {
   const [authToken, setAuthToken, removeAuthToken] = useLocalStorage({
     key: AUTH_TOKEN_KEY,
   })
-  const userQuery = useUser()
+  const { userQuery, isLogged } = useUser({ removeAuthToken })
   const queryClient = useQueryClient()
-
-  if (userQuery.isError) {
-    queryClient.setQueryData(['user', authToken], undefined)
-    removeAuthToken()
-  }
-
-  const isLogged = Boolean(
-    userQuery.data && !('error' in userQuery.data) && !!userQuery.data?.id,
-  )
 
   useHandleUserGoogleLogin({
     storeInLocalStorage: (token) => setAuthToken(token),

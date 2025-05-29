@@ -1,14 +1,9 @@
-import { useEffectEventP } from '@/contants'
-import { ReactNode, useContext, useEffect, useState } from 'react'
-import { useReactFlow } from 'reactflow'
-import { userContext } from '../User/constants'
+import { ReactNode, useState } from 'react'
 import { userBoardsContext } from './constants'
-import {
-  handleLoadUserBoards,
-  useHandleBoardsOnLogout,
-  useMutateUserBoard,
-  useUserBoards,
-} from './hooks'
+import { useHandleBoardsOnLogout } from './hooks/useHandleBoardsOnLogout'
+import { useHandleLoadUserBoards } from './hooks/useHandleLoadUserBoards'
+import { useMutateUserBoard } from './hooks/useMutateUserBoard'
+import { useUserBoards } from './hooks/useUserBoards'
 
 interface IProps {
   children: ReactNode
@@ -18,39 +13,22 @@ export default function UserBoardsProvider({ children }: IProps) {
   const [currentUserBoardId, setCurrentUserBoardId] = useState<
     string | undefined
   >(undefined)
-  const { isLogged } = useContext(userContext)
   const boardsQuery = useUserBoards()
 
   const mutator = useMutateUserBoard({
     currentUserBoardId,
     setCurrentUserBoardId,
   })
-  const flowInstance = useReactFlow()
-
-  const nonReactiveState = useEffectEventP(() => ({
-    flowInstance,
-    setCurrentUserBoardId,
-    createNewBoard: mutator.create,
-  }))
 
   useHandleBoardsOnLogout({
     resetCurrentUserBoardId: () => setCurrentUserBoardId(undefined),
   })
 
-  // on Login
-  useEffect(() => {
-    const { createNewBoard, flowInstance, setCurrentUserBoardId } =
-      nonReactiveState()
-
-    if (isLogged) {
-      handleLoadUserBoards({
-        setCurrentUserBoardId,
-        boardsQuery,
-        createNewBoard,
-        flowInstance,
-      })
-    }
-  }, [isLogged, nonReactiveState])
+  useHandleLoadUserBoards({
+    currentUserBoardId,
+    setCurrentUserBoardId,
+    boardsQuery,
+  })
 
   return (
     <userBoardsContext.Provider

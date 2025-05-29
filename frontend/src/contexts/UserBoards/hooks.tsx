@@ -1,10 +1,15 @@
-import { getDataToStoreObject } from '@/contants'
+import { getDataToStoreObject, showNotificationSuccess } from '@/contants'
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
-import { useLocalStorage, usePrevious } from '@mantine/hooks'
+import { useLocalStorage } from '@mantine/hooks'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useContext, useRef } from 'react'
 import { ReactFlowInstance } from 'reactflow'
-import { AUTH_TOKEN_KEY, BackendQueryResponse } from '../User/constants'
+import {
+  AUTH_TOKEN_KEY,
+  BackendQueryResponse,
+  userContext,
+} from '../User/constants'
 import { TBoardModel } from './constants'
 
 export function useUserBoards() {
@@ -26,7 +31,7 @@ export function useUserBoards() {
   })
 }
 
-export function useQueryKey() {
+function useQueryKey() {
   const [authToken] = useLocalStorage<string>({
     key: AUTH_TOKEN_KEY,
   })
@@ -35,21 +40,27 @@ export function useQueryKey() {
 }
 
 export function useHandleBoardsOnLogout({
-  isLogged,
   resetCurrentUserBoardId,
 }: {
-  isLogged: boolean
   resetCurrentUserBoardId: () => void
 }) {
-  const previousIsLogged = usePrevious(isLogged)
+  const { isLogged } = useContext(userContext)
   const queryKey = useQueryKey()
   const queryClient = useQueryClient()
 
-  if (!isLogged && previousIsLogged) {
+  const ut = useRef(isLogged)
+
+  const trigger = !isLogged && !!ut.current
+  if (trigger) {
     queryClient.removeQueries({ queryKey })
     queryClient.setQueryData(queryKey, undefined)
     resetCurrentUserBoardId()
+    showNotificationSuccess({
+      title: "You're logged out !",
+      message: 'Your previous boards will be waiting for your return',
+    })
   }
+  ut.current = isLogged
 }
 
 export function useMutateUserBoard({
@@ -151,11 +162,20 @@ export async function handleLoadUserBoards({
   // if user Has board data, create new userboard and load it
   if (hadCurrentDataBoard) {
     const data = await createNewBoard({
-      title: 'New board',
+      title: `Pushed-on ${new Intl.DateTimeFormat('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(new Date())}`,
       nodes: flowInstance.getNodes(),
       edges: flowInstance.getEdges(),
     })
     setCurrentUserBoardId(data.id)
+    showNotificationSuccess({
+      title: "You're in",
+      message: 'I will now store your existing work on the cloud :)',
+    })
     return
   }
 
@@ -168,10 +188,16 @@ export async function handleLoadUserBoards({
       edges: flowInstance.getEdges(),
     })
     setCurrentUserBoardId(data.id)
-    return
+    showNotificationSuccess({
+      title: "You're in !",
+      message: 'Your work will now safely be stored in the cloud :)',
+    })
   } else {
     // If user has boards, load the first one
     setCurrentUserBoardId(userBoards[0].id)
+    showNotificationSuccess({
+      title: 'Welcome back',
+    })
   }
 }
 

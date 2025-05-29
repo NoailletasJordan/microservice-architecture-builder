@@ -69,7 +69,12 @@ export default function App() {
   }, [])
 
   return (
-    <>
+    <div
+      style={{
+        background: CSSVAR['--background'],
+        color: CSSVAR['--text'],
+      }}
+    >
       <PostHogProvider
         apiKey={
           window.location.hostname.startsWith('localhost')
@@ -78,29 +83,22 @@ export default function App() {
         }
         options={options}
       >
-        <div
-          style={{
-            background: CSSVAR['--background'],
-            color: CSSVAR['--text'],
-          }}
-        >
-          <ReactFlowProvider>
-            <ReactQueryProvider>
-              <UserProvider>
-                <UserBoardsProvider>
-                  <BoardDataProvider>
-                    <MantineProvider theme={theme}>
-                      <RouterProvider router={router} />
-                      <Notifications />
-                    </MantineProvider>
-                  </BoardDataProvider>
-                </UserBoardsProvider>
-              </UserProvider>
-            </ReactQueryProvider>
-          </ReactFlowProvider>
-        </div>
+        <ReactFlowProvider>
+          <ReactQueryProvider>
+            <UserProvider>
+              <UserBoardsProvider>
+                <BoardDataProvider>
+                  <MantineProvider theme={theme}>
+                    <RouterProvider router={router} />
+                    <Notifications />
+                  </MantineProvider>
+                </BoardDataProvider>
+              </UserBoardsProvider>
+            </UserProvider>
+          </ReactQueryProvider>
+        </ReactFlowProvider>
       </PostHogProvider>
-    </>
+    </div>
   )
 }
 

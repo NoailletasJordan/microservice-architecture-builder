@@ -1,13 +1,12 @@
 import { useEffectEventP } from '@/contants'
-import { useQueryClient } from '@tanstack/react-query'
 import { ReactNode, useContext, useEffect, useState } from 'react'
 import { useReactFlow } from 'reactflow'
 import { userContext } from '../User/constants'
 import { userBoardsContext } from './constants'
 import {
   handleLoadUserBoards,
+  useHandleBoardsOnLogout,
   useMutateUserBoard,
-  useQueryKey,
   useUserBoards,
 } from './hooks'
 
@@ -27,27 +26,23 @@ export default function UserBoardsProvider({ children }: IProps) {
     setCurrentUserBoardId,
   })
   const flowInstance = useReactFlow()
-  const queryKey = useQueryKey()
-  const queryClient = useQueryClient()
 
   const nonReactiveState = useEffectEventP(() => ({
-    boardsQuery,
     flowInstance,
     setCurrentUserBoardId,
     createNewBoard: mutator.create,
   }))
 
-  // onLoginChange
+  useHandleBoardsOnLogout({
+    resetCurrentUserBoardId: () => setCurrentUserBoardId(undefined),
+  })
+
+  // on Login
   useEffect(() => {
-    const { createNewBoard, boardsQuery, flowInstance, setCurrentUserBoardId } =
+    const { createNewBoard, flowInstance, setCurrentUserBoardId } =
       nonReactiveState()
 
-    if (!isLogged) {
-      queryClient.removeQueries({ queryKey })
-      queryClient.setQueryData(queryKey, undefined)
-      // Reset boardId
-      setCurrentUserBoardId(undefined)
-    } else {
+    if (isLogged) {
       handleLoadUserBoards({
         setCurrentUserBoardId,
         boardsQuery,

@@ -19,9 +19,10 @@ export function useHandleSwitchBoardData({
   setEdges: React.Dispatch<React.SetStateAction<TCustomEdge[]>>
 }) {
   const FIT_VIEW_DURATION = 700
-  let { fitView } = useReactFlow()
+  const { fitView } = useReactFlow()
   const { currentUserBoardId } = useContext(userBoardsContext)
 
+  // Cant use data or cache as state is clientside - still uses useQuery for request status
   const { isSuccess, isLoading, refetch } = useQuery({
     enabled: false,
     queryKey: ['board', currentUserBoardId],

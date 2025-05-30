@@ -5,6 +5,7 @@ const testWithNodesSetup = base.extend({
   page: async ({ page }, use) => {
     await page.goto('/')
     await initialTwoNodesSetup({ page })
+    // eslint-disable-next-line react-hooks/rules-of-hooks -- not a react component
     use(page)
   },
 })

@@ -1,7 +1,6 @@
 import { ReactNode, useState } from 'react'
 import { userBoardsContext } from './constants'
-import { useHandleBoardsOnLogout } from './hooks/useHandleBoardsOnLogout'
-import { useHandleLoadUserBoards } from './hooks/useHandleLoadUserBoards'
+import { useHandleBoardsOnLoginLogout } from './hooks/useHandleBoardsOnLoginLogout'
 import { useMutateUserBoard } from './hooks/useMutateUserBoard'
 import { useUserBoards } from './hooks/useUserBoards'
 
@@ -15,19 +14,14 @@ export default function UserBoardsProvider({ children }: IProps) {
   >(undefined)
   const boardsQuery = useUserBoards()
 
+  useHandleBoardsOnLoginLogout({
+    currentUserBoardId,
+    setCurrentUserBoardId,
+  })
+
   const mutator = useMutateUserBoard({
     currentUserBoardId,
     setCurrentUserBoardId,
-  })
-
-  useHandleBoardsOnLogout({
-    resetCurrentUserBoardId: () => setCurrentUserBoardId(undefined),
-  })
-
-  useHandleLoadUserBoards({
-    currentUserBoardId,
-    setCurrentUserBoardId,
-    boardsQuery,
   })
 
   return (

@@ -1,5 +1,6 @@
 import { useHash } from '@mantine/hooks'
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
+import { useEffectEventP } from '../../../contants'
 import { TOKEN_PREFIX } from '../constants'
 
 export const useHandleUserGoogleLogin = ({
@@ -8,16 +9,17 @@ export const useHandleUserGoogleLogin = ({
   storeInLocalStorage: (token: string) => void
 }) => {
   const [hash, setHash] = useHash()
-  const storeInLocalStorageRef = useRef(storeInLocalStorage)
-  storeInLocalStorageRef.current = storeInLocalStorage
+
+  const nonReactiveState = useEffectEventP(() => ({ storeInLocalStorage }))
 
   useEffect(() => {
     ;(async () => {
+      const { storeInLocalStorage } = nonReactiveState()
       if (hash.startsWith(TOKEN_PREFIX)) {
         const token = hash.slice(TOKEN_PREFIX.length)
-        storeInLocalStorageRef.current(token)
+        storeInLocalStorage(token)
         setHash('')
       }
     })()
-  }, [hash, setHash])
+  }, [hash, setHash, nonReactiveState])
 }

@@ -1,15 +1,13 @@
 import { showNotificationSuccess, useEffectEventP } from '@/contants'
-import { userContext } from '@/contexts/User/constants'
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
-import { useContext, useEffect } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { ReactFlowInstance, useReactFlow } from 'reactflow'
 import { TBoardModel } from '../constants'
 import { useMutateUserBoard } from './useMutateUserBoard'
 import { useUserBoards } from './useUserBoards'
 
-export function useHandleLoadUserBoards({
-  boardsQuery,
+export function useHandleBoardsOnLoginLogout({
   currentUserBoardId,
   setCurrentUserBoardId,
 }: {
@@ -17,48 +15,73 @@ export function useHandleLoadUserBoards({
   setCurrentUserBoardId: React.Dispatch<
     React.SetStateAction<string | undefined>
   >
-  boardsQuery: ReturnType<typeof useUserBoards>
 }) {
-  const { isLogged } = useContext(userContext)
-  const flowInstance = useReactFlow()
+  const boardsQuery = useUserBoards()
+  const hasBoards = useMemo(() => {
+    return (
+      boardsQuery.data &&
+      !('error' in boardsQuery.data) &&
+      boardsQuery.data.length > 0
+    )
+  }, [boardsQuery.data])
 
   const mutator = useMutateUserBoard({
     currentUserBoardId,
     setCurrentUserBoardId,
   })
 
+  const flowInstance = useReactFlow()
   const nonReactiveState = useEffectEventP(() => ({
-    refetch: boardsQuery.refetch,
+    createNewBoard: mutator.create,
+    boardsQuery,
     flowInstance,
     setCurrentUserBoardId,
-    createNewBoard: mutator.create,
   }))
 
+  const previouslyHadBoard = useRef(false)
   useEffect(() => {
-    const { createNewBoard, flowInstance, setCurrentUserBoardId, refetch } =
+    const { setCurrentUserBoardId, flowInstance, createNewBoard, boardsQuery } =
       nonReactiveState()
+    if (
+      boardsQuery.isError ||
+      (boardsQuery.data && 'error' in boardsQuery.data)
+    )
+      return
 
-    if (isLogged) {
-      handleLoadUserBoards({
+    if (!hasBoards) {
+      if (previouslyHadBoard.current) {
+        // User logged out
+        previouslyHadBoard.current = false
+        setCurrentUserBoardId(undefined)
+        showNotificationSuccess({
+          title: "You're logged out",
+          message: 'I will now save your work on your browser',
+        })
+      }
+    } else {
+      // User logged in
+      previouslyHadBoard.current = true
+      const userBoards = boardsQuery.data as TBoardModel[]
+      handleLoadRemoteUserBoards({
         setCurrentUserBoardId,
-        refetch,
+        userBoards,
         createNewBoard,
         flowInstance,
       })
     }
-  }, [isLogged, nonReactiveState])
+  }, [hasBoards, nonReactiveState])
 }
 
-export async function handleLoadUserBoards({
+async function handleLoadRemoteUserBoards({
   setCurrentUserBoardId,
-  refetch,
   flowInstance,
   createNewBoard,
+  userBoards,
 }: {
+  userBoards: TBoardModel[]
   setCurrentUserBoardId: React.Dispatch<
     React.SetStateAction<string | undefined>
   >
-  refetch: ReturnType<typeof useUserBoards>['refetch']
   flowInstance: ReactFlowInstance
   createNewBoard: ({
     title,
@@ -70,13 +93,11 @@ export async function handleLoadUserBoards({
     edges: TCustomEdge[]
   }) => Promise<any>
 }) {
-  const { data, isSuccess } = await refetch()
-  if (!isSuccess || 'error' in data) return
-  const hadCurrentDataBoard = flowInstance.getNodes().length > 0
+  const hadCurrentBoardData = flowInstance.getNodes().length > 0
 
   // if user Has board data, create new userboard and load it
-  if (hadCurrentDataBoard) {
-    const data = await createNewBoard({
+  if (hadCurrentBoardData) {
+    const newBoard = await createNewBoard({
       title: `Pushed-on ${new Intl.DateTimeFormat('en-GB', {
         day: '2-digit',
         month: '2-digit',
@@ -86,7 +107,7 @@ export async function handleLoadUserBoards({
       nodes: flowInstance.getNodes(),
       edges: flowInstance.getEdges(),
     })
-    setCurrentUserBoardId(data.id)
+    setCurrentUserBoardId(newBoard.id)
     showNotificationSuccess({
       title: 'Connected to the cloud',
       message: 'I pushed your existing work into a new board :)',
@@ -94,15 +115,14 @@ export async function handleLoadUserBoards({
     return
   }
 
-  const userBoards = data as TBoardModel[]
   if (userBoards.length === 0) {
     // If user has no boards, create a new one and load it
-    const data = await createNewBoard({
+    const newBoard = await createNewBoard({
       title: 'New board',
       nodes: flowInstance.getNodes(),
       edges: flowInstance.getEdges(),
     })
-    setCurrentUserBoardId(data.id)
+    setCurrentUserBoardId(newBoard.id)
     showNotificationSuccess({
       title: "You're in !",
       message: 'Your work will now safely be stored in the cloud :)',

@@ -5,7 +5,7 @@ import { BackendQueryResponse } from '../User/constants'
 import { useUserBoards } from './hooks/useUserBoards'
 
 interface IUserBoardsContext {
-  boardsQuery?: ReturnType<typeof useUserBoards>
+  boardsQuery: ReturnType<typeof useUserBoards> | null
   currentUserBoardId?: string
   setCurrentUserBoardId: (boardId: string) => void
   remove: (boardId: string) => void
@@ -37,7 +37,7 @@ export interface TBoardModel {
 }
 
 export const userBoardsContext = createContext<IUserBoardsContext>({
-  boardsQuery: undefined,
+  boardsQuery: null,
   currentUserBoardId: undefined,
   setCurrentUserBoardId: () => {},
   remove: () => {},

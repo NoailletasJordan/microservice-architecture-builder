@@ -16,6 +16,7 @@ const testWithFixture = base.extend<{
 
     const page2 = await context.newPage()
     await page2.goto(loadURL)
+    // eslint-disable-next-line react-hooks/rules-of-hooks -- not a react component
     await use(page2)
     await page2.close()
     await context.close()

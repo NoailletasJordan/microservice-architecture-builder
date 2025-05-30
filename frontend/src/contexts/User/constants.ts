@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import { useUser } from './hooks'
+import { useUser } from './hooks/useUser'
 
 export type BackendQueryResponse<T> =
   | (T & { error?: undefined })
@@ -16,7 +16,7 @@ export interface IUser {
 
 export interface IUserContext {
   isLogged: boolean
-  userQuery?: ReturnType<typeof useUser>
+  userQuery?: ReturnType<typeof useUser>['userQuery']
   authToken?: string
   handleLogout: () => void
   handlePushToGoogleOauth: () => void

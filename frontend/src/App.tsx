@@ -19,6 +19,7 @@ import {
 } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
 import { RichTextEditor } from '@mantine/tiptap'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { PostHogProvider } from 'posthog-js/react'
 import { useEffect } from 'react'
 import {
@@ -95,6 +96,7 @@ export default function App() {
                 </BoardDataProvider>
               </UserBoardsProvider>
             </UserProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
           </ReactQueryProvider>
         </ReactFlowProvider>
       </PostHogProvider>

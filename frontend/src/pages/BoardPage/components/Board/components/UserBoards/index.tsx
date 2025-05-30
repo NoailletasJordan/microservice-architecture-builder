@@ -42,8 +42,6 @@ export default function UserBoards() {
                 edges: [],
               })
               if (!('error' in data)) {
-                /** Temp */
-                console.log('setter 1')
                 setCurrentUserBoardId(data.id)
               }
             }}
@@ -68,8 +66,6 @@ function BoardList({ boards }: { boards: Partial<TBoardModel>[] }) {
       {boards.map((board: any) => (
         <BoardItem
           onSelect={() => {
-            /** Temp */
-            console.log('setter 6')
             setCurrentUserBoardId(board.id)
           }}
           key={board.id}

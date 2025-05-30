@@ -3,7 +3,6 @@ import OnboardingContextProvider from '@/contexts/Onboarding/Provider'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { AppShell, Modal, Space, Text } from '@mantine/core'
 import { motion, Transition } from 'framer-motion'
-import { useState } from 'react'
 import { useReactFlow } from 'reactflow'
 import ClickCanvaProvider from '../../contexts/ClickCanvaCapture/ClickCanvaProvider'
 import Board from './components/Board'
@@ -12,7 +11,6 @@ import { onDragEndConfig } from './configs/drag-handlers'
 
 export default function BoardPage() {
   const flowInstance = useReactFlow()
-  const [openLoader, setOpenLoader] = useState(true)
 
   return (
     <AppShell>
@@ -31,7 +29,7 @@ export default function BoardPage() {
         <AppShell.Main>
           <ClickCanvaProvider>
             <OnboardingContextProvider>
-              <Board showInitialLoader={openLoader} />
+              <Board />
               {/* temp */}
               {/* <LoaderModal
                 close={() => setOpenLoader(false)}

@@ -11,14 +11,9 @@ import { SECTIONS } from './constants'
 interface Props {
   opened: boolean
   close: () => void
-  showInitialLoader: boolean
 }
 
-export default function OnboardingModal({
-  showInitialLoader,
-  opened,
-  close,
-}: Props) {
+export default function OnboardingModal({ opened, close }: Props) {
   const [selectedIndex, setSelectedIndex] = useState(0)
 
   const handleClose = () => {
@@ -148,10 +143,7 @@ export default function OnboardingModal({
             }}
             bg={CSSVAR['--surface-strong']}
           >
-            <Canva
-              showInitialLoader={showInitialLoader}
-              artboard={SECTIONS[selectedIndex].artboard}
-            />
+            <Canva artboard={SECTIONS[selectedIndex].artboard} />
           </Center>
           <Space h="md" />
           <motion.div

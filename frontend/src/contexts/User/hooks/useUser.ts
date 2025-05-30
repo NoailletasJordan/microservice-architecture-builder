@@ -1,5 +1,6 @@
 import { useLocalStorage } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { AUTH_TOKEN_KEY, BackendQueryResponse, IUser } from '../constants'
 
 export function useUser({ removeAuthToken }: { removeAuthToken: () => void }) {
@@ -9,25 +10,36 @@ export function useUser({ removeAuthToken }: { removeAuthToken: () => void }) {
   const queryClient = useQueryClient()
 
   const userQuery = useQuery<BackendQueryResponse<IUser>>({
-    enabled: !!authToken,
+    // enabled: !!authToken,
     queryKey: ['user', authToken],
-    queryFn: async () => {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/me`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      })
-      if (!res.ok) throw new Error('Failed to fetch user')
-      const result = await res.json()
-      return result
+    queryFn: async ({ queryKey }) => {
+      const [_, authToken] = queryKey
+
+      if (!authToken) {
+        return null
+      } else {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/users/me`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          },
+        )
+        if (!res.ok) throw new Error('Failed to fetch user')
+        const result = await res.json()
+        return result
+      }
     },
     staleTime: Infinity,
   })
 
-  if (userQuery.isError) {
-    queryClient.setQueryData(['user', authToken], undefined)
-    removeAuthToken()
-  }
+  useMemo(() => {
+    if (userQuery.isError) {
+      queryClient.setQueryData(['user', authToken], undefined)
+      removeAuthToken()
+    }
+  }, [userQuery.isError])
 
   const isLogged = Boolean(
     userQuery.data && !('error' in userQuery.data) && !!userQuery.data?.id,

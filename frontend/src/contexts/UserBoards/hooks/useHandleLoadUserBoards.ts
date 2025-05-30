@@ -86,8 +86,6 @@ export async function handleLoadUserBoards({
       nodes: flowInstance.getNodes(),
       edges: flowInstance.getEdges(),
     })
-    /** Temp */
-    console.log('setter 5')
     setCurrentUserBoardId(data.id)
     showNotificationSuccess({
       title: 'Connected to the cloud',
@@ -104,8 +102,6 @@ export async function handleLoadUserBoards({
       nodes: flowInstance.getNodes(),
       edges: flowInstance.getEdges(),
     })
-    /** Temp */
-    console.log('setter 2')
     setCurrentUserBoardId(data.id)
     showNotificationSuccess({
       title: "You're in !",
@@ -113,8 +109,6 @@ export async function handleLoadUserBoards({
     })
   } else {
     // If user has boards, load the first one
-    /** Temp */
-    console.log('setter 3')
     setCurrentUserBoardId(userBoards[0].id)
     showNotificationSuccess({
       title: 'Welcome back',

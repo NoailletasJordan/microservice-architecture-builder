@@ -1,5 +1,4 @@
 import { useLocalStorage } from '@mantine/hooks'
-import { useQueryClient } from '@tanstack/react-query'
 import { ReactNode, useCallback } from 'react'
 import {
   AUTH_TOKEN_KEY,
@@ -14,16 +13,14 @@ export default function UserProvider({ children }: { children: ReactNode }) {
     key: AUTH_TOKEN_KEY,
   })
   const { userQuery, isLogged } = useUser({ removeAuthToken })
-  const queryClient = useQueryClient()
 
   useHandleUserGoogleLogin({
     storeInLocalStorage: (token) => setAuthToken(token),
   })
 
   const handleLogout = useCallback(() => {
-    queryClient.setQueryData(['user', authToken], undefined)
     removeAuthToken()
-  }, [authToken, queryClient, removeAuthToken])
+  }, [removeAuthToken])
 
   return (
     <userContext.Provider

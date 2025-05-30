@@ -4,10 +4,9 @@ import { useEffect, useState } from 'react'
 
 interface Props {
   artboard: string
-  showInitialLoader: boolean
 }
 
-export default function Canva({ showInitialLoader, artboard }: Props) {
+export default function Canva({ artboard }: Props) {
   const [isRiveLoading, setIsRiveLoading] = useState(true)
   const { rive, RiveComponent } = useRive({
     src: '/onBoarding/mas.riv',
@@ -18,13 +17,10 @@ export default function Canva({ showInitialLoader, artboard }: Props) {
 
   useEffect(() => {
     if (rive) {
-      if (showInitialLoader) rive.pause()
-      else {
-        rive.play()
-        setIsRiveLoading(false)
-      }
+      rive.play()
+      setIsRiveLoading(false)
     }
-  }, [rive, showInitialLoader])
+  }, [rive])
 
   return (
     <>

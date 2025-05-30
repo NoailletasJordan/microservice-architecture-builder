@@ -13,12 +13,17 @@ export function useUserBoards() {
   return useQuery<BackendQueryResponse<TBoardModel[]>>({
     enabled: false,
     queryKey,
-    queryFn: () =>
-      fetch(`${import.meta.env.VITE_API_URL}/api/board`, {
+    queryFn: async () => {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/board`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
-      }).then((res) => res.json()),
+      })
+
+      if (!res.ok) throw new Error('Failed to fetch user boards')
+      const result = await res.json()
+      return result
+    },
     staleTime: Infinity,
   })
 }

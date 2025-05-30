@@ -4,6 +4,7 @@ import { boardDataContext } from '@/contexts/BoardData/constants'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
 import { userContext } from '@/contexts/User/constants'
+import { userBoardsContext } from '@/contexts/UserBoards/constants'
 import { Box } from '@mantine/core'
 import { useDisclosure, useElementSize } from '@mantine/hooks'
 import { cloneDeep, omit } from 'lodash'
@@ -16,6 +17,7 @@ import ReactFlow, {
   EdgeTypes,
   NodeDragHandler,
   NodeTypes,
+  Panel,
   addEdge,
   useReactFlow,
   useStore,
@@ -40,13 +42,13 @@ import CustomNode from './components/CustomNode/'
 import DeleteModal from './components/DeleteModal'
 import DemoPanel from './components/DemoPanel'
 import DraggableGhost from './components/DraggableGhost/index'
-import LoadUrlBoardModal from './components/LoadUrlBoardModal/'
 import DemoModal from './components/OnboardingModal'
 import PrimaryActionsPanel from './components/PrimaryActionsPanel'
 import Settings from './components/Settings/index'
 import ShareModal from './components/ShareModal'
 import Toolbar from './components/Toolbar'
 import UserBoards from './components/UserBoards'
+import LoadUrlBoardModal from './services/LoadUrlBoardModal'
 
 const nodeTypes: NodeTypes = {
   service: CustomNode,
@@ -59,11 +61,7 @@ const edgeTypes: EdgeTypes = {
 const preventScrollbarOnPan = { overflow: 'hidden' }
 const droppableType = 'board'
 
-interface Props {
-  showInitialLoader: boolean
-}
-
-export default function Board({ showInitialLoader }: Props) {
+export default function Board() {
   const { showGuidanceTexts, showOnboarding, updateShowOnboarding } =
     useContext(onBoardingContext)
   const { nodes, setNodes, onNodesChange, edges, onEdgesChange, setEdges } =
@@ -188,6 +186,7 @@ export default function Board({ showInitialLoader }: Props) {
             <PrimaryActionsPanel openShareModal={shareModalHanders.open} />
             {authToken && <UserBoards />}
             <DraggableGhost />
+            <Temp />
           </Box>
         </DroppableArea>
       </DroppableHintProvider>
@@ -203,10 +202,27 @@ export default function Board({ showInitialLoader }: Props) {
       />
       {boardInitialized && <LoadUrlBoardModal nodes={nodes} />}
       <DemoModal
-        showInitialLoader={showInitialLoader}
         close={() => updateShowOnboarding(false)}
         opened={showOnboarding}
       />
     </>
+  )
+}
+
+function Temp() {
+  // temp
+  const frontFullyLoaded = true
+  const { isLogged, userQuery } = useContext(userContext)
+  const { currentUserBoardId } = useContext(userBoardsContext)
+  return (
+    <Panel position="bottom-center">
+      <div>
+        isLogged : {String(isLogged)}
+        <br />
+        currentBoardId: {currentUserBoardId}
+        <br />
+        status: {userQuery?.status}
+      </div>
+    </Panel>
   )
 }

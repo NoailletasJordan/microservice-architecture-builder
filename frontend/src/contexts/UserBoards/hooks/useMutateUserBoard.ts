@@ -71,8 +71,6 @@ export function useMutateUserBoard({
 
         if (currentBoardIndex === deleteBoardIndex) {
           const nextIndex = (currentBoardIndex + 1) % boards.length
-          /** Temp */
-          console.log('setter 4')
           setCurrentUserBoardId(boards[nextIndex].id)
         }
       }

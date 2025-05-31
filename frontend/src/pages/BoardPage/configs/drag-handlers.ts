@@ -23,6 +23,7 @@ type DragEventHandler = (
 
 export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
   board: (event, flowInstance) => {
+    console.log('calledDragEndConfig')
     const centerX =
       event.active.rect.current.translated!.left - CARD_WIDTH * 0.5
     const centerY = event.active.rect.current.translated!.top

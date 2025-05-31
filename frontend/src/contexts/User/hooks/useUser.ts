@@ -10,7 +10,6 @@ export function useUser({ removeAuthToken }: { removeAuthToken: () => void }) {
   const queryClient = useQueryClient()
 
   const userQuery = useQuery<BackendQueryResponse<IUser>>({
-    // enabled: !!authToken,
     queryKey: ['user', authToken],
     queryFn: async ({ queryKey }) => {
       const [_, authToken] = queryKey

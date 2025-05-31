@@ -10,7 +10,6 @@ export interface BoardDataContext {
   setEdges: React.Dispatch<React.SetStateAction<TCustomEdge[]>>
   onNodesChange: OnNodesChange
   onEdgesChange: OnEdgesChange
-  boardStatus: 'loading' | 'success' | 'error'
 }
 
 export const boardDataContext = createContext<BoardDataContext>({
@@ -20,5 +19,4 @@ export const boardDataContext = createContext<BoardDataContext>({
   setEdges: () => {},
   onNodesChange: () => {},
   onEdgesChange: () => {},
-  boardStatus: 'loading',
 })

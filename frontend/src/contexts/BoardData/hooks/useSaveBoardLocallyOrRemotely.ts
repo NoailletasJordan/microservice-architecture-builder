@@ -8,9 +8,9 @@ import {
 } from '@/pages/BoardPage/configs/constants'
 import { storeInLocal } from '@/pages/BoardPage/configs/helpers'
 import { useContext, useEffect } from 'react'
-import { BoardDataContext } from '../constants'
 
 const DEBOUNCE_SAVE_MS = 600
+
 export function useSaveBoardLocallyOrRemotely({
   nodes,
   edges,
@@ -18,7 +18,7 @@ export function useSaveBoardLocallyOrRemotely({
 }: {
   nodes: TCustomNode[]
   edges: TCustomEdge[]
-  boardStatus: BoardDataContext['boardStatus']
+  boardStatus: 'pending' | 'success' | 'error'
 }) {
   const { isLogged } = useContext(userContext)
   const { currentUserBoardId } = useContext(userBoardsContext)

@@ -7,7 +7,7 @@ import { userContext } from '@/contexts/User/constants'
 import { userBoardsContext } from '@/contexts/UserBoards/constants'
 import { Box } from '@mantine/core'
 import { useDisclosure, useElementSize } from '@mantine/hooks'
-import { cloneDeep, omit } from 'lodash'
+import { omit } from 'lodash'
 import { useCallback, useContext, useMemo } from 'react'
 import ReactFlow, {
   Background,
@@ -91,7 +91,7 @@ export default function Board() {
     // todo one clonedeep possible ?
     setNodes((oldNodes) =>
       oldNodes.map((compNode) =>
-        compNode.id === targetNode.id ? cloneDeep(targetNode) : compNode,
+        compNode.id === targetNode.id ? targetNode : compNode,
       ),
     )
   }

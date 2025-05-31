@@ -1,13 +1,11 @@
 import { ReactNode } from 'react'
 import { boardDataContext } from './constants'
-import {
-  useNodesAndEdges,
-  useOnEdgesChange,
-  useOnNodesChange,
-  useSetEdges,
-  useSetNodes,
-} from './hooks/useNodesAndEdges'
+import { useNodesAndEdges } from './hooks/useNodesAndEdges'
+import { useOnEdgesChange } from './hooks/useOnEdgesChange'
+import { useOnNodesChange } from './hooks/useOnNodesChange'
 import { useSaveBoardLocallyOrRemotely } from './hooks/useSaveBoardLocallyOrRemotely'
+import { useSetEdges } from './hooks/useSetEdges'
+import { useSetNodes } from './hooks/useSetNodes'
 
 export default function BoardDataProvider({
   children,
@@ -23,6 +21,7 @@ export default function BoardDataProvider({
 
   useSaveBoardLocallyOrRemotely({ nodes, edges, boardStatus })
 
+  console.log('nodes:', nodes)
   return (
     <boardDataContext.Provider
       value={{

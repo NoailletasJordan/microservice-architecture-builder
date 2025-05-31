@@ -1,26 +1,10 @@
 import { AUTH_TOKEN_KEY } from '@/contexts/User/constants'
-import { TBoardModel, userBoardsContext } from '@/contexts/UserBoards/constants'
-import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
-import {
-  STORAGE_DATA_INDEX_KEY,
-  TCustomNode,
-} from '@/pages/BoardPage/configs/constants'
+import { TBoardModel } from '@/contexts/UserBoards/constants'
+import { STORAGE_DATA_INDEX_KEY } from '@/pages/BoardPage/configs/constants'
 import { readLocalStorageValue } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useContext } from 'react'
-import {
-  applyEdgeChanges,
-  applyNodeChanges,
-  OnEdgesChange,
-  OnNodesChange,
-  useReactFlow,
-} from 'reactflow'
-
-function useQueryKey() {
-  const { currentUserBoardId } = useContext(userBoardsContext)
-
-  return ['board', currentUserBoardId]
-}
+import { useReactFlow } from 'reactflow'
+import { useQueryKey } from './useQueryKey'
 
 export function useNodesAndEdges() {
   const FIT_VIEW_DURATION = 700
@@ -85,109 +69,4 @@ export function useNodesAndEdges() {
     edges,
     boardStatus,
   }
-}
-
-type TBoardDataStore = {
-  nodes: TCustomNode[]
-  edges: TCustomEdge[]
-}
-
-export function useSetEdges() {
-  const queryKey = useQueryKey()
-  const queryClient = useQueryClient()
-
-  const setEdges = (
-    callbackOrEdges:
-      | ((oldEdges: TCustomEdge[]) => TCustomEdge[])
-      | TCustomEdge[],
-  ) => {
-    const oldData = queryClient.getQueryData(queryKey) as TBoardDataStore
-    const newEdges =
-      typeof callbackOrEdges === 'function'
-        ? callbackOrEdges(oldData.edges)
-        : callbackOrEdges
-    const newState = JSON.parse(JSON.stringify({ ...oldData, edges: newEdges }))
-
-    queryClient.setQueryData(queryKey, newState)
-  }
-
-  return setEdges
-}
-
-export function useSetNodes() {
-  const queryKey = useQueryKey()
-  const queryClient = useQueryClient()
-
-  const setNodes = (
-    callbackOrNodes:
-      | ((oldNodes: TCustomNode[]) => TCustomNode[])
-      | TCustomNode[],
-  ) => {
-    const oldData = queryClient.getQueryData(queryKey) as TBoardDataStore
-    const newNodes =
-      typeof callbackOrNodes === 'function'
-        ? callbackOrNodes(oldData.nodes)
-        : callbackOrNodes
-    const newState = JSON.parse(JSON.stringify({ ...oldData, nodes: newNodes }))
-
-    queryClient.setQueryData(queryKey, newState)
-  }
-
-  return setNodes
-}
-
-export function useOnNodesChange(): OnNodesChange {
-  const setNodes = useSetNodes()
-
-  return (changes) => setNodes((nds) => applyNodeChanges(changes, nds))
-}
-
-export function useOnEdgesChange(): OnEdgesChange {
-  const setEdges = useSetEdges()
-
-  return (changes) => setEdges((nds) => applyEdgeChanges(changes, nds))
-}
-
-export function useGetNode() {
-  const queryKey = useQueryKey()
-  const queryClient = useQueryClient()
-
-  function getNodes(id: TCustomNode['id']) {
-    const { nodes } = queryClient.getQueryData(queryKey) as TBoardDataStore
-    return nodes.find((node) => node.id === id)
-  }
-  return getNodes
-}
-
-export function useGetEdge() {
-  const queryKey = useQueryKey()
-  const queryClient = useQueryClient()
-
-  function getEdge(id: TCustomEdge['id']) {
-    const { edges } = queryClient.getQueryData(queryKey) as TBoardDataStore
-    return edges.find((edge) => edge.id === id)
-  }
-  return getEdge
-}
-
-export function useGetNodes() {
-  const queryKey = useQueryKey()
-  const queryClient = useQueryClient()
-
-  function getNodes() {
-    const { nodes } = queryClient.getQueryData(queryKey) as TBoardDataStore
-    return nodes
-  }
-  return getNodes
-}
-
-export function useGetEdges() {
-  const queryKey = useQueryKey()
-  const queryClient = useQueryClient()
-
-  function getEdges() {
-    const { edges } = queryClient.getQueryData(queryKey) as TBoardDataStore
-    return edges
-  }
-  return getEdges
 }

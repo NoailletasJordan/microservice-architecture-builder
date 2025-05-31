@@ -14,11 +14,11 @@ const DEBOUNCE_SAVE_MS = 600
 export function useSaveBoardLocallyOrRemotely({
   nodes,
   edges,
-  boardStatus,
+  requestStatus,
 }: {
   nodes: TCustomNode[]
   edges: TCustomEdge[]
-  boardStatus: 'pending' | 'success' | 'error'
+  requestStatus: 'pending' | 'success' | 'error'
 }) {
   const { isLogged } = useContext(userContext)
   const { currentUserBoardId } = useContext(userBoardsContext)
@@ -27,14 +27,17 @@ export function useSaveBoardLocallyOrRemotely({
   const nonReactiveState = useEffectEventP(() => ({
     currentUserBoardId,
     update,
+    requestStatus,
+    isLogged,
   }))
 
   // Save board, debounced
   useEffect(() => {
-    if (boardStatus !== 'success') return
+    const { requestStatus, currentUserBoardId, update, isLogged } =
+      nonReactiveState()
+    if (requestStatus !== 'success') return
     const handle = setTimeout(() => {
       const dataToStore = getDataToStoreObject(nodes, edges)
-      const { currentUserBoardId, update } = nonReactiveState()
       if (isLogged && currentUserBoardId) {
         update({
           boardId: currentUserBoardId,
@@ -48,5 +51,5 @@ export function useSaveBoardLocallyOrRemotely({
     return () => {
       clearTimeout?.(handle)
     }
-  }, [boardStatus, nodes, edges, isLogged, nonReactiveState])
+  }, [nodes, edges, nonReactiveState])
 }

@@ -4,8 +4,7 @@ import { boardDataContext } from '@/contexts/BoardData/constants'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
 import { userContext } from '@/contexts/User/constants'
-import { userBoardsContext } from '@/contexts/UserBoards/constants'
-import { Box } from '@mantine/core'
+import { Box, Loader } from '@mantine/core'
 import { useDisclosure, useElementSize } from '@mantine/hooks'
 import { omit } from 'lodash'
 import { useCallback, useContext, useMemo } from 'react'
@@ -88,7 +87,6 @@ export default function Board() {
       newSubService,
     ]
 
-    // todo one clonedeep possible ?
     setNodes((oldNodes) =>
       oldNodes.map((compNode) =>
         compNode.id === targetNode.id ? targetNode : compNode,
@@ -186,7 +184,7 @@ export default function Board() {
             <PrimaryActionsPanel openShareModal={shareModalHanders.open} />
             {authToken && <UserBoards />}
             <DraggableGhost />
-            <Temp />
+            <BoardLoadingState />
           </Box>
         </DroppableArea>
       </DroppableHintProvider>
@@ -209,20 +207,15 @@ export default function Board() {
   )
 }
 
-function Temp() {
-  // temp
-  const frontFullyLoaded = true
-  const { isLogged, userQuery } = useContext(userContext)
-  const { currentUserBoardId } = useContext(userBoardsContext)
+function BoardLoadingState() {
+  const { fetchStatus } = useContext(boardDataContext)
   return (
     <Panel position="bottom-center">
-      <div>
-        isLogged : {String(isLogged)}
-        <br />
-        currentBoardId: {currentUserBoardId}
-        <br />
-        status: {userQuery?.status}
-      </div>
+      {fetchStatus === 'fetching' && (
+        <Box bg="green" p="md">
+          <Loader />
+        </Box>
+      )}
     </Panel>
   )
 }

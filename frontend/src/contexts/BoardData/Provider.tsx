@@ -12,16 +12,15 @@ export default function BoardDataProvider({
 }: {
   children: ReactNode
 }) {
-  const { edges, nodes, boardStatus } = useNodesAndEdges()
+  const { edges, nodes, fetchStatus, requestStatus } = useNodesAndEdges()
 
   const setNodes = useSetNodes()
   const setEdges = useSetEdges()
   const onNodesChange = useOnNodesChange()
   const onEdgesChange = useOnEdgesChange()
 
-  useSaveBoardLocallyOrRemotely({ nodes, edges, boardStatus })
+  useSaveBoardLocallyOrRemotely({ nodes, edges, requestStatus })
 
-  console.log('nodes:', nodes)
   return (
     <boardDataContext.Provider
       value={{
@@ -31,6 +30,7 @@ export default function BoardDataProvider({
         setEdges,
         onNodesChange,
         onEdgesChange,
+        fetchStatus,
       }}
     >
       {children}

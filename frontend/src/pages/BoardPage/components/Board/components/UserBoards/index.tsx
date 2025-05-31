@@ -1,4 +1,6 @@
 import { TBoardModel, userBoardsContext } from '@/contexts/UserBoards/constants'
+import { MutationUserBoard } from '@/contexts/UserBoards/hooks/useMutateUserBoard'
+import { useQueryKey } from '@/contexts/UserBoards/hooks/useQueryKey'
 import {
   ActionIcon,
   Card,
@@ -9,6 +11,7 @@ import {
   Text,
 } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
+import { useMutationState } from '@tanstack/react-query'
 import { useContext } from 'react'
 import { Panel } from 'reactflow'
 import { ICON_STYLE } from '../../../../configs/constants'
@@ -19,6 +22,18 @@ export default function UserBoards() {
     useContext(userBoardsContext)
 
   const { create } = useContext(userBoardsContext)
+
+  const isCreatingBoard = useMutationState({
+    filters: {
+      mutationKey: useQueryKey(),
+      status: 'pending',
+      predicate: (m) => {
+        const variables = m.state.variables as MutationUserBoard
+        return variables.method === 'POST'
+      },
+    },
+    select: (m) => m.state.variables,
+  }) as MutationUserBoard[]
 
   let component = null
   if (boardsQuery?.isError) component = null
@@ -35,15 +50,13 @@ export default function UserBoards() {
           <Text>Boards</Text>
           <Text>{currentUserBoardId}</Text>
           <ActionIcon
-            onClick={async () => {
-              const data = await create({
+            loading={isCreatingBoard.length > 0}
+            onClick={() => {
+              create({
                 title: 'My added board',
                 nodes: [],
                 edges: [],
               })
-              if (!('error' in data)) {
-                setCurrentUserBoardId(data.id)
-              }
             }}
           >
             <IconPlus style={ICON_STYLE} />

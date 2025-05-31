@@ -1,5 +1,6 @@
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
+import { FetchStatus } from '@tanstack/react-query'
 import { createContext } from 'react'
 import { OnEdgesChange, OnNodesChange } from 'reactflow'
 
@@ -10,6 +11,7 @@ export interface BoardDataContext {
   setEdges: React.Dispatch<React.SetStateAction<TCustomEdge[]>>
   onNodesChange: OnNodesChange
   onEdgesChange: OnEdgesChange
+  fetchStatus: FetchStatus
 }
 
 export const boardDataContext = createContext<BoardDataContext>({
@@ -19,4 +21,5 @@ export const boardDataContext = createContext<BoardDataContext>({
   setEdges: () => {},
   onNodesChange: () => {},
   onEdgesChange: () => {},
+  fetchStatus: 'idle',
 })

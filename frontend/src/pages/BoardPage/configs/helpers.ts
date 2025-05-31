@@ -1,7 +1,6 @@
 import { ReactFlowInstance, XYPosition } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 
-import { cloneDeep } from 'lodash'
 import { IConnexion } from '../components/Board/components/connexionContants'
 import {
   ILocalStorage,
@@ -85,7 +84,7 @@ export const handleDeleteSubservice = (
         (compSubService) => compSubService.id != deleteId,
       )
 
-      const newCompNode = cloneDeep(compNode)
+      const newCompNode = compNode
       newCompNode.data.subServices = filteredSubServices
 
       return newCompNode
@@ -100,7 +99,7 @@ export const handleUpdateNode = (
 ): void => {
   flowInstance.setNodes((oldNodes) =>
     oldNodes.map((compNode) => {
-      return compNode.id === serviceId ? cloneDeep(newNode) : compNode
+      return compNode.id === serviceId ? newNode : compNode
     }),
   )
 }
@@ -114,7 +113,7 @@ export const handleUpdateEdge = (
     edges.map((compEdge) => {
       if (compEdge.id !== connexionId) return compEdge
 
-      const edgeCopy = cloneDeep(compEdge)
+      const edgeCopy = compEdge
       edgeCopy.data = { ...edgeCopy.data, ...partialEdge }
       return edgeCopy
     }),

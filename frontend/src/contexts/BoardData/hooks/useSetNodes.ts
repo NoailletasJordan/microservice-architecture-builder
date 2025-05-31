@@ -18,7 +18,6 @@ export function useSetNodes() {
       | TCustomNode[],
   ) => {
     const oldData = queryClient.getQueryData(queryKey) as TBoardDataStore
-    console.log('oldData:', oldData)
     const newNodes =
       typeof callbackOrNodes === 'function'
         ? callbackOrNodes(oldData.nodes)

@@ -12,7 +12,11 @@ export function useNodesAndEdges() {
   const queryKey = useQueryKey()
   const queryClient = useQueryClient()
 
-  const { status: boardStatus, data } = useQuery({
+  const {
+    data,
+    fetchStatus,
+    status: requestStatus,
+  } = useQuery({
     queryKey,
     placeholderData: {
       nodes: [],
@@ -67,6 +71,7 @@ export function useNodesAndEdges() {
   return {
     nodes,
     edges,
-    boardStatus,
+    fetchStatus,
+    requestStatus,
   }
 }

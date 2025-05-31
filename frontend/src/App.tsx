@@ -96,7 +96,7 @@ export default function App() {
                 </BoardDataProvider>
               </UserBoardsProvider>
             </UserProvider>
-            <ReactQueryDevtools initialIsOpen={false} />
+            <ReactQueryDevtools initialIsOpen={true} />
           </ReactQueryProvider>
         </ReactFlowProvider>
       </PostHogProvider>

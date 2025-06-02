@@ -96,7 +96,12 @@ export default function App() {
                 </BoardDataProvider>
               </UserBoardsProvider>
             </UserProvider>
-            <ReactQueryDevtools initialIsOpen={true} />
+            {process.env.NODE_ENV === 'development' && (
+              <ReactQueryDevtools
+                buttonPosition="bottom-left"
+                initialIsOpen={false}
+              />
+            )}
           </ReactQueryProvider>
         </ReactFlowProvider>
       </PostHogProvider>

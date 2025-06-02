@@ -6,7 +6,7 @@ import { onBoardingContext } from '@/contexts/Onboarding/constants'
 import { userContext } from '@/contexts/User/constants'
 import { Box, Loader } from '@mantine/core'
 import { useDisclosure, useElementSize } from '@mantine/hooks'
-import { useContext, useMemo } from 'react'
+import { useContext } from 'react'
 import ReactFlow, {
   Background,
   BackgroundVariant,
@@ -14,7 +14,6 @@ import ReactFlow, {
   EdgeTypes,
   NodeTypes,
   Panel,
-  useStore,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { v4 } from 'uuid'
@@ -69,9 +68,6 @@ export default function Board() {
   const onConnect = useOnConnect({ edges })
   const onNodeDragEnd = useOnNodeDragEnd()
 
-  // Dirty fix on async loading fitview behavior
-  const loadedWidthNodes = useMemo(() => !!nodes.length, [])
-  const boardInitialized = useStore((state) => !!state.height)
   const { authToken } = useContext(userContext)
 
   return (
@@ -95,7 +91,6 @@ export default function Board() {
             <ReactFlow
               minZoom={1}
               maxZoom={1}
-              fitView={loadedWidthNodes && boardInitialized}
               onConnect={onConnect}
               nodes={nodes}
               edges={edges}
@@ -142,7 +137,7 @@ export default function Board() {
         opened={showShareModal}
         close={shareModalHanders.close}
       />
-      {boardInitialized && <LoadUrlBoardModal />}
+      <LoadUrlBoardModal />
       <DemoModal
         close={() => updateShowOnboarding(false)}
         opened={showOnboarding}

@@ -64,7 +64,9 @@ testWithNodesSetup('should delete an edge', async ({ page }) => {
 testWithNodesSetup('should reset board', async ({ page }) => {
   await page.getByTestId('button-settings').click()
   await page.getByText('Reset the board').click()
-  await page.getByRole('button', { name: 'Yes, reset the board' }).click()
+  await page
+    .getByRole('button', { name: 'Yes, reset the board', includeHidden: true })
+    .click()
   await page.waitForTimeout(100)
   await expect(page.getByTestId(/node-type-/)).toHaveCount(0)
 })

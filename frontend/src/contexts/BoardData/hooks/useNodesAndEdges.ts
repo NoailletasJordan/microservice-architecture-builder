@@ -1,6 +1,10 @@
 import { AUTH_TOKEN_KEY } from '@/contexts/User/constants'
 import { TBoardModel } from '@/contexts/UserBoards/constants'
-import { STORAGE_DATA_INDEX_KEY } from '@/pages/BoardPage/configs/constants'
+import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
+import {
+  STORAGE_DATA_INDEX_KEY,
+  TCustomNode,
+} from '@/pages/BoardPage/configs/constants'
 import { readLocalStorageValue } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useQueryKey } from './useQueryKey'
@@ -9,15 +13,11 @@ export function useNodesAndEdges() {
   const queryKey = useQueryKey()
   const queryClient = useQueryClient()
 
-  const {
-    data,
-    fetchStatus,
-    status: requestStatus,
-  } = useQuery({
+  const boardDataQuery = useQuery({
     queryKey,
     placeholderData: {
-      nodes: [],
-      edges: [],
+      nodes: [] as TCustomNode[],
+      edges: [] as TCustomEdge[],
     },
     queryFn: async ({ queryKey }) => {
       const [_, currentUserBoardId] = queryKey
@@ -59,14 +59,13 @@ export function useNodesAndEdges() {
     },
     staleTime: Infinity,
   })
-
+  const { data } = boardDataQuery
   const nodes = data?.nodes || []
   const edges = data?.edges || []
 
   return {
     nodes,
     edges,
-    fetchStatus,
-    requestStatus,
+    boardDataQuery,
   }
 }

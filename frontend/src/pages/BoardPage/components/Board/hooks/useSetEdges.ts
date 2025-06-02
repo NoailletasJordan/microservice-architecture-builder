@@ -1,6 +1,6 @@
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { useQueryClient } from '@tanstack/react-query'
-import { useQueryKey } from './useQueryKey'
+import { useQueryKey } from '../../../../../contexts/BoardData/hooks/useQueryKey'
 import { TBoardDataStore } from './useSetNodes'
 
 export function useSetEdges() {

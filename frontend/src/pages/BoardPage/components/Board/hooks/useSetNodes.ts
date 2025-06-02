@@ -1,7 +1,7 @@
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { useQueryClient } from '@tanstack/react-query'
-import { useQueryKey } from './useQueryKey'
+import { useQueryKey } from '../../../../../contexts/BoardData/hooks/useQueryKey'
 
 export type TBoardDataStore = {
   nodes: TCustomNode[]

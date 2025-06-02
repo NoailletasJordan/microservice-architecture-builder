@@ -6,35 +6,25 @@ import { onBoardingContext } from '@/contexts/Onboarding/constants'
 import { userContext } from '@/contexts/User/constants'
 import { Box, Loader } from '@mantine/core'
 import { useDisclosure, useElementSize } from '@mantine/hooks'
-import { omit } from 'lodash'
-import { useCallback, useContext, useMemo } from 'react'
+import { useContext, useMemo } from 'react'
 import ReactFlow, {
   Background,
   BackgroundVariant,
-  Connection,
   ConnectionMode,
   EdgeTypes,
-  NodeDragHandler,
   NodeTypes,
   Panel,
-  addEdge,
-  useReactFlow,
   useStore,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
-import { v4 as uuidv4, v4 } from 'uuid'
+import { v4 } from 'uuid'
 import DroppableArea from '../../../../components/DroppableArea/index'
 import { clickCanvaContext } from '../../../../contexts/ClickCanvaCapture/constants'
 import {
-  IService,
   NO_DRAG_REACTFLOW_CLASS,
   NO_PAN_REACTFLOW_CLASS,
   NO_WhEEL_REACTFLOW_CLASS,
-  SubService,
-  TCustomNode,
 } from '../../configs/constants'
-import { getNodeOverlapped, handleDeleteNode } from '../../configs/helpers'
-import { IConnexion, TCustomEdge } from './components/connexionContants'
 import ConnexionPreview from './components/ConnexionPreview'
 import CustomEdge from './components/CustomEdge'
 import CustomNode from './components/CustomNode/'
@@ -47,6 +37,10 @@ import Settings from './components/Settings/index'
 import ShareModal from './components/ShareModal'
 import Toolbar from './components/Toolbar'
 import UserBoards from './components/UserBoards'
+import { useOnNodeDragEnd } from './hooks/onNodeDragEnd'
+import { useOnConnect } from './hooks/useOnConnect'
+import { useOnEdgesChange } from './hooks/useOnEdgesChange'
+import { useOnNodesChange } from './hooks/useOnNodesChange'
 import LoadUrlBoardModal from './services/LoadUrlBoardModal'
 
 const nodeTypes: NodeTypes = {
@@ -63,67 +57,17 @@ const droppableType = 'board'
 export default function Board() {
   const { showGuidanceTexts, showOnboarding, updateShowOnboarding } =
     useContext(onBoardingContext)
-  const { nodes, setNodes, onNodesChange, edges, onEdgesChange, setEdges } =
-    useContext(boardDataContext)
+  const { nodes, edges } = useContext(boardDataContext)
   const [showResetBoardModal, resetModalHandlers] = useDisclosure(false)
   const [showShareModal, shareModalHanders] = useDisclosure(false)
 
   const { ref, height, width } = useElementSize()
-  const flowInstance = useReactFlow<IService, IConnexion>()
   const { triggerClickCanva } = useContext(clickCanvaContext)
 
-  const onNodeDragEnd: NodeDragHandler = (_event, node: TCustomNode) => {
-    const targetNode = getNodeOverlapped(node, nodes)
-    if (!targetNode) return
-
-    // Delete node and add it as a subService
-    handleDeleteNode(node.id, flowInstance)
-    const newSubService: SubService = {
-      ...omit(node.data, 'subServices'),
-      parentId: targetNode.data.id,
-    }
-    targetNode.data.subServices = [
-      ...targetNode.data.subServices,
-      newSubService,
-    ]
-
-    setNodes((oldNodes) =>
-      oldNodes.map((compNode) =>
-        compNode.id === targetNode.id ? targetNode : compNode,
-      ),
-    )
-  }
-
-  const onConnect = useCallback(
-    ({ source, sourceHandle, target, targetHandle }: Connection) => {
-      const id = uuidv4()
-      const newEdge: TCustomEdge = {
-        id,
-        source: source!,
-        target: target!,
-        sourceHandle,
-        targetHandle,
-        type: 'custom',
-        data: {
-          id,
-          direction: 'duplex',
-          note: '',
-        },
-      }
-
-      const edgeAlleadyExist = !!edges.filter(
-        (compEdge) =>
-          (compEdge.source === source || compEdge.source === target) &&
-          (compEdge.target === source || compEdge.target === target),
-      ).length
-
-      const connectToSelf = source === target
-      if (edgeAlleadyExist || connectToSelf) return
-
-      setEdges((oldEdges) => addEdge(newEdge, oldEdges))
-    },
-    [setEdges, edges],
-  )
+  const onNodesChange = useOnNodesChange()
+  const onEdgesChange = useOnEdgesChange()
+  const onConnect = useOnConnect({ edges })
+  const onNodeDragEnd = useOnNodeDragEnd()
 
   // Dirty fix on async loading fitview behavior
   const loadedWidthNodes = useMemo(() => !!nodes.length, [])
@@ -198,7 +142,7 @@ export default function Board() {
         opened={showShareModal}
         close={shareModalHanders.close}
       />
-      {boardInitialized && <LoadUrlBoardModal nodes={nodes} />}
+      {boardInitialized && <LoadUrlBoardModal />}
       <DemoModal
         close={() => updateShowOnboarding(false)}
         opened={showOnboarding}
@@ -208,10 +152,10 @@ export default function Board() {
 }
 
 function BoardLoadingState() {
-  const { fetchStatus } = useContext(boardDataContext)
+  const { boardDataQuery } = useContext(boardDataContext)
   return (
     <Panel position="bottom-center">
-      {fetchStatus === 'fetching' && (
+      {boardDataQuery?.fetchStatus === 'fetching' && (
         <Box bg="green" p="md">
           <Loader />
         </Box>

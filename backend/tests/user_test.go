@@ -6,14 +6,15 @@ import (
 	"strings"
 	"testing"
 
-	"microservice-architecture-builder/backend/model"
 	"microservice-architecture-builder/backend/helpers"
+	"microservice-architecture-builder/backend/model"
 	"net/http/httptest"
 )
 
 func TestGetMe_Authorized(t *testing.T) {
-	ts := NewTestServer()
+	ts, terminateConnection := NewTestServer(t)
 	defer ts.Close()
+	defer terminateConnection()
 
 	user := createTestUser(t, ts)
 
@@ -31,8 +32,9 @@ func TestGetMe_Authorized(t *testing.T) {
 }
 
 func TestGetMe_Unauthorized(t *testing.T) {
-	ts := NewTestServer()
+	ts, terminateConnection := NewTestServer(t)
 	defer ts.Close()
+	defer terminateConnection()
 
 	t.Run("No Authorization header", func(t *testing.T) {
 		rr := makeRequest(t, ts, "GET", "/api/users/me", nil, nil)
@@ -122,8 +124,9 @@ func TestGetMe_Unauthorized(t *testing.T) {
 }
 
 func TestGoogleCallbackHandler_MissingCode(t *testing.T) {
-	ts := NewTestServer()
+	ts, terminateConnection := NewTestServer(t)
 	defer ts.Close()
+	defer terminateConnection()
 
 	r := httptest.NewRequest("GET", "/auth/google/callback", nil)
 	rw := httptest.NewRecorder()

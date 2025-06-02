@@ -112,7 +112,7 @@ func NewServer(boardController *controller.BoardController, userController *cont
 // NewPostgresDB creates a PostgresStore. DSN must be provided, or it panics.
 func NewPostgresDB(dsn string) (*sql.DB, error) {
 	if dsn == "" {
-		panic("Postgres DSN must be provided to NewPostgresStore")
+		panic("Postgres DSN must be provided to NewPostgresDB")
 	}
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {

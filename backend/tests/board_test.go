@@ -3,17 +3,15 @@ package tests
 import (
 	"encoding/json"
 	"net/http"
-	"os"
 	"strings"
 	"testing"
 
-	"microservice-architecture-builder/backend/model"
 	"microservice-architecture-builder/backend/helpers"
-	"microservice-architecture-builder/backend/server"
+	"microservice-architecture-builder/backend/model"
 )
 
 func TestGetBoard(t *testing.T) {
-	ts := NewTestServer()
+	ts, _ := NewTestServer(t)
 	defer ts.Close()
 
 	user := createTestUser(t, ts)
@@ -92,7 +90,7 @@ func TestGetBoard(t *testing.T) {
 }
 
 func TestUpdateBoard(t *testing.T) {
-	ts := NewTestServer()
+	ts, _ := NewTestServer(t)
 	defer ts.Close()
 
 	user := createTestUser(t, ts)
@@ -241,7 +239,7 @@ func TestUpdateBoard(t *testing.T) {
 }
 
 func TestDeleteBoard(t *testing.T) {
-	ts := NewTestServer()
+	ts, _ := NewTestServer(t)
 	defer ts.Close()
 
 	// Create a test board
@@ -323,10 +321,8 @@ func TestDeleteBoard(t *testing.T) {
 }
 
 func TestListBoards(t *testing.T) {
-	ts := NewTestServer()
+	ts, _ := NewTestServer(t)
 	defer ts.Close()
-
-	cleanupTestOnTables()
 
 	user := createTestUser(t, ts)
 
@@ -450,7 +446,7 @@ func TestListBoards(t *testing.T) {
 
 // TestGetBoardShareFragment tests BoardService.GetBoardShareFragment
 func TestGetBoardShareFragment(t *testing.T) {
-	ts := NewTestServer()
+	ts, _ := NewTestServer(t)
 	defer ts.Close()
 
 	user := createTestUser(t, ts)
@@ -528,18 +524,4 @@ func TestGetBoardShareFragment(t *testing.T) {
 	if errMsg, ok := errResp6["error"]; !ok || !strings.Contains(errMsg, helpers.ErrorMessages.NotFound) {
 		t.Errorf("Expected error containing '%s', got '%s'", helpers.ErrorMessages.NotFound, errMsg)
 	}
-}
-
-func TestMain(m *testing.M) {
-	var testDSN = os.Getenv("POSTGRES_TEST_DSN")
-	db, err := server.NewPostgresDB(testDSN)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	cleanupTestOnTables() // Clean before tests
-	code := m.Run()
-	cleanupTestOnTables() // Clean after tests
-	os.Exit(code)
 }

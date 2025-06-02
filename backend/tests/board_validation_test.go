@@ -7,13 +7,14 @@ import (
 	"strings"
 	"testing"
 
-	"microservice-architecture-builder/backend/model"
 	"microservice-architecture-builder/backend/helpers"
+	"microservice-architecture-builder/backend/model"
 )
 
 func TestBoardValidation(t *testing.T) {
-	ts := NewTestServer()
+	ts, terminateConnection := NewTestServer(t)
 	defer ts.Close()
+	defer terminateConnection()
 
 	// Create a valid user for tests that require a valid owner
 	validUser := createTestUser(t, ts)
@@ -290,8 +291,9 @@ func TestBoardValidation(t *testing.T) {
 }
 
 func TestBoardUpdateValidation(t *testing.T) {
-	ts := NewTestServer()
+	ts, terminateConnection := NewTestServer(t)
 	defer ts.Close()
+	defer terminateConnection()
 
 	// Create a test board for update tests
 	user := createTestUser(t, ts)

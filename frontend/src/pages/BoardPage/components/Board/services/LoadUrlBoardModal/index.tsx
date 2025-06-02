@@ -1,77 +1,22 @@
 import CustomModal from '@/components/CustomModal'
-import { showNotificationError, showNotificationSuccess } from '@/contants'
-import {
-  TCustomNode,
-  shareHashTocken,
-} from '@/pages/BoardPage/configs/constants'
 import { Button, Grid, Group, Space, Text, ThemeIcon } from '@mantine/core'
 import { useDisclosure, useMediaQuery } from '@mantine/hooks'
 import { IconAlertTriangle } from '@tabler/icons-react'
-import { useEffect, useRef } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { getNodesBounds, useReactFlow } from 'reactflow'
-
-interface Props {
-  nodes: TCustomNode[]
-}
+import { useCurrentHash } from './hooks/useCurrentHash'
+import { useHandleOnExternalUrl } from './hooks/useHandleOnExternalUrl'
+import { useHandleCloseModal } from './hooks/useOnHandleCloseModal'
+import { useOverwriteBoardData } from './hooks/useOverwriteBoardData'
 
 // This components needs to be called after reactFlow initialisation
-// because of "onClickOverwriteRef" function
 // otherwise "fitBounds" / "fitView" etc simply doesnt work
 
-export default function LoadLinkBoardModal({ nodes }: Props) {
+export default function LoadLinkBoardModal() {
   const [opened, modalAction] = useDisclosure(false)
+  const hash = useCurrentHash()
   const maxSM = useMediaQuery('(max-width: 768px)')
-  const location = useLocation()
-  const { hash } = location
-  const flowInstance = useReactFlow()
-  const navigate = useNavigate()
-
-  // Until useEffectEvent shipped
-  // https://react.dev/reference/react/experimental_useEffectEvent
-  const nodesRef = useRef<TCustomNode[]>([])
-  const modalActionRef = useRef(modalAction)
-  const onClickOverwriteRef = useRef<() => void>(() => null)
-
-  nodesRef.current = nodes
-  modalActionRef.current = modalAction
-  onClickOverwriteRef.current = () => {
-    try {
-      const objectString = hash.replace(shareHashTocken, '')
-      const loadedValues = JSON.parse(decodeURIComponent(objectString))
-      flowInstance.setNodes(() => loadedValues.nodes)
-      flowInstance.setEdges(() => loadedValues.edges)
-      flowInstance.fitBounds(getNodesBounds(loadedValues.nodes))
-
-      showNotificationSuccess({
-        title: 'Board loaded successfully',
-        message: '',
-      })
-    } catch (error) {
-      console.error(error)
-      showNotificationError({
-        title: 'Error loading url content',
-        message:
-          'Continuing on existing content, apologies for the inconvenience',
-      })
-    } finally {
-      handleCloseModal()
-    }
-  }
-
-  const handleCloseModal = () => {
-    modalActionRef.current.close()
-    navigate('/')
-  }
-
-  useEffect(() => {
-    const isLoadExternalURL = hash.includes(shareHashTocken)
-    if (!isLoadExternalURL) return modalActionRef.current.close()
-
-    if (nodesRef.current.length) return modalActionRef.current.open()
-
-    onClickOverwriteRef.current()
-  }, [hash])
+  const handleCloseModal = useHandleCloseModal(modalAction.close)
+  const overwriteBoardData = useOverwriteBoardData({ hash, handleCloseModal })
+  useHandleOnExternalUrl({ overwriteBoardData, hash, modalAction })
 
   return (
     <CustomModal
@@ -102,7 +47,7 @@ export default function LoadLinkBoardModal({ nodes }: Props) {
         <Button variant="outline" color="gray.11" onClick={handleCloseModal}>
           Cancel
         </Button>
-        <Button color="red.9" onClick={onClickOverwriteRef.current}>
+        <Button color="red.9" onClick={overwriteBoardData}>
           Load external board
         </Button>
       </Group>

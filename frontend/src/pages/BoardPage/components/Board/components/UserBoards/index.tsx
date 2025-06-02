@@ -18,8 +18,7 @@ import { ICON_STYLE } from '../../../../configs/constants'
 import BoardItem from './components/BoardItem'
 
 export default function UserBoards() {
-  const { boardsQuery, currentUserBoardId, setCurrentUserBoardId } =
-    useContext(userBoardsContext)
+  const { boardsQuery, currentUserBoardId } = useContext(userBoardsContext)
 
   const { create } = useContext(userBoardsContext)
 
@@ -37,7 +36,8 @@ export default function UserBoards() {
 
   let component = null
   if (boardsQuery?.isError) component = null
-  else if (boardsQuery?.isLoading) component = <LoadingStateComponent />
+  else if (boardsQuery && !boardsQuery?.isFetched)
+    component = <LoadingStateComponent />
   else if (boardsQuery?.data)
     component = (
       <BoardList boards={boardsQuery.data as Partial<TBoardModel>[]} />

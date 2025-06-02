@@ -3,12 +3,9 @@ import { TBoardModel } from '@/contexts/UserBoards/constants'
 import { STORAGE_DATA_INDEX_KEY } from '@/pages/BoardPage/configs/constants'
 import { readLocalStorageValue } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useReactFlow } from 'reactflow'
 import { useQueryKey } from './useQueryKey'
 
 export function useNodesAndEdges() {
-  const FIT_VIEW_DURATION = 700
-  const { fitView } = useReactFlow()
   const queryKey = useQueryKey()
   const queryClient = useQueryClient()
 
@@ -32,7 +29,6 @@ export function useNodesAndEdges() {
           defaultValue: { timestamp: new Date(), nodes: [], edges: [] },
         })
 
-        setTimeout(() => fitView({ duration: FIT_VIEW_DURATION }), 100)
         return { nodes: localData.nodes, edges: localData.edges }
       } else {
         // If logged, load remote data
@@ -58,7 +54,6 @@ export function useNodesAndEdges() {
         localStorage.removeItem(STORAGE_DATA_INDEX_KEY)
         const logoutQueryKey = [queryKey[0], null]
         queryClient.setQueryData(logoutQueryKey, { nodes: [], edges: [] })
-        setTimeout(() => fitView({ duration: FIT_VIEW_DURATION }), 100)
         return { nodes, edges }
       }
     },

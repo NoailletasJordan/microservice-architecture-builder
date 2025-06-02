@@ -130,8 +130,5 @@ async function handleLoadRemoteUserBoards({
   } else {
     // If user has boards, load the first one
     setCurrentUserBoardId(userBoards[0].id)
-    showNotificationSuccess({
-      title: 'Welcome back',
-    })
   }
 }

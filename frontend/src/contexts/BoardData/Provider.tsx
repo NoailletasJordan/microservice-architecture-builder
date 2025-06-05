@@ -8,7 +8,7 @@ export default function BoardDataProvider({
 }: {
   children: ReactNode
 }) {
-  const { edges, nodes, boardDataQuery } = useNodesAndEdges()
+  const { title, edges, nodes, boardDataQuery } = useNodesAndEdges()
 
   useSaveBoardLocallyOrRemotely({
     nodes,
@@ -19,6 +19,7 @@ export default function BoardDataProvider({
   return (
     <boardDataContext.Provider
       value={{
+        title,
         nodes,
         edges,
         boardDataQuery,

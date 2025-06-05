@@ -6,6 +6,7 @@ import { createContext } from 'react'
 export interface BoardDataContext {
   nodes: TCustomNode[]
   edges: TCustomEdge[]
+  title?: string
   boardDataQuery?: UseQueryResult<
     {
       nodes: any
@@ -18,5 +19,6 @@ export interface BoardDataContext {
 export const boardDataContext = createContext<BoardDataContext>({
   nodes: [],
   edges: [],
+  title: undefined,
   boardDataQuery: undefined,
 })

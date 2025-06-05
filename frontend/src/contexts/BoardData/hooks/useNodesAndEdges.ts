@@ -18,6 +18,7 @@ export function useNodesAndEdges() {
     placeholderData: {
       nodes: [] as TCustomNode[],
       edges: [] as TCustomEdge[],
+      title: '',
     },
     queryFn: async ({ queryKey }) => {
       const [_, currentUserBoardId] = queryKey
@@ -29,7 +30,10 @@ export function useNodesAndEdges() {
           defaultValue: { timestamp: new Date(), nodes: [], edges: [] },
         })
 
-        return { nodes: localData.nodes, edges: localData.edges }
+        return {
+          nodes: localData.nodes,
+          edges: localData.edges,
+        }
       } else {
         // If logged, load remote data
         const authToken = readLocalStorageValue({ key: AUTH_TOKEN_KEY })
@@ -54,7 +58,7 @@ export function useNodesAndEdges() {
         localStorage.removeItem(STORAGE_DATA_INDEX_KEY)
         const logoutQueryKey = [queryKey[0], null]
         queryClient.setQueryData(logoutQueryKey, { nodes: [], edges: [] })
-        return { nodes, edges }
+        return { nodes, edges, title: response.title }
       }
     },
     staleTime: Infinity,
@@ -62,10 +66,12 @@ export function useNodesAndEdges() {
   const { data } = boardDataQuery
   const nodes = data?.nodes || []
   const edges = data?.edges || []
+  const title = data?.title
 
   return {
     nodes,
     edges,
+    title,
     boardDataQuery,
   }
 }

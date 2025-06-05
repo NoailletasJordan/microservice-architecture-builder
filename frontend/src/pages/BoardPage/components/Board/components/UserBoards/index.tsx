@@ -3,6 +3,7 @@ import { MutationUserBoard } from '@/contexts/UserBoards/hooks/useMutateUserBoar
 import { useQueryKey } from '@/contexts/UserBoards/hooks/useQueryKey'
 import {
   ActionIcon,
+  Button,
   Card,
   Divider,
   Group,
@@ -16,6 +17,7 @@ import { useContext } from 'react'
 import { Panel } from 'reactflow'
 import { ICON_STYLE } from '../../../../configs/constants'
 import BoardItem from './components/BoardItem'
+import { useDuplicateBoard } from './hooks/useDuplicateBoard'
 
 export default function UserBoards() {
   const { boardsQuery, currentUserBoardId } = useContext(userBoardsContext)
@@ -43,6 +45,8 @@ export default function UserBoards() {
       <BoardList boards={boardsQuery.data as Partial<TBoardModel>[]} />
     )
 
+  const duplicateBoard = useDuplicateBoard()
+
   return (
     <Panel position="bottom-left">
       <Card bg="gray.9">
@@ -61,6 +65,14 @@ export default function UserBoards() {
           >
             <IconPlus style={ICON_STYLE} />
           </ActionIcon>
+          <Button
+            loading={isCreatingBoard.length > 0}
+            onClick={() => {
+              duplicateBoard()
+            }}
+          >
+            dup
+          </Button>
         </Group>
 
         <Divider my="sm" />

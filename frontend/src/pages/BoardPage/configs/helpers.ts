@@ -56,7 +56,7 @@ export const handleAddNode = (
 //     nodes: storageReference.nodes,
 //     edges: storageReference.edges,
 //   }
-// }
+// draggedOverVariants}
 
 export const storeInLocal = (boardId: string, data: ILocalStorage) => {
   localStorage.setItem(boardId as string, JSON.stringify(data))

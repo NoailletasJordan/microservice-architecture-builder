@@ -1,5 +1,6 @@
 import DroppableIndicator from '@/components/DroppableIndicator'
 import GuidanceTextsMain from '@/components/GuidanceTextsComponents/GuidanceTextsMain'
+import { CSSVAR } from '@/contants'
 import { boardDataContext } from '@/contexts/BoardData/constants'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
@@ -12,6 +13,7 @@ import ReactFlow, {
   BackgroundVariant,
   ConnectionMode,
   EdgeTypes,
+  MiniMap,
   NodeTypes,
   Panel,
 } from 'reactflow'
@@ -105,6 +107,8 @@ export default function Board() {
               noWheelClassName={NO_WhEEL_REACTFLOW_CLASS}
               noPanClassName={NO_PAN_REACTFLOW_CLASS}
               zoomOnDoubleClick={false}
+              snapGrid={[30, 30]}
+              snapToGrid={true}
               proOptions={{
                 hideAttribution: true,
               }}
@@ -115,6 +119,14 @@ export default function Board() {
               )}
               <Toolbar />
               {showGuidanceTexts && <GuidanceTextsMain />}
+              <MiniMap
+                style={{ backgroundColor: CSSVAR['--surface-strong'] }}
+                nodeBorderRadius={10}
+                nodeStrokeWidth={5}
+                nodeStrokeColor={CSSVAR['--text']}
+                nodeColor={CSSVAR['--surface-strong']}
+                maskColor="#00000066"
+              />
               <DemoPanel
                 openOnboarding={() => updateShowOnboarding(true)}
                 showGuidanceTexts={showGuidanceTexts}

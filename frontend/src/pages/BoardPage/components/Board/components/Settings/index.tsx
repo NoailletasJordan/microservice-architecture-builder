@@ -1,14 +1,11 @@
 import { clickCanvaContext } from '@/contexts/ClickCanvaCapture/constants'
-import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
-import { ActionIcon, Divider, Menu } from '@mantine/core'
+import { ActionIcon, Card, Group, Menu } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { IconMenu2 } from '@tabler/icons-react'
 import { useContext, useEffect } from 'react'
 import { Panel } from 'reactflow'
-import Github from './components/Github'
-import LogIn from './components/LogIn'
-import ResetBoard from './components/ResetBoard'
-import SwitchDropHints from './components/SwitchDropHints'
+import BoardTitle from './components/BoardTitle'
+import Dropdown from './components/Dropdown'
 
 interface Props {
   openResetModal: () => void
@@ -22,28 +19,32 @@ export default function Settings({ openResetModal }: Props) {
     canvaClickIncrement !== 0 && close()
   }, [canvaClickIncrement, close])
 
-  const target = (
-    <Menu.Target>
-      <ActionIcon onClick={toggle} data-testid="button-settings">
-        <IconMenu2 style={ICON_STYLE} />
-      </ActionIcon>
-    </Menu.Target>
-  )
-
   return (
     <Panel position="top-left">
-      <Menu shadow="md" opened={isOpened}>
-        {target}
+      <Menu position="bottom-start" shadow="md" opened={isOpened}>
+        <Target toggleOpenModal={toggle} />
 
-        <Menu.Dropdown p="xs">
-          <ResetBoard openResetModal={openResetModal} />
-          <Github />
-          <LogIn />
-          <Divider my="xs" />
-
-          <SwitchDropHints />
-        </Menu.Dropdown>
+        <Dropdown openResetModal={openResetModal} />
       </Menu>
     </Panel>
+  )
+}
+
+function Target({ toggleOpenModal }: { toggleOpenModal: () => void }) {
+  return (
+    <Menu.Target>
+      <Card radius="md" p={0}>
+        <Group align="center" p="xs">
+          <ActionIcon
+            variant="transparent"
+            onClick={toggleOpenModal}
+            data-testid="button-settings"
+          >
+            <IconMenu2 />
+          </ActionIcon>
+          <BoardTitle />
+        </Group>
+      </Card>
+    </Menu.Target>
   )
 }

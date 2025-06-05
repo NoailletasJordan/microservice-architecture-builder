@@ -70,6 +70,9 @@ export default function Board() {
 
   const { authToken } = useContext(userContext)
 
+  /** Temp */
+  console.log('nodes:', nodes)
+
   return (
     <>
       <DroppableHintProvider>

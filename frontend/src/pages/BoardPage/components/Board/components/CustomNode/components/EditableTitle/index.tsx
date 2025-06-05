@@ -1,6 +1,7 @@
 import EditableInput from '@/components/EditableText'
 import { IService } from '@/pages/BoardPage/configs/constants'
 import { useDisclosure } from '@mantine/hooks'
+import { cloneDeep } from 'lodash'
 import { useReactFlow } from 'reactflow'
 
 interface Props {
@@ -13,7 +14,7 @@ export default function NodeTitle({ service }: Props) {
 
   const onTitleChange = (value: string) => {
     const nodeToEdit = flowInstance.getNode(service.id)!
-    const newNode = nodeToEdit
+    const newNode = cloneDeep(nodeToEdit)
 
     newNode.data.title = value
     flowInstance.setNodes((nodes) =>

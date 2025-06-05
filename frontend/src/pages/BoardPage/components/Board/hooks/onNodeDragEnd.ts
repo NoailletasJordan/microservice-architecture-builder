@@ -27,11 +27,13 @@ export function useOnNodeDragEnd() {
       newSubService,
     ]
 
-    flowInstance.setNodes((oldNodes) =>
-      oldNodes.map((compNode) =>
-        compNode.id === targetNode.id ? targetNode : compNode,
-      ),
-    )
+    setTimeout(() => {
+      flowInstance.setNodes((oldNodes) =>
+        oldNodes.map((compNode) =>
+          compNode.id === targetNode.id ? targetNode : compNode,
+        ),
+      )
+    }, 0)
   }
   return onNodeDragEnd
 }

@@ -22,7 +22,7 @@ export function useSetNodes() {
       typeof callbackOrNodes === 'function'
         ? callbackOrNodes(oldData.nodes)
         : callbackOrNodes
-    const newState = JSON.parse(JSON.stringify({ ...oldData, nodes: newNodes }))
+    const newState = { ...oldData, nodes: newNodes }
 
     queryClient.setQueryData(queryKey, newState)
   }

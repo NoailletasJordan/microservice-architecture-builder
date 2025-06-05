@@ -1,6 +1,7 @@
 import { ReactFlowInstance, XYPosition } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 
+import { cloneDeep } from 'lodash'
 import { IConnexion } from '../components/Board/components/connexionContants'
 import {
   ILocalStorage,
@@ -84,7 +85,7 @@ export const handleDeleteSubservice = (
         (compSubService) => compSubService.id != deleteId,
       )
 
-      const newCompNode = compNode
+      const newCompNode = cloneDeep(compNode)
       newCompNode.data.subServices = filteredSubServices
 
       return newCompNode

@@ -70,9 +70,6 @@ export default function Board() {
 
   const { authToken } = useContext(userContext)
 
-  /** Temp */
-  console.log('nodes:', nodes)
-
   return (
     <>
       <DroppableHintProvider>
@@ -92,8 +89,8 @@ export default function Board() {
             />
 
             <ReactFlow
-              minZoom={1}
-              maxZoom={1}
+              minZoom={0.65}
+              maxZoom={2}
               onConnect={onConnect}
               nodes={nodes}
               edges={edges}
@@ -107,6 +104,7 @@ export default function Board() {
               noDragClassName={NO_DRAG_REACTFLOW_CLASS}
               noWheelClassName={NO_WhEEL_REACTFLOW_CLASS}
               noPanClassName={NO_PAN_REACTFLOW_CLASS}
+              zoomOnDoubleClick={false}
               proOptions={{
                 hideAttribution: true,
               }}

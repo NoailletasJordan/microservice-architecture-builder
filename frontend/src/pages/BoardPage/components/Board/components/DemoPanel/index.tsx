@@ -16,7 +16,7 @@ export default function DemoPanel({
 }: Props) {
   const { fitView } = useReactFlow()
 
-  const onClick = () => fitView({ duration: 700 })
+  const onClick = () => fitView({ duration: 700, maxZoom: 1, minZoom: 0.65 })
 
   return (
     <Panel position="bottom-right">

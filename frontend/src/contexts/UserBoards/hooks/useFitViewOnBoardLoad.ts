@@ -19,7 +19,7 @@ export default function useFitViewOnBoardLoad({
     const { fitView } = nonReactiveState()
     if (isFetched) {
       setTimeout(() => {
-        fitView({ duration: FIT_VIEW_DURATION })
+        fitView({ duration: FIT_VIEW_DURATION, maxZoom: 1, minZoom: 0.65 })
       }, 100)
     }
 

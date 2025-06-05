@@ -7,9 +7,6 @@ import { useHandleOnExternalUrl } from './hooks/useHandleOnExternalUrl'
 import { useHandleCloseModal } from './hooks/useOnHandleCloseModal'
 import { useOverwriteBoardData } from './hooks/useOverwriteBoardData'
 
-// This components needs to be called after reactFlow initialisation
-// otherwise "fitBounds" / "fitView" etc simply doesnt work
-
 export default function LoadLinkBoardModal() {
   const [opened, modalAction] = useDisclosure(false)
   const hash = useCurrentHash()

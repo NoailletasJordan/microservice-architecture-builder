@@ -11,9 +11,9 @@ import {
 } from './constants'
 import {
   getNewNode,
-  handleAddNode,
-  handleDeleteSubservice,
-  handleUpdateNode,
+  getNodesAfterDeleteSubservice,
+  getNodesAfterUpdateNode,
+  getStateAfterDeleteNode,
 } from './helpers'
 
 type DragEventHandler = (
@@ -42,20 +42,22 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
           position,
           serviceIdType: draggedService.serviceIdType,
         })
-        handleAddNode(newNode, flowInstance)
+        flowInstance.setNodes((oldNodes) => [...oldNodes, newNode])
         break
       }
       case 'subService': {
         const draggedSubService = draggedContent
-        handleDeleteSubservice(draggedSubService.id, flowInstance)
-        // shameful timeout to chain with previous setNode
-        setTimeout(() => {
-          const newNode = getNewNode({
-            position,
-            ...draggedSubService,
-          })
-          handleAddNode(newNode, flowInstance)
-        }, 0)
+        const nodesFilteredSubservice = getNodesAfterDeleteSubservice(
+          draggedSubService.id,
+          flowInstance.getNodes(),
+        )
+
+        const newNode = getNewNode({
+          position,
+          ...draggedSubService,
+        })
+        const newNodes = [...nodesFilteredSubservice, newNode]
+        flowInstance.setNodes(newNodes)
         break
       }
     }
@@ -80,7 +82,11 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
           newSubService,
         ]
 
-        handleUpdateNode(targetNode.id, targetNode, flowInstance)
+        const newNodes = getNodesAfterUpdateNode({
+          currentNodes: flowInstance.getNodes(),
+          newNode: targetNode,
+        })
+        flowInstance.setNodes(newNodes)
         break
       }
       case 'subService': {
@@ -93,11 +99,17 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
           { ...draggedSubService, parentId: targetNode.id },
         ]
 
-        handleDeleteSubservice(draggedSubService.id, flowInstance)
+        // delete subservice in old node, then create in target
+        const nodesFilteredSubservice = getNodesAfterDeleteSubservice(
+          draggedSubService.id,
+          flowInstance.getNodes(),
+        )
 
-        setTimeout(() => {
-          handleUpdateNode(targetNode.id, targetNode, flowInstance)
-        }, 0)
+        const newNodes = getNodesAfterUpdateNode({
+          currentNodes: nodesFilteredSubservice,
+          newNode: targetNode,
+        })
+        flowInstance.setNodes(newNodes)
         break
       }
     }
@@ -106,9 +118,18 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
     const { draggableType, draggedContent } = event.active.data
       .current as DraggableData
     switch (draggableType) {
-      case 'subService':
-        handleDeleteSubservice(draggedContent.id, flowInstance)
+      case 'subService': {
+        const currentNodes = flowInstance.getNodes()
+        const currentEdges = flowInstance.getEdges()
+        const { edges: newEdges, nodes: newNodes } = getStateAfterDeleteNode({
+          nodeId: draggedContent.id,
+          currentEdges,
+          currentNodes,
+        })
+        flowInstance.setNodes(newNodes)
+        flowInstance.setEdges(newEdges)
         break
+      }
     }
   },
   toolbox: () => null,

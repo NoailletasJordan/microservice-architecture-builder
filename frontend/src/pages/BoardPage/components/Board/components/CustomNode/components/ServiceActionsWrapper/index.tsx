@@ -1,7 +1,7 @@
 import TooltipWrapper from '@/components/TooltipWrapper'
 import { CSSVAR } from '@/contants'
 import { NO_DRAG_REACTFLOW_CLASS } from '@/pages/BoardPage/configs/constants'
-import { handleDeleteNode } from '@/pages/BoardPage/configs/helpers'
+import { getStateAfterDeleteNode } from '@/pages/BoardPage/configs/helpers'
 import { ActionIcon, Group } from '@mantine/core'
 import { IconNote, IconTrash } from '@tabler/icons-react'
 import { motion, Variants } from 'motion/react'
@@ -79,7 +79,18 @@ export default function ServiceActionsWrapper({
                 variant="outline"
                 style={{ border: 'none' }}
                 color={CSSVAR['--text']}
-                onClick={() => handleDeleteNode(parentId, flowInstance)}
+                onClick={() => {
+                  const currentEdges = flowInstance.getEdges()
+                  const currentNodes = flowInstance.getNodes()
+                  const { nodes: nodesAfterDelete, edges: edgesAfterDelete } =
+                    getStateAfterDeleteNode({
+                      nodeId: parentId,
+                      currentEdges,
+                      currentNodes,
+                    })
+                  flowInstance.setNodes(nodesAfterDelete)
+                  flowInstance.setEdges(edgesAfterDelete)
+                }}
               >
                 <IconTrash stroke={1.5} />
               </ActionIcon>

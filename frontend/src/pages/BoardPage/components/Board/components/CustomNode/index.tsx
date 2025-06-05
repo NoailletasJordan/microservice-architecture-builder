@@ -11,7 +11,7 @@ import {
 } from '@/pages/BoardPage/configs/constants'
 import {
   getNodeOverlapped,
-  handleUpdateNode,
+  getNodesAfterUpdateNode,
 } from '@/pages/BoardPage/configs/helpers'
 import { Box } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
@@ -42,9 +42,10 @@ export default function CustomNode(props: NodeProps<IService>) {
   const droppableType = 'node'
 
   const handleNoteChange = (newNote: string) => {
+    const currentNodes = flowInstance.getNodes()
     const nodeToEdit = flowInstance.getNode(service.id)!
     nodeToEdit.data.note = newNote
-    handleUpdateNode(service.id, nodeToEdit, flowInstance)
+    getNodesAfterUpdateNode({ currentNodes, newNode: nodeToEdit })
   }
 
   const editor = useEditor(

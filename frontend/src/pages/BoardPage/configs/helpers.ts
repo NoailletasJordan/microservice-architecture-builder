@@ -2,7 +2,10 @@ import { ReactFlowInstance, XYPosition } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 
 import { cloneDeep } from 'lodash'
-import { IConnexion } from '../components/Board/components/connexionContants'
+import {
+  IConnexion,
+  TCustomEdge,
+} from '../components/Board/components/connexionContants'
 import {
   ILocalStorage,
   IService,
@@ -36,13 +39,6 @@ export const getNewNode = ({
   }
 }
 
-export const handleAddNode = (
-  newNode: TCustomNode,
-  flowInstance: ReactFlowInstance,
-) => {
-  flowInstance.setNodes((oldNodes: TCustomNode[]) => [...oldNodes, newNode])
-}
-
 // For reference, -to delete
 // export const getInitialBoardData = (): ILocalStorage => {
 //   const storageReference: ILocalStorage | undefined =
@@ -63,45 +59,50 @@ export const storeInLocal = (boardId: string, data: ILocalStorage) => {
   localStorage.setItem(boardId as string, JSON.stringify(data))
 }
 
-export const handleDeleteNode = (
-  nodeId: string,
-  flowInstance: ReactFlowInstance,
-) => {
-  flowInstance.setNodes((oldNodes) =>
-    oldNodes.filter((compNode) => compNode.id != nodeId),
+export const getStateAfterDeleteNode = ({
+  nodeId,
+  currentEdges: oldEdges,
+  currentNodes: oldNodes,
+}: {
+  nodeId: string
+  currentNodes: TCustomNode[]
+  currentEdges: TCustomEdge[]
+}): { nodes: TCustomNode[]; edges: TCustomEdge[] } => {
+  const newNodes = oldNodes.filter((compNode) => compNode.id != nodeId)
+  const newEdges = oldEdges.filter(
+    (edge) => edge.source !== nodeId && edge.target !== nodeId,
   )
-  flowInstance.setEdges((oldEdges) =>
-    oldEdges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId),
-  )
+
+  return { nodes: newNodes, edges: newEdges }
 }
 
-export const handleDeleteSubservice = (
+export const getNodesAfterDeleteSubservice = (
   deleteId: SubService['id'],
-  flowInstance: ReactFlowInstance,
+  oldNodes: TCustomNode[],
 ) => {
-  flowInstance.setNodes((oldNodes) =>
-    oldNodes.map((compNode: TCustomNode) => {
-      const filteredSubServices = compNode.data.subServices.filter(
-        (compSubService) => compSubService.id != deleteId,
-      )
+  const newNodes = oldNodes.map((compNode: TCustomNode) => {
+    const filteredSubServices = compNode.data.subServices.filter(
+      (compSubService) => compSubService.id != deleteId,
+    )
 
-      const newCompNode = cloneDeep(compNode)
-      newCompNode.data.subServices = filteredSubServices
+    const newCompNode = cloneDeep(compNode)
+    newCompNode.data.subServices = filteredSubServices
 
-      return newCompNode
-    }),
-  )
+    return newCompNode
+  })
+
+  return newNodes
 }
 
-export const handleUpdateNode = (
-  serviceId: string,
-  newNode: TCustomNode,
-  flowInstance: ReactFlowInstance,
-): void => {
-  flowInstance.setNodes((oldNodes) =>
-    oldNodes.map((compNode) => {
-      return compNode.id === serviceId ? newNode : compNode
-    }),
+export const getNodesAfterUpdateNode = ({
+  newNode,
+  currentNodes: oldNodes,
+}: {
+  newNode: TCustomNode
+  currentNodes: TCustomNode[]
+}): TCustomNode[] => {
+  return oldNodes.map((compNode) =>
+    compNode.id === newNode.id ? newNode : compNode,
   )
 }
 

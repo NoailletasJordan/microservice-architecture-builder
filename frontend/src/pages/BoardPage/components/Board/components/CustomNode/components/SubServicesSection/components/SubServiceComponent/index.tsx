@@ -19,7 +19,9 @@ export function DraggableSubServiceComponent({ subService }: Props) {
   return (
     <div className={NO_DRAG_REACTFLOW_CLASS}>
       <DraggableArea id={subService.id} data={draggableProps}>
-        <SubServiceComponent subService={subService} />
+        {() => {
+          return <SubServiceComponent subService={subService} />
+        }}
       </DraggableArea>
     </div>
   )

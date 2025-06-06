@@ -13,7 +13,7 @@ export default function ClearBoard({ openClearCurrentBoardModal }: Props) {
       onClick={openClearCurrentBoardModal}
     >
       <Text component="span" size="sm">
-        Clear
+        Clear data
       </Text>
     </Menu.Item>
   )

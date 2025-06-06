@@ -1,8 +1,9 @@
 import CustomModal from '@/components/CustomModal'
-import { CSSVAR } from '@/contants'
+import { CSSVAR, showNotificationSuccess } from '@/contants'
 import { userBoardsContext } from '@/contexts/UserBoards/constants'
 import { Button, Group, Stack, Text } from '@mantine/core'
 import { useContext } from 'react'
+import { useIsDeleting_ } from './hooks/useIsDeleting_'
 
 interface Props {
   opened: boolean
@@ -11,10 +12,19 @@ interface Props {
 
 export default function DeleteCurrentBoardModal({ opened, close }: Props) {
   const { remove, currentUserBoardId } = useContext(userBoardsContext)
+  const isDeleting = useIsDeleting_()
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!currentUserBoardId) return
-    remove(currentUserBoardId)
+    try {
+      await remove(currentUserBoardId)
+      showNotificationSuccess({
+        title: 'Successfully deleted',
+        message: 'I forwarded you to another one of your boards',
+      })
+    } catch (error) {
+      console.error(error)
+    }
     close()
   }
 
@@ -32,7 +42,7 @@ export default function DeleteCurrentBoardModal({ opened, close }: Props) {
           <Button variant="outline" color="gray.11" onClick={close}>
             Cancel
           </Button>
-          <Button color="red.9" onClick={handleDelete}>
+          <Button loading={isDeleting} color="red.9" onClick={handleDelete}>
             Yes, delete the board
           </Button>
         </Group>

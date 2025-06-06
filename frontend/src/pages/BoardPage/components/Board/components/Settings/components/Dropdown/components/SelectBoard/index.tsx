@@ -2,8 +2,8 @@ import TooltipWrapper from '@/components/TooltipWrapper'
 import { userContext } from '@/contexts/User/constants'
 import { userBoardsContext } from '@/contexts/UserBoards/constants'
 import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
-import { Menu } from '@mantine/core'
-import { IconCaretUpDown } from '@tabler/icons-react'
+import { Badge, Menu } from '@mantine/core'
+import { IconPinEnd } from '@tabler/icons-react'
 import { useContext } from 'react'
 
 interface Props {
@@ -20,7 +20,7 @@ export default function SelectBoard({ disabledTooltip }: Props) {
     <Menu.Sub>
       <Menu.Sub.Target>
         <Menu.Sub.Item
-          leftSection={<IconCaretUpDown stroke={1} style={ICON_STYLE} />}
+          leftSection={<IconPinEnd stroke={1} style={ICON_STYLE} />}
           disabled={!isLogged}
         >
           <TooltipWrapper
@@ -34,15 +34,25 @@ export default function SelectBoard({ disabledTooltip }: Props) {
       </Menu.Sub.Target>
 
       <Menu.Sub.Dropdown>
-        {boards.map((board) => (
-          <Menu.Item
-            onClick={() => setCurrentUserBoardId(board.id)}
-            key={board.id}
-            disabled={board.id === currentUserBoardId}
-          >
-            {board.title}
-          </Menu.Item>
-        ))}
+        {boards.map((board) => {
+          const isCurrent = board.id === currentUserBoardId
+          return (
+            <Menu.Item
+              onClick={() => setCurrentUserBoardId(board.id)}
+              key={board.id}
+              disabled={isCurrent}
+              rightSection={
+                isCurrent ? (
+                  <Badge size="xs" color="gray">
+                    Current
+                  </Badge>
+                ) : null
+              }
+            >
+              {board.title}
+            </Menu.Item>
+          )
+        })}
       </Menu.Sub.Dropdown>
     </Menu.Sub>
   )

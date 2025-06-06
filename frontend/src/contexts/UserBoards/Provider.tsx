@@ -31,8 +31,6 @@ export default function UserBoardsProvider({ children }: IProps) {
     currentUserBoardId,
   })
 
-  /** Temp */
-  console.log('currentUserBoardId:', currentUserBoardId)
   return (
     <userBoardsContext.Provider
       value={{

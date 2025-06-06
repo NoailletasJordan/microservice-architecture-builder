@@ -9,7 +9,9 @@ interface IUserBoardsContext {
   boards: TBoardModel[]
   currentUserBoardId?: string
   setCurrentUserBoardId: (boardId: string) => void
-  remove: (boardId: string) => void
+  remove: (
+    boardId: string,
+  ) => Promise<BackendQueryResponse<Record<string, never>>>
   update: ({
     boardId,
     payload,
@@ -42,7 +44,8 @@ export const userBoardsContext = createContext<IUserBoardsContext>({
   boards: [],
   currentUserBoardId: undefined,
   setCurrentUserBoardId: () => {},
-  remove: () => {},
+  remove: () =>
+    Promise.resolve({} as BackendQueryResponse<Record<string, never>>),
   update: () => Promise.resolve({} as BackendQueryResponse<TBoardModel>),
   create: () => Promise.resolve({} as BackendQueryResponse<TBoardModel>),
 })

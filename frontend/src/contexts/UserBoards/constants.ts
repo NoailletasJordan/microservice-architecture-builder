@@ -1,11 +1,12 @@
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
+import { UseQueryResult } from '@tanstack/react-query'
 import { createContext } from 'react'
 import { BackendQueryResponse } from '../User/constants'
-import { useUserBoards } from './hooks/useUserBoards'
 
 interface IUserBoardsContext {
-  boardsQuery: ReturnType<typeof useUserBoards> | null
+  boardsQuery: UseQueryResult<BackendQueryResponse<TBoardModel[]>, Error>
+  boards: TBoardModel[]
   currentUserBoardId?: string
   setCurrentUserBoardId: (boardId: string) => void
   remove: (boardId: string) => void
@@ -37,7 +38,8 @@ export interface TBoardModel {
 }
 
 export const userBoardsContext = createContext<IUserBoardsContext>({
-  boardsQuery: null,
+  boardsQuery: null as any,
+  boards: [],
   currentUserBoardId: undefined,
   setCurrentUserBoardId: () => {},
   remove: () => {},

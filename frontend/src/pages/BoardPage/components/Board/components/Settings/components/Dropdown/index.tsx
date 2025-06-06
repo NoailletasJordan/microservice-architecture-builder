@@ -1,56 +1,35 @@
-import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import { Menu } from '@mantine/core'
-import { IconPlus } from '@tabler/icons-react'
+import ClearBoard from './components/ClearBoard'
+import DeleteCurrentBoard from './components/DeleteBoard'
 import Github from './components/Github'
-import LogIn from './components/LogIn'
-import ResetBoard from './components/ResetBoard'
-import SwitchDropHints from './components/SwitchDropHints'
+import LogInLogOut from './components/LogInLogOut'
+import NewBoard from './components/NewBoard'
+import SelectBoard from './components/SelectBoard'
 
 interface Props {
-  openResetModal: () => void
+  openClearCurrentBoardModal: () => void
+  openDeleteCurrentBoardModal: () => void
 }
 
-export default function Dropdown({ openResetModal }: Props) {
+const disabledTooltip = 'Log in to handle multiple boards'
+
+export default function Dropdown({
+  openClearCurrentBoardModal,
+  openDeleteCurrentBoardModal,
+}: Props) {
   return (
     <Menu.Dropdown>
-      <Menu.Label>Board</Menu.Label>
-      <AddBoard />
-      <DuplicateBoard />
-      <ResetBoard openResetModal={openResetModal} />
+      <Menu.Label>Board actions</Menu.Label>
+      <ClearBoard openClearCurrentBoardModal={openClearCurrentBoardModal} />
+      <NewBoard disabledTooltip={disabledTooltip} />
+      <SelectBoard disabledTooltip={disabledTooltip} />
+      <DeleteCurrentBoard
+        openDeleteCurrentBoardModal={openDeleteCurrentBoardModal}
+        disabledTooltip={disabledTooltip}
+      />
       <Menu.Divider my="xs" />
-      <Menu.Label>Settings</Menu.Label>
+      <LogInLogOut />
       <Github />
-      <LogIn />
-      <Menu.Divider my="xs" />
-      <Menu.Label>Settings</Menu.Label>
-      <SwitchDropHints />
     </Menu.Dropdown>
-  )
-}
-function AddBoard() {
-  return (
-    <Menu.Item leftSection={<IconPlus stroke={1} style={ICON_STYLE} />}>
-      New board
-    </Menu.Item>
-  )
-}
-
-function DuplicateBoard() {
-  /** Temp */
-  console.log('Menu.Sub:', Menu)
-  return (
-    <Menu.Sub>
-      <Menu.Sub.Target>
-        <Menu.Sub.Item>Products</Menu.Sub.Item>
-      </Menu.Sub.Target>
-
-      <Menu.Sub.Dropdown>
-        <Menu.Item>All products</Menu.Item>
-        <Menu.Item>Categories</Menu.Item>
-        <Menu.Item>Tags</Menu.Item>
-        <Menu.Item>Attributes</Menu.Item>
-        <Menu.Item>Shipping classes</Menu.Item>
-      </Menu.Sub.Dropdown>
-    </Menu.Sub>
   )
 }

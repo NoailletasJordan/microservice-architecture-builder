@@ -13,11 +13,12 @@ export default function UserBoardsProvider({ children }: IProps) {
   const [currentUserBoardId, setCurrentUserBoardId] = useState<
     string | undefined
   >(undefined)
-  const boardsQuery = useUserBoards()
+  const { boardsQuery, boards } = useUserBoards()
 
   useHandleBoardsOnLoginLogout({
     currentUserBoardId,
     setCurrentUserBoardId,
+    boardsQuery,
   })
 
   const mutator = useMutateUserBoard({
@@ -30,9 +31,12 @@ export default function UserBoardsProvider({ children }: IProps) {
     currentUserBoardId,
   })
 
+  /** Temp */
+  console.log('currentUserBoardId:', currentUserBoardId)
   return (
     <userBoardsContext.Provider
       value={{
+        boards,
         boardsQuery,
         currentUserBoardId,
         setCurrentUserBoardId,

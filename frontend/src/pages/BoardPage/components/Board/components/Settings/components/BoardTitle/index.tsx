@@ -1,49 +1,51 @@
+import TooltipWrapper from '@/components/TooltipWrapper'
+import { boardDataContext } from '@/contexts/BoardData/constants'
 import { userContext } from '@/contexts/User/constants'
-import { TBoardModel, userBoardsContext } from '@/contexts/UserBoards/constants'
-import { TextInput } from '@mantine/core'
-import { useContext } from 'react'
+import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
+import { Loader, TextInput } from '@mantine/core'
+import { IconRouter, IconRouterOff } from '@tabler/icons-react'
+import { useContext, useMemo } from 'react'
+import useOnTitleChange from './hooks/useOnTitleChange'
+import usePushMutation from './hooks/usePushMutation'
 
 export default function BoardTitle() {
-  const value = useBoardTitle()
+  const { title, boardDataQuery } = useContext(boardDataContext)
   const onChange = useOnTitleChange()
-
-  return (
-    <TextInput onChange={onChange} value={value} fw="bold" variant="default" />
-  )
-}
-
-function useOnTitleChange() {
-  const { update: updateBoard, currentUserBoardId } =
-    useContext(userBoardsContext)
-
-  function onChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (!currentUserBoardId) return
-
-    updateBoard({
-      boardId: currentUserBoardId!,
-      payload: {
-        title: e.target.value,
-      },
-    })
-  }
-  return onChange
-}
-
-function useBoardTitle() {
-  const { boardsQuery, currentUserBoardId } = useContext(userBoardsContext)
+  const pushMutation = usePushMutation()
   const { isLogged } = useContext(userContext)
 
-  if (!isLogged) {
-    return 'Local board'
-  } else {
-    if (!boardsQuery || !boardsQuery.data || 'error' in boardsQuery.data)
-      return ''
+  const isLoading = !boardDataQuery.isFetched && boardDataQuery.isFetching
+  const Icon = useMemo(
+    () => (isLogged ? IconRouter : IconRouterOff),
+    [isLogged],
+  )
 
-    const boards = boardsQuery.data as TBoardModel[]
-    const loggedTitle = boards.find(
-      ({ id }) => id === currentUserBoardId,
-    )?.title
-
-    return loggedTitle
-  }
+  return (
+    <>
+      <TextInput
+        onChange={onChange}
+        onBlur={() => pushMutation(title)}
+        value={title}
+        fw="bold"
+        variant={isLogged ? 'default' : 'unstyled'}
+        readOnly={!isLogged}
+        rightSection={
+          isLoading ? (
+            <Loader size="xs" />
+          ) : (
+            <TooltipWrapper
+              position="bottom"
+              label={
+                isLogged
+                  ? 'Your data is saved in the cloud !'
+                  : 'Your board is saved locally in your browser'
+              }
+            >
+              <Icon stroke={1} style={ICON_STYLE} />
+            </TooltipWrapper>
+          )
+        }
+      />
+    </>
+  )
 }

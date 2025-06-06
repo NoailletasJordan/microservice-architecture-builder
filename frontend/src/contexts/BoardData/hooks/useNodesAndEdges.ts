@@ -9,6 +9,8 @@ import { readLocalStorageValue } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useQueryKey } from './useQueryKey'
 
+const localBoardTitle = 'Local board'
+
 export function useNodesAndEdges() {
   const queryKey = useQueryKey()
   const queryClient = useQueryClient()
@@ -33,6 +35,7 @@ export function useNodesAndEdges() {
         return {
           nodes: localData.nodes,
           edges: localData.edges,
+          title: localBoardTitle,
         }
       } else {
         // If logged, load remote data
@@ -57,7 +60,11 @@ export function useNodesAndEdges() {
         const { nodes, edges } = JSON.parse(response.data)
         localStorage.removeItem(STORAGE_DATA_INDEX_KEY)
         const logoutQueryKey = [queryKey[0], null]
-        queryClient.setQueryData(logoutQueryKey, { nodes: [], edges: [] })
+        queryClient.setQueryData(logoutQueryKey, {
+          nodes: [],
+          edges: [],
+          title: '',
+        })
         return { nodes, edges, title: response.title }
       }
     },
@@ -66,7 +73,7 @@ export function useNodesAndEdges() {
   const { data } = boardDataQuery
   const nodes = data?.nodes || []
   const edges = data?.edges || []
-  const title = data?.title
+  const title = data?.title || ''
 
   return {
     nodes,

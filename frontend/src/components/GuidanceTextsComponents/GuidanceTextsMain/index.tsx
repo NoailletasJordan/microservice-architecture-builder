@@ -30,7 +30,7 @@ export default function Main() {
         <Space h="lg" />
         <Center>
           <GuidanceText>
-            All your data is saved locally in your browser
+            Visualize and share software architectures in seconds !
           </GuidanceText>
         </Center>
       </Box>

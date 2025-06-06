@@ -2,7 +2,7 @@ import { boardDataContext } from '@/contexts/BoardData/constants'
 import { userBoardsContext } from '@/contexts/UserBoards/constants'
 import { useContext } from 'react'
 
-export function useDuplicateBoard() {
+export function useDuplicateCurrentBoard() {
   const { create } = useContext(userBoardsContext)
   const { edges, nodes, title } = useContext(boardDataContext)
 

@@ -4,14 +4,19 @@ import { useDisclosure } from '@mantine/hooks'
 import { IconMenu2 } from '@tabler/icons-react'
 import { useContext, useEffect } from 'react'
 import { Panel } from 'reactflow'
+import OnGuidanceTextsSettings from '../../../../../../components/GuidanceTextsComponents/GuidanceTextsSettings/index'
 import BoardTitle from './components/BoardTitle'
 import Dropdown from './components/Dropdown'
 
 interface Props {
-  openResetModal: () => void
+  openClearCurrentBoardModal: () => void
+  openDeleteCurrentBoardModal: () => void
 }
 
-export default function Settings({ openResetModal }: Props) {
+export default function Settings({
+  openClearCurrentBoardModal,
+  openDeleteCurrentBoardModal,
+}: Props) {
   const { canvaClickIncrement } = useContext(clickCanvaContext)
   const [isOpened, { close, toggle }] = useDisclosure(false)
 
@@ -24,7 +29,10 @@ export default function Settings({ openResetModal }: Props) {
       <Menu position="bottom-start" shadow="md" opened={isOpened}>
         <Target toggleOpenModal={toggle} />
 
-        <Dropdown openResetModal={openResetModal} />
+        <Dropdown
+          openClearCurrentBoardModal={openClearCurrentBoardModal}
+          openDeleteCurrentBoardModal={openDeleteCurrentBoardModal}
+        />
       </Menu>
     </Panel>
   )
@@ -33,18 +41,21 @@ export default function Settings({ openResetModal }: Props) {
 function Target({ toggleOpenModal }: { toggleOpenModal: () => void }) {
   return (
     <Menu.Target>
-      <Card radius="md" p={0}>
-        <Group align="center" p="xs">
-          <ActionIcon
-            variant="transparent"
-            onClick={toggleOpenModal}
-            data-testid="button-settings"
-          >
-            <IconMenu2 />
-          </ActionIcon>
-          <BoardTitle />
-        </Group>
-      </Card>
+      <div>
+        <Card radius="md" p={0}>
+          <Group align="center" p="xs">
+            <ActionIcon
+              variant="transparent"
+              onClick={toggleOpenModal}
+              data-testid="button-settings"
+            >
+              <IconMenu2 />
+            </ActionIcon>
+            <BoardTitle />
+          </Group>
+        </Card>
+        <OnGuidanceTextsSettings />
+      </div>
     </Menu.Target>
   )
 }

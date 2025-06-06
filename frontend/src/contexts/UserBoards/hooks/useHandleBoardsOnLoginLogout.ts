@@ -1,22 +1,23 @@
 import { showNotificationSuccess, useEffectEventP } from '@/contants'
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
+import { UseQueryResult } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef } from 'react'
 import { ReactFlowInstance, useReactFlow } from 'reactflow'
 import { TBoardModel } from '../constants'
 import { useMutateUserBoard } from './useMutateUserBoard'
-import { useUserBoards } from './useUserBoards'
 
 export function useHandleBoardsOnLoginLogout({
   currentUserBoardId,
   setCurrentUserBoardId,
+  boardsQuery,
 }: {
   currentUserBoardId: string | undefined
   setCurrentUserBoardId: React.Dispatch<
     React.SetStateAction<string | undefined>
   >
+  boardsQuery: UseQueryResult<TBoardModel[], Error>
 }) {
-  const boardsQuery = useUserBoards()
   const hasBoards = useMemo(() => {
     return (
       boardsQuery.data &&

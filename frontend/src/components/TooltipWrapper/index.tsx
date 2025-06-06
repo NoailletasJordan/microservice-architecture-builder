@@ -1,21 +1,28 @@
 import { CSSVAR } from '@/contants'
-import { Center, FloatingPosition, Tooltip } from '@mantine/core'
+import { Box, FloatingPosition, Tooltip } from '@mantine/core'
 import { ReactNode } from 'react'
 
 interface Props {
   children: ReactNode
   label: ReactNode
   position?: FloatingPosition
+  disabled?: boolean
 }
 
-const TooltipWrapper = ({ children, label, position = 'top' }: Props) => (
+const TooltipWrapper = ({
+  children,
+  label,
+  position = 'top',
+  disabled,
+}: Props) => (
   <Tooltip
     label={label}
     bg={CSSVAR['--surface-strong']}
     position={position}
     openDelay={150}
+    disabled={disabled}
   >
-    <Center>{children}</Center>
+    <Box>{children}</Box>
   </Tooltip>
 )
 

@@ -6,6 +6,7 @@ import { useQueryKey } from '../../../../../contexts/BoardData/hooks/useQueryKey
 export type TBoardDataStore = {
   nodes: TCustomNode[]
   edges: TCustomEdge[]
+  title: string
 }
 
 export function useSetNodes() {

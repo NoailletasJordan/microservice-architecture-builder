@@ -11,7 +11,8 @@ export default function GuidanceTextsOnboarding() {
     >
       <Grid align="center">
         <Grid.Col span="auto">
-          <GuidanceText>Short introduction to the tool</GuidanceText>
+          <GuidanceText size="md">Feeling lost ? Here's a</GuidanceText>
+          <GuidanceText size="md">20 seconds's guide</GuidanceText>
         </Grid.Col>
         <Grid.Col span="content">
           <img src="/onBoarding/arrow-help.svg" width="70px" alt="arrowDown" />

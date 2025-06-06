@@ -5,12 +5,13 @@ import { useQueryKey } from './useQueryKey'
 
 export function useUserBoards() {
   const queryKey = useQueryKey()
-  return useQuery<BackendQueryResponse<TBoardModel[]> | null>({
+  const boardsQuery = useQuery<BackendQueryResponse<TBoardModel[]>>({
     queryKey,
+    placeholderData: [],
     queryFn: async ({ queryKey }) => {
       const [_, authToken] = queryKey
       if (!authToken) {
-        return null
+        return []
       } else {
         const res = await fetch(`${import.meta.env.VITE_API_URL}/api/board`, {
           headers: {
@@ -20,10 +21,14 @@ export function useUserBoards() {
 
         if (!res.ok) throw new Error('Failed to fetch user boards')
         const result = await res.json()
-        return result
+        return result as TBoardModel[]
       }
     },
     staleTime: Infinity,
-    placeholderData: null,
   })
+
+  return {
+    boardsQuery,
+    boards: boardsQuery.data || [],
+  }
 }

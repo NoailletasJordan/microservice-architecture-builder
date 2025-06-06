@@ -79,7 +79,7 @@ export function useMutateUserBoard({
     },
 
     remove: async (boardId: string) => {
-      const response: BackendQueryResponse<null> =
+      const response: BackendQueryResponse<Record<string, never>> =
         await mutateBoard.mutateAsync({
           method: 'DELETE',
           boardId,
@@ -121,6 +121,7 @@ export interface MutationUserBoard {
   method: 'POST' | 'PATCH' | 'DELETE'
   boardId?: string
 }
+
 // BareMutation
 function useMutateBoards() {
   const queryKey = useQueryKey()
@@ -163,7 +164,7 @@ function useMutateBoards() {
       if (!res.ok) throw new Error(config[method].errormessage)
       return res.json()
     },
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey })
     },
   })

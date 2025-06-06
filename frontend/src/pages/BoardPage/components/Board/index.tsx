@@ -5,7 +5,7 @@ import { boardDataContext } from '@/contexts/BoardData/constants'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
 import { userContext } from '@/contexts/User/constants'
-import { Box, Loader } from '@mantine/core'
+import { Box } from '@mantine/core'
 import { useDisclosure, useElementSize } from '@mantine/hooks'
 import { useContext } from 'react'
 import ReactFlow, {
@@ -15,7 +15,6 @@ import ReactFlow, {
   EdgeTypes,
   MiniMap,
   NodeTypes,
-  Panel,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { v4 } from 'uuid'
@@ -26,10 +25,11 @@ import {
   NO_PAN_REACTFLOW_CLASS,
   NO_WhEEL_REACTFLOW_CLASS,
 } from '../../configs/constants'
+import ClearCurrentBoard from './components/ClearCurrentBoardModal'
 import ConnexionPreview from './components/ConnexionPreview'
 import CustomEdge from './components/CustomEdge'
 import CustomNode from './components/CustomNode/'
-import DeleteModal from './components/DeleteModal'
+import DeleteCurrentBoardModal from './components/DeleteCurrentBoardModal'
 import DemoPanel from './components/DemoPanel'
 import DraggableGhost from './components/DraggableGhost/index'
 import DemoModal from './components/OnboardingModal'
@@ -37,7 +37,6 @@ import PrimaryActionsPanel from './components/PrimaryActionsPanel'
 import Settings from './components/Settings/index'
 import ShareModal from './components/ShareModal'
 import Toolbar from './components/Toolbar'
-import UserBoards from './components/UserBoards'
 import { useOnNodeDragEnd } from './hooks/onNodeDragEnd'
 import { useOnConnect } from './hooks/useOnConnect'
 import { useOnEdgesChange } from './hooks/useOnEdgesChange'
@@ -59,7 +58,10 @@ export default function Board() {
   const { showGuidanceTexts, showOnboarding, updateShowOnboarding } =
     useContext(onBoardingContext)
   const { nodes, edges } = useContext(boardDataContext)
-  const [showResetBoardModal, resetModalHandlers] = useDisclosure(false)
+  const [showResetBoardModal, clearCurrentBoardModalHandlers] =
+    useDisclosure(false)
+  const [showDeleteCurrentBoardModal, deleteCurrentBoardModalHandlers] =
+    useDisclosure(false)
   const [showShareModal, shareModalHanders] = useDisclosure(false)
 
   const { ref, height, width } = useElementSize()
@@ -132,18 +134,23 @@ export default function Board() {
                 showGuidanceTexts={showGuidanceTexts}
               />
             </ReactFlow>
-            <Settings openResetModal={resetModalHandlers.open} />
+            <Settings
+              openClearCurrentBoardModal={clearCurrentBoardModalHandlers.open}
+              openDeleteCurrentBoardModal={deleteCurrentBoardModalHandlers.open}
+            />
             <PrimaryActionsPanel openShareModal={shareModalHanders.open} />
-            {authToken && <UserBoards />}
             <DraggableGhost />
-            <BoardLoadingState />
           </Box>
         </DroppableArea>
       </DroppableHintProvider>
 
-      <DeleteModal
-        close={resetModalHandlers.close}
+      <ClearCurrentBoard
+        close={clearCurrentBoardModalHandlers.close}
         opened={showResetBoardModal}
+      />
+      <DeleteCurrentBoardModal
+        close={deleteCurrentBoardModalHandlers.close}
+        opened={showDeleteCurrentBoardModal}
       />
       <ShareModal
         nodes={nodes}
@@ -156,18 +163,5 @@ export default function Board() {
         opened={showOnboarding}
       />
     </>
-  )
-}
-
-function BoardLoadingState() {
-  const { boardDataQuery } = useContext(boardDataContext)
-  return (
-    <Panel position="bottom-center">
-      {boardDataQuery?.fetchStatus === 'fetching' && (
-        <Box bg="green" p="md">
-          <Loader />
-        </Box>
-      )}
-    </Panel>
   )
 }

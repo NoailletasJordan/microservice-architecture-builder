@@ -88,6 +88,12 @@ func NewServer(boardController *controller.BoardController, userController *cont
 	r.Use(MaxBodySizeMiddleware)
 	r.Use(grabAssociatedUserMiddleware(userService))
 
+	// Health check
+	r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("pong"))
+	})
+
 	r.Route("/api/board", func(r chi.Router) {
 		r.Post("/", boardController.CreateBoard)
 		r.Get("/", boardController.GetAllBoards)

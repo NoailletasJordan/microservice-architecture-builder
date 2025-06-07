@@ -30,6 +30,7 @@
     "@tiptap/pm": "^2.4.0",
     "@tiptap/react": "2.3.2",
     "@tiptap/starter-kit": "2.3.2",
+    "dotenv": "^16.5.0",
     "install": "0.13.0",
     "lodash": "^4.17.21",
     "motion": "^12.4.3",
@@ -40,12 +41,13 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "6.22.3",
     "reactflow": "11.11.2",
+    "testcontainers": "^11.0.1",
     "uuid": "9.0.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.51.1",
     "@types/lodash": "^4.14.198",
-    "@types/node": "^22.15.29",
+    "@types/node": "^22.15.30",
     "@types/react": "^18.2.15",
     "@types/react-beautiful-dnd": "^13.1.4",
     "@types/react-dom": "^18.2.7",

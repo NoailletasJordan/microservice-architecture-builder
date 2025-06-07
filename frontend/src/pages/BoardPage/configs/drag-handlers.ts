@@ -46,10 +46,10 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
       }
       case 'subService': {
         const draggedSubService = draggedContent
-        const nodesFilteredSubservice = getNodesAfterDeleteSubservice(
-          draggedSubService.id,
-          flowInstance.getNodes(),
-        )
+        const nodesFilteredSubservice = getNodesAfterDeleteSubservice({
+          deleteId: draggedSubService.id,
+          oldNodes: flowInstance.getNodes(),
+        })
 
         const newNode = getNewNode({
           position,
@@ -99,10 +99,10 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
         ]
 
         // delete subservice in old node, then create in target
-        const nodesFilteredSubservice = getNodesAfterDeleteSubservice(
-          draggedSubService.id,
-          flowInstance.getNodes(),
-        )
+        const nodesFilteredSubservice = getNodesAfterDeleteSubservice({
+          deleteId: draggedSubService.id,
+          oldNodes: flowInstance.getNodes(),
+        })
 
         const newNodes = getNodesAfterUpdateNode({
           currentNodes: nodesFilteredSubservice,

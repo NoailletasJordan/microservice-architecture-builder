@@ -1,4 +1,3 @@
-import { ThemeIcon } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import { IconCheck, IconX } from '@tabler/icons-react'
 import { useCallback, useInsertionEffect, useRef } from 'react'
@@ -6,22 +5,17 @@ import { TCustomEdge } from './pages/BoardPage/components/Board/components/conne
 import { ICON_STYLE, TCustomNode } from './pages/BoardPage/configs/constants'
 
 export const customColors = {
-  //  from accent DCFF46 https://www.radix-ui.com/customColors/custom
   primary: [
-    '#000', //emtpy shade0,
-    '#10120a',
-    '#10120a',
-    '#16190e',
-    '#232811',
-    '#2d3512',
-    '#384214',
-    '#445019',
-    '#52601f',
-    '#637323',
-    '#dcff46',
-    '#d3f538',
-    '#c7e54a',
-    '#e5f7b1',
+    '#f4ffde',
+    '#e8ffbc',
+    '#d6ff8f',
+    '#c1ff59',
+    '#aeff1a',
+    '#9de000',
+    '#8cc100',
+    '#7fa700',
+    '#738f00',
+    '#667f00',
   ],
   primaryAlpha: [
     '#000', //emtpy shade0,
@@ -69,6 +63,8 @@ export const customColors = {
     '#f9fafef2',
   ],
 }
+
+const colorPrimary = '#DCFF46'
 export const themeDarkColorVariables = {
   '--border': customColors.gray[7],
   '--border-strong': customColors.gray[8],
@@ -79,11 +75,10 @@ export const themeDarkColorVariables = {
   '--surface-primary': customColors.primary[3],
   '--surface-primary-strong': customColors.primary[5],
   '--background': customColors.gray[1],
-  '--primary': customColors.primary[9],
+  '--primary': colorPrimary,
   '--text': customColors.gray[11],
   '--text-strong': customColors.gray[12],
-  '--text-primary': customColors.primary[11],
-  '--text-primary-strong': customColors.primary[12],
+  '--text-primary': colorPrimary,
 }
 
 export const CSSVAR = Object.keys(themeDarkColorVariables).reduce(
@@ -118,37 +113,35 @@ export function useEffectEventP<T extends (...args: any[]) => any>(
 export function showNotificationError({
   title,
   message,
+  autoClose = 8000,
 }: {
   title?: string
   message?: string
+  autoClose?: number
 }) {
   notifications.show({
-    icon: (
-      <ThemeIcon radius="xl" color="pink" variant="outline">
-        <IconX style={ICON_STYLE} />
-      </ThemeIcon>
-    ),
+    icon: <IconX color="white" style={ICON_STYLE} />,
     message,
+    color: 'red',
     title,
-    autoClose: 12000,
+    autoClose,
   })
 }
 
 export function showNotificationSuccess({
   title,
   message,
+  autoClose = 8000,
 }: {
   title?: string
   message?: string
+  autoClose?: number
 }) {
   notifications.show({
-    icon: (
-      <ThemeIcon radius="xl" color="primary.10" variant="outline">
-        <IconCheck style={ICON_STYLE} />
-      </ThemeIcon>
-    ),
+    icon: <IconCheck color="white" style={ICON_STYLE} />,
     message,
+    color: 'green',
     title,
-    autoClose: 10000,
+    autoClose,
   })
 }

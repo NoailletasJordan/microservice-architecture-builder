@@ -1,6 +1,6 @@
 import CustomButtonPrimary from '@/components/CustomButtonPrimary'
 import CustomModal from '@/components/CustomModal'
-import { themeDarkColorVariables } from '@/contants'
+import { showNotificationSuccess, themeDarkColorVariables } from '@/contants'
 import {
   ICON_STYLE,
   TCustomNode,
@@ -17,12 +17,7 @@ import {
   useMantineTheme,
 } from '@mantine/core'
 import { useClipboard, useMediaQuery } from '@mantine/hooks'
-import { notifications } from '@mantine/notifications'
-import {
-  IconAlertTriangle,
-  IconClipboardCheck,
-  IconCopy,
-} from '@tabler/icons-react'
+import { IconAlertTriangle, IconCopy } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { ReactFlowInstance, useReactFlow } from 'reactflow'
 
@@ -100,18 +95,8 @@ export default function SharableModal({ close, opened, nodes }: Props) {
               <CustomButtonPrimary
                 onClick={() => {
                   !clipboard.copied && clipboard.copy(link)
-                  notifications.show({
-                    icon: (
-                      <ThemeIcon
-                        radius="xl"
-                        color="primary.10"
-                        variant="outline"
-                      >
-                        <IconClipboardCheck style={ICON_STYLE} />
-                      </ThemeIcon>
-                    ),
-                    title: 'Copied to clipboard',
-                    message: '',
+                  showNotificationSuccess({
+                    message: 'Copied to clipboard',
                     autoClose: 3000,
                   })
                   handleClose()

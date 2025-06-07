@@ -113,8 +113,9 @@ const preventActiveTranslate = {
 }
 
 const theme = createTheme({
-  primaryShade: 9,
-  primaryColor: 'lime',
+  primaryShade: 7,
+  primaryColor: 'primary',
+  // primaryColor: 'lime',
   colors: customColors as any,
   components: {
     Button: Button.extend(preventActiveTranslate),

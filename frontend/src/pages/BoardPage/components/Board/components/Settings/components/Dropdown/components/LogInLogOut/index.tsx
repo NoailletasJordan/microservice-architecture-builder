@@ -13,7 +13,7 @@ export default function LogInLogOut() {
 
   return (
     <Menu.Item
-      color={!isLogged ? 'lime' : ''}
+      color={!isLogged ? 'primary' : ''}
       disabled={isLoading}
       leftSection={<Icon stroke={1} style={ICON_STYLE} />}
       onClick={isLogged ? handleLogout : handlePushToGoogleOauth}

@@ -56,7 +56,7 @@ export function useHandleBoardsOnLoginLogout({
         setCurrentUserBoardId(undefined)
         showNotificationSuccess({
           title: "You're logged out",
-          message: 'I will now save your work on your browser',
+          message: 'Your work will be waiting for your return',
         })
       }
     } else {
@@ -111,7 +111,7 @@ async function handleLoadRemoteUserBoards({
     setCurrentUserBoardId(newBoard.id)
     showNotificationSuccess({
       title: 'Connected to the cloud',
-      message: 'I pushed your existing work into a new board :)',
+      message: 'I created a new board for your active work :)',
     })
     return
   }

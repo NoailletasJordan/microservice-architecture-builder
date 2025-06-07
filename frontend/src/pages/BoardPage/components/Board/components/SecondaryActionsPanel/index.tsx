@@ -10,7 +10,7 @@ interface Props {
   openOnboarding: () => void
 }
 
-export default function DemoPanel({
+export default function SecondaryActionsPaner({
   openOnboarding,
   showGuidanceTexts,
 }: Props) {
@@ -24,12 +24,24 @@ export default function DemoPanel({
       <Space h="xs" />
       <Group justify="flex-end">
         <TooltipWrapper label="Fit into view">
-          <ActionIcon onClick={onClick} aria-label="Fit to view">
+          <ActionIcon
+            size="lg"
+            variant="light"
+            color="white"
+            onClick={onClick}
+            aria-label="Fit to view"
+          >
             <IconFocusCentered style={ICON_STYLE} />
           </ActionIcon>
         </TooltipWrapper>
         <TooltipWrapper label="Watch demo">
-          <ActionIcon aria-label="Watch demo" onClick={openOnboarding}>
+          <ActionIcon
+            size="lg"
+            color="white"
+            variant="light"
+            aria-label="Watch demo"
+            onClick={openOnboarding}
+          >
             <IconInfoSquareRounded style={ICON_STYLE} />
           </ActionIcon>
         </TooltipWrapper>

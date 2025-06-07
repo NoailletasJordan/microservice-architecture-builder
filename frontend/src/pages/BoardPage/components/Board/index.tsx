@@ -29,10 +29,10 @@ import ConnexionPreview from './components/ConnexionPreview'
 import CustomEdge from './components/CustomEdge'
 import CustomNode from './components/CustomNode/'
 import DeleteCurrentBoardModal from './components/DeleteCurrentBoardModal'
-import DemoPanel from './components/DemoPanel'
 import DraggableGhost from './components/DraggableGhost/index'
 import DemoModal from './components/OnboardingModal'
 import PrimaryActionsPanel from './components/PrimaryActionsPanel'
+import SecondaryActionsPaner from './components/SecondaryActionsPanel'
 import Settings from './components/Settings/index'
 import ShareModal from './components/ShareModal'
 import Toolbar from './components/Toolbar'
@@ -140,7 +140,7 @@ export default function Board() {
                 nodeColor={CSSVAR['--surface-strong']}
                 maskColor="#00000066"
               />
-              <DemoPanel
+              <SecondaryActionsPaner
                 openOnboarding={() => updateShowOnboarding(true)}
                 showGuidanceTexts={showGuidanceTexts}
               />

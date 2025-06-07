@@ -1,6 +1,7 @@
+import { CSSVAR } from '@/contants'
 import { clickCanvaContext } from '@/contexts/ClickCanvaCapture/constants'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
-import { ActionIcon, Card, Group, Menu } from '@mantine/core'
+import { ActionIcon, Box, Card, Group, Menu } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { IconMenu2 } from '@tabler/icons-react'
 import { useContext, useEffect } from 'react'
@@ -44,8 +45,8 @@ function Target({ toggleOpenModal }: { toggleOpenModal: () => void }) {
 
   return (
     <Menu.Target>
-      <div>
-        <Card radius="md" p={0}>
+      <Box pos="relative">
+        <Card radius="sm" bg={CSSVAR['--surface']} p={0}>
           <Group align="flex-start" p="xs">
             <ActionIcon
               mt={4}
@@ -59,7 +60,7 @@ function Target({ toggleOpenModal }: { toggleOpenModal: () => void }) {
           </Group>
         </Card>
         {showGuidanceTexts && <OnGuidanceTextsSettings />}
-      </div>
+      </Box>
     </Menu.Target>
   )
 }

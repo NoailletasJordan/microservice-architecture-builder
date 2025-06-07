@@ -1,4 +1,3 @@
-import { themeDarkColorVariables } from '@/contants'
 import { Button, ButtonProps } from '@mantine/core'
 import { ReactNode } from 'react'
 
@@ -13,12 +12,7 @@ export default function CustomButtonPrimary({
   ...props
 }: Props) {
   return (
-    <Button
-      c={themeDarkColorVariables['--background']}
-      color={themeDarkColorVariables['--text-primary']}
-      {...props}
-      style={style}
-    >
+    <Button {...props} style={style}>
       {children}
     </Button>
   )

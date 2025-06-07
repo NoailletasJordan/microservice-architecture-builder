@@ -95,6 +95,14 @@ export default function Board() {
             {showGuidanceTexts && defaultPointerStyle}
 
             <ReactFlow
+              translateExtent={[
+                [-2520, -1890],
+                [2520, 1890],
+              ]}
+              nodeExtent={[
+                [-2320, -1690],
+                [2320, 1690],
+              ]}
               minZoom={0.65}
               maxZoom={2}
               onConnect={onConnect}

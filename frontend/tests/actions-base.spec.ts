@@ -19,6 +19,7 @@ test('should display and navigate through onboarding modal', async ({
       Wait.forLogMessage('database system is ready to accept connections'),
     )
     .withNetwork(network)
+    .withNetworkAliases('db_local')
     .start()
 
   const stram = await postgresContainer.logs()
@@ -58,7 +59,14 @@ test('should display and navigate through onboarding modal', async ({
       .withNetwork(network)
       .start()
 
-    // await startedBackendContainer.stop()
+    const host = startedBackendContainer.getHost()
+    const port = startedBackendContainer.getMappedPort(8080)
+
+    const res = await fetch(`http://${host}:${port}/ping`)
+    console.log(await res.text())
+
+    await startedBackendContainer.stop()
+    await postgresContainer.stop()
   } catch (e) {
     console.error('❌ Container failed to start:', e)
   }

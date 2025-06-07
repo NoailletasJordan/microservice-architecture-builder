@@ -1,4 +1,3 @@
-import TooltipWrapper from '@/components/TooltipWrapper/index.tsx'
 import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import { Menu } from '@mantine/core'
 import { IconPlus } from '@tabler/icons-react'
@@ -6,11 +5,7 @@ import { useCreateNewBoard } from './hooks/useCreateNewBoard.tsx'
 import { useDuplicateCurrentBoard } from './hooks/useDuplicateCurrentBoard.ts'
 import { IsEnabled } from './hooks/useIsEnabled.tsx'
 
-interface Props {
-  disabledTooltip?: string
-}
-
-export default function NewBoard({ disabledTooltip }: Props) {
+export default function NewBoard() {
   const duplicateCurrentBoard = useDuplicateCurrentBoard()
   const createNewBoard = useCreateNewBoard()
   const isEnabled = IsEnabled()
@@ -21,13 +16,7 @@ export default function NewBoard({ disabledTooltip }: Props) {
           disabled={!isEnabled}
           leftSection={<IconPlus stroke={1} style={ICON_STYLE} />}
         >
-          <TooltipWrapper
-            disabled={isEnabled}
-            position="right"
-            label={disabledTooltip}
-          >
-            Create new
-          </TooltipWrapper>
+          Create new
         </Menu.Sub.Item>
       </Menu.Sub.Target>
 

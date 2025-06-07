@@ -13,7 +13,7 @@ export default function ResetBoard() {
       target="_blank"
     >
       <Text component="span" size="sm">
-        Star on Github ?
+        Star on Github
       </Text>
     </Menu.Item>
   )

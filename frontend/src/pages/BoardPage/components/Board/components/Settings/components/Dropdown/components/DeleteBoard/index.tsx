@@ -8,36 +8,29 @@ import { useContext } from 'react'
 
 interface Props {
   openDeleteCurrentBoardModal: () => void
-  disabledTooltip?: string
 }
 
-export default function DeleteBoard({
-  openDeleteCurrentBoardModal,
-  disabledTooltip,
-}: Props) {
+export default function DeleteBoard({ openDeleteCurrentBoardModal }: Props) {
   const { isLogged } = useContext(userContext)
   const { boards } = useContext(userBoardsContext)
 
   const notEnoughBoardsToDelete = isLogged && boards.length < 2
 
-  if (notEnoughBoardsToDelete) {
-    disabledTooltip = "Can't delete your only board "
-  }
   return (
-    <Menu.Item
-      leftSection={<IconTrash stroke={1} style={ICON_STYLE} />}
-      onClick={openDeleteCurrentBoardModal}
-      disabled={!isLogged || notEnoughBoardsToDelete}
+    <TooltipWrapper
+      position="right"
+      label={notEnoughBoardsToDelete ? "Can't delete your only board " : ''}
+      disabled={!notEnoughBoardsToDelete}
     >
-      <TooltipWrapper
-        position="right"
-        label={disabledTooltip}
-        disabled={!isLogged || !notEnoughBoardsToDelete}
+      <Menu.Item
+        leftSection={<IconTrash stroke={1} style={ICON_STYLE} />}
+        onClick={openDeleteCurrentBoardModal}
+        disabled={!isLogged || notEnoughBoardsToDelete}
       >
         <Text component="span" size="sm">
           Delete
         </Text>
-      </TooltipWrapper>
-    </Menu.Item>
+      </Menu.Item>
+    </TooltipWrapper>
   )
 }

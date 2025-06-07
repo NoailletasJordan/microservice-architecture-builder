@@ -27,11 +27,11 @@ export default function BoardTitle() {
   return (
     <>
       <TextInput
-        error={error}
+        error={!isLoading && error}
         maxLength={50}
         onChange={onChange}
         onBlur={() => {
-          if (!currentUserBoardId || isError) return
+          if (!currentUserBoardId || isError || isLoading) return
 
           return pushMutation(title)
         }}
@@ -44,14 +44,18 @@ export default function BoardTitle() {
             <Loader size="xs" />
           ) : (
             <TooltipWrapper
-              position="bottom"
+              position="right"
               label={
                 isLogged
-                  ? 'Your data is saved in the cloud !'
-                  : 'Your board is saved locally in your browser'
+                  ? 'Your work is saved in the cloud'
+                  : 'Your work is saved on your browser'
               }
             >
-              <Icon stroke={1} color="white" style={ICON_STYLE} />
+              <Icon
+                stroke={1.5}
+                color={isLogged ? 'white' : 'gray'}
+                style={ICON_STYLE}
+              />
             </TooltipWrapper>
           )
         }

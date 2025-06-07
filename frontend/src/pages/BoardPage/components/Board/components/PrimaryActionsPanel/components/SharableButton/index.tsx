@@ -17,7 +17,7 @@ export default function SharableButton({ onClick, shrink }: Props) {
     </Box>
   ) : (
     <CustomButtonPrimary
-      size="lg"
+      size="md"
       leftSection={<IconLink style={ICON_STYLE} />}
       onClick={onClick}
     >

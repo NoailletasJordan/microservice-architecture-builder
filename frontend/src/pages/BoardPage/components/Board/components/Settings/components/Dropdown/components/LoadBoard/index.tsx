@@ -1,4 +1,3 @@
-import TooltipWrapper from '@/components/TooltipWrapper'
 import { userContext } from '@/contexts/User/constants'
 import { userBoardsContext } from '@/contexts/UserBoards/constants'
 import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
@@ -6,11 +5,7 @@ import { Badge, Menu } from '@mantine/core'
 import { IconPinEnd } from '@tabler/icons-react'
 import { useContext } from 'react'
 
-interface Props {
-  disabledTooltip?: string
-}
-
-export default function SelectBoard({ disabledTooltip }: Props) {
+export default function LoadBoard() {
   const { boards, currentUserBoardId, setCurrentUserBoardId } =
     useContext(userBoardsContext)
 
@@ -23,13 +18,7 @@ export default function SelectBoard({ disabledTooltip }: Props) {
           leftSection={<IconPinEnd stroke={1} style={ICON_STYLE} />}
           disabled={!isLogged}
         >
-          <TooltipWrapper
-            disabled={isLogged}
-            position="right"
-            label={disabledTooltip}
-          >
-            Load
-          </TooltipWrapper>
+          Load
         </Menu.Sub.Item>
       </Menu.Sub.Target>
 

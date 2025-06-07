@@ -10,8 +10,6 @@ export default function usePushMutation() {
   const queryKeyBoardData = useQueryKeyBoardData()
 
   return async (newTitle: string) => {
-    if (!currentUserBoardId) return
-
     try {
       await updateBoard({
         boardId: currentUserBoardId!,

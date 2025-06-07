@@ -41,12 +41,14 @@ export default function Settings({
 
 function Target({ toggleOpenModal }: { toggleOpenModal: () => void }) {
   const { showGuidanceTexts } = useContext(onBoardingContext)
+
   return (
     <Menu.Target>
       <div>
         <Card radius="md" p={0}>
-          <Group align="center" p="xs">
+          <Group align="flex-start" p="xs">
             <ActionIcon
+              mt={4}
               variant="transparent"
               onClick={toggleOpenModal}
               data-testid="button-settings"

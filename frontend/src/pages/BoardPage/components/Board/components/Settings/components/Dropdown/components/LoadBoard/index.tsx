@@ -1,7 +1,7 @@
 import { userContext } from '@/contexts/User/constants'
 import { userBoardsContext } from '@/contexts/UserBoards/constants'
 import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
-import { Badge, Menu } from '@mantine/core'
+import { Badge, Menu, ScrollArea } from '@mantine/core'
 import { IconPinEnd } from '@tabler/icons-react'
 import { useContext } from 'react'
 
@@ -23,25 +23,27 @@ export default function LoadBoard() {
       </Menu.Sub.Target>
 
       <Menu.Sub.Dropdown>
-        {boards.map((board) => {
-          const isCurrent = board.id === currentUserBoardId
-          return (
-            <Menu.Item
-              onClick={() => setCurrentUserBoardId(board.id)}
-              key={board.id}
-              disabled={isCurrent}
-              rightSection={
-                isCurrent ? (
-                  <Badge size="xs" color="gray">
-                    Current
-                  </Badge>
-                ) : null
-              }
-            >
-              {board.title}
-            </Menu.Item>
-          )
-        })}
+        <ScrollArea.Autosize mah={400}>
+          {boards.map((board) => {
+            const isCurrent = board.id === currentUserBoardId
+            return (
+              <Menu.Item
+                onClick={() => setCurrentUserBoardId(board.id)}
+                key={board.id}
+                disabled={isCurrent}
+                rightSection={
+                  isCurrent ? (
+                    <Badge size="xs" color="gray">
+                      Current
+                    </Badge>
+                  ) : null
+                }
+              >
+                {board.title}
+              </Menu.Item>
+            )
+          })}
+        </ScrollArea.Autosize>
       </Menu.Sub.Dropdown>
     </Menu.Sub>
   )

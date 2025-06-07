@@ -51,29 +51,27 @@ export default function DeleteButton({ parentId }: Props) {
           droppableType: 'delete',
         }}
       >
-        {({ isOver }) => {
-          return (
-            <motion.div
-              variants={draggedOverVariants}
-              initial={false}
-              animate={isOver ? 'on' : 'off'}
+        {({ isOver }) => (
+          <motion.div
+            variants={draggedOverVariants}
+            initial={false}
+            animate={isOver ? 'on' : 'off'}
+          >
+            <ThemeIcon
+              component="div"
+              variant="transparent"
+              color={CSSVAR['--surface']}
+              size="md"
+              aria-label="Delete-Service"
             >
-              <ThemeIcon
-                component="div"
-                variant="transparent"
-                color={CSSVAR['--surface']}
-                size="md"
-                aria-label="Delete-Service"
-              >
-                <IconTrash
-                  color={CSSVAR['--text']}
-                  style={ICON_STYLE}
-                  stroke={1.5}
-                />
-              </ThemeIcon>
-            </motion.div>
-          )
-        }}
+              <IconTrash
+                color={CSSVAR['--text']}
+                style={ICON_STYLE}
+                stroke={1.5}
+              />
+            </ThemeIcon>
+          </motion.div>
+        )}
       </DroppableArea>
     </motion.div>
   )

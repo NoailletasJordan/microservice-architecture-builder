@@ -13,7 +13,6 @@ import {
   getNewNode,
   getNodesAfterDeleteSubservice,
   getNodesAfterUpdateNode,
-  getStateAfterDeleteNode,
 } from './helpers'
 
 type DragEventHandler = (
@@ -120,14 +119,11 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
     switch (draggableType) {
       case 'subService': {
         const currentNodes = flowInstance.getNodes()
-        const currentEdges = flowInstance.getEdges()
-        const { edges: newEdges, nodes: newNodes } = getStateAfterDeleteNode({
-          nodeId: draggedContent.id,
-          currentEdges,
-          currentNodes,
+        const newNodes = getNodesAfterDeleteSubservice({
+          deleteId: draggedContent.id,
+          oldNodes: currentNodes,
         })
         flowInstance.setNodes(newNodes)
-        flowInstance.setEdges(newEdges)
         break
       }
     }

@@ -4,7 +4,6 @@ import { CSSVAR } from '@/contants'
 import { boardDataContext } from '@/contexts/BoardData/constants'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
-import { userContext } from '@/contexts/User/constants'
 import { Box } from '@mantine/core'
 import { useDisclosure, useElementSize } from '@mantine/hooks'
 import { useContext } from 'react'
@@ -72,8 +71,6 @@ export default function Board() {
   const onConnect = useOnConnect({ edges })
   const onNodeDragEnd = useOnNodeDragEnd()
 
-  const { authToken } = useContext(userContext)
-
   return (
     <>
       <DroppableHintProvider>
@@ -81,9 +78,13 @@ export default function Board() {
           <Box
             w="100%"
             h="100vh"
-            style={preventScrollbarOnPan}
+            style={{
+              ...preventScrollbarOnPan,
+              cursor: showGuidanceTexts ? '' : '',
+            }}
             pos="relative"
             ref={ref}
+            className={showGuidanceTexts ? NO_PAN_REACTFLOW_CLASS : ''}
           >
             <DroppableIndicator
               height={height}
@@ -91,6 +92,7 @@ export default function Board() {
               width={width}
               droppableType={droppableType}
             />
+            {showGuidanceTexts && defaultPointerStyle}
 
             <ReactFlow
               minZoom={0.65}
@@ -165,3 +167,16 @@ export default function Board() {
     </>
   )
 }
+
+const defaultPointerStyle = (
+  <style>
+    {`
+        .react-flow__pane {
+          cursor: default;
+        }
+        .react-flow__pane.dragging {
+          cursor: default;
+        }
+      `}
+  </style>
+)

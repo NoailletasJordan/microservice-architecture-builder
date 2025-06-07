@@ -1,4 +1,5 @@
 import { clickCanvaContext } from '@/contexts/ClickCanvaCapture/constants'
+import { onBoardingContext } from '@/contexts/Onboarding/constants'
 import { ActionIcon, Card, Group, Menu } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { IconMenu2 } from '@tabler/icons-react'
@@ -39,6 +40,7 @@ export default function Settings({
 }
 
 function Target({ toggleOpenModal }: { toggleOpenModal: () => void }) {
+  const { showGuidanceTexts } = useContext(onBoardingContext)
   return (
     <Menu.Target>
       <div>
@@ -54,7 +56,7 @@ function Target({ toggleOpenModal }: { toggleOpenModal: () => void }) {
             <BoardTitle />
           </Group>
         </Card>
-        <OnGuidanceTextsSettings />
+        {showGuidanceTexts && <OnGuidanceTextsSettings />}
       </div>
     </Menu.Target>
   )

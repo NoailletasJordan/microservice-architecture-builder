@@ -41,7 +41,7 @@ export default function BoardTitle() {
                   : 'Your board is saved locally in your browser'
               }
             >
-              <Icon stroke={1} style={ICON_STYLE} />
+              <Icon stroke={1} color="white" style={ICON_STYLE} />
             </TooltipWrapper>
           )
         }

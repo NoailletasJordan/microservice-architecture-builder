@@ -63,7 +63,7 @@ export function useNodesAndEdges() {
         queryClient.setQueryData(logoutQueryKey, {
           nodes: [],
           edges: [],
-          title: '',
+          title: localBoardTitle,
         })
         return { nodes, edges, title: response.title }
       }

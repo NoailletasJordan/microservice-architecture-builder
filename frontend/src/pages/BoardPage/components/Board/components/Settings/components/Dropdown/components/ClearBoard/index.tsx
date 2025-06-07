@@ -6,6 +6,8 @@ interface Props {
   openClearCurrentBoardModal: () => void
 }
 
+export const itemLabel = 'Clear data'
+
 export default function ClearBoard({ openClearCurrentBoardModal }: Props) {
   return (
     <Menu.Item
@@ -13,7 +15,7 @@ export default function ClearBoard({ openClearCurrentBoardModal }: Props) {
       onClick={openClearCurrentBoardModal}
     >
       <Text component="span" size="sm">
-        Clear data
+        {itemLabel}
       </Text>
     </Menu.Item>
   )

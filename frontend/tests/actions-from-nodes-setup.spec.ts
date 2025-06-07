@@ -1,4 +1,6 @@
 import { test as base, expect } from '@playwright/test'
+import { primaryActionText as clearActionText } from '../src/pages/BoardPage/components/Board/components/ClearCurrentBoardModal/index'
+import { itemLabel as clearItemLabel } from '../src/pages/BoardPage/components/Board/components/Settings/components/Dropdown/components/ClearBoard'
 import { checkInitialSetup, initialTwoNodesSetup } from './helpers'
 
 const testWithNodesSetup = base.extend({
@@ -63,9 +65,9 @@ testWithNodesSetup('should delete an edge', async ({ page }) => {
 
 testWithNodesSetup('should reset board', async ({ page }) => {
   await page.getByTestId('button-settings').click()
-  await page.getByText('Reset the board').click()
+  await page.getByText(clearItemLabel).click()
   await page
-    .getByRole('button', { name: 'Yes, reset the board', includeHidden: true })
+    .getByRole('button', { name: clearActionText, includeHidden: true })
     .click()
   await page.waitForTimeout(100)
   await expect(page.getByTestId(/node-type-/)).toHaveCount(0)

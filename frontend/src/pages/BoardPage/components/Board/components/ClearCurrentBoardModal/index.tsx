@@ -8,6 +8,8 @@ interface Props {
   close: () => void
 }
 
+export const primaryActionText = 'Yes, clear the board'
+
 export default function ClearCurrentBoard({ opened, close }: Props) {
   const flowInstance = useReactFlow()
   const handleReset = () => {
@@ -31,7 +33,7 @@ export default function ClearCurrentBoard({ opened, close }: Props) {
             Cancel
           </Button>
           <Button color="red.9" onClick={handleReset}>
-            Yes, reset the board
+            {primaryActionText}
           </Button>
         </Group>
       </Stack>

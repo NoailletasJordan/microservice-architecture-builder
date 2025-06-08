@@ -1,4 +1,5 @@
 import { Locator, Page, expect } from '@playwright/test'
+import { testIdLogged } from './../src/pages/BoardPage/components/Board/components/Settings/components/BoardTitle/index'
 
 interface DragParameters {
   coordonate: [number, number]
@@ -63,4 +64,11 @@ export const initialTwoNodesSetup = async ({ page }: NodeSetupOptions) => {
 export const checkInitialSetup = async ({ page }: NodeSetupOptions) => {
   const edge = page.getByLabel('edge').first()
   await expect(edge).toHaveCount(1)
+}
+
+export async function logInActions(page: Page) {
+  const validTokenOauth =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEwNjg1NTgwNzQxMDU0NzE2NTMwMSJ9.sMqtrZQ0dYbSd3x1isUPywg2hawbYZqmwHLBXJVWNyc'
+  await page.goto(`/#auth-token=${validTokenOauth}`)
+  await expect(page.getByTestId(testIdLogged)).toBeVisible()
 }

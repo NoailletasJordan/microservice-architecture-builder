@@ -52,6 +52,7 @@ export default function BoardTitle() {
               }
             >
               <Icon
+                data-testid={isLogged ? testIdLogged : testIdLogoff}
                 stroke={1.5}
                 color={isLogged ? 'white' : 'gray'}
                 style={ICON_STYLE}
@@ -63,3 +64,6 @@ export default function BoardTitle() {
     </>
   )
 }
+
+export const testIdLogged = 'icon-router'
+export const testIdLogoff = 'icon-router-off'

@@ -1,76 +1,9 @@
-import { expect, test } from '@playwright/test'
-import { parse } from 'dotenv'
-import { readFileSync } from 'fs'
-import { GenericContainer, Network, Wait } from 'testcontainers'
-import { v4 as uuid } from 'uuid'
+import { expect } from '@playwright/test'
+import { testWithBackend as test } from './setupTeardown'
 
 test('should display and navigate through onboarding modal', async ({
   page,
 }) => {
-  const envFileContent = readFileSync('../.env', 'utf-8')
-  const envVars = parse(envFileContent)
-
-  const network = await new Network({ nextUuid: uuid }).start()
-
-  const postgresContainer = await new GenericContainer('postgres:latest')
-    .withExposedPorts(5432)
-    .withEnvironment(envVars)
-    .withWaitStrategy(
-      Wait.forLogMessage('database system is ready to accept connections'),
-    )
-    .withNetwork(network)
-    .withNetworkAliases('db_local')
-    .start()
-
-  const stram = await postgresContainer.logs()
-
-  stram.on('data', (chunk) => {
-    console.log('postgres', chunk.toString())
-  })
-  stram.on('error', (err) => {
-    console.error('postgres', err)
-  })
-  stram.on('close', () => {
-    console.log('postgres Stream closed')
-  })
-
-  const backendContainer = await GenericContainer.fromDockerfile(
-    '../backend/',
-    'Dockerfile',
-  ).build()
-
-  backendContainer.withLogConsumer((stream) => {
-    stream.on('data', (chunk) => {
-      console.log('backend', chunk.toString())
-    })
-    stream.on('error', (err) => {
-      console.error('backend', err)
-    })
-    stream.on('close', () => {
-      console.log('backend Stream closed')
-    })
-  })
-
-  try {
-    const startedBackendContainer = await backendContainer
-      .withEnvironment({ ...envVars })
-      .withExposedPorts(8080)
-      .withWaitStrategy(Wait.forLogMessage('Server starting on port :8080'))
-      .withNetwork(network)
-      .start()
-
-    const host = startedBackendContainer.getHost()
-    const port = startedBackendContainer.getMappedPort(8080)
-
-    const res = await fetch(`http://${host}:${port}/ping`)
-    console.log(await res.text())
-
-    await startedBackendContainer.stop()
-    await postgresContainer.stop()
-  } catch (e) {
-    console.error('❌ Container failed to start:', e)
-  }
-
   await page.goto('/')
 
   const demoButton = page.getByLabel(/watch demo/i)

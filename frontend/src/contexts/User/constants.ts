@@ -1,3 +1,4 @@
+import { getApiUrl } from '@/contants'
 import { createContext } from 'react'
 import { useUser } from './hooks/useUser'
 
@@ -32,5 +33,5 @@ export const userContext = createContext<IUserContext>({
 })
 
 export const handlePushToGoogleOauth = () => {
-  window.location.href = `${import.meta.env.VITE_API_URL}/auth/google/login`
+  window.location.href = `${getApiUrl()}/auth/google/login`
 }

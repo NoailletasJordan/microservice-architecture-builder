@@ -1,3 +1,4 @@
+import { getApiUrl } from '@/contants'
 import { BackendQueryResponse } from '@/contexts/User/constants'
 import { useQuery } from '@tanstack/react-query'
 import { TBoardModel } from '../constants'
@@ -13,7 +14,7 @@ export function useUserBoards() {
       if (!authToken) {
         return []
       } else {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/board`, {
+        const res = await fetch(`${getApiUrl()}/api/board`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           },

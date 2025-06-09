@@ -1,3 +1,4 @@
+import { getApiUrl } from '@/contants'
 import { useLocalStorage } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
@@ -17,14 +18,11 @@ export function useUser({ removeAuthToken }: { removeAuthToken: () => void }) {
       if (!authToken) {
         return null
       } else {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/users/me`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
+        const res = await fetch(`${getApiUrl()}/api/users/me`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
           },
-        )
+        })
         if (!res.ok) throw new Error('Failed to fetch user')
         const result = await res.json()
         return result

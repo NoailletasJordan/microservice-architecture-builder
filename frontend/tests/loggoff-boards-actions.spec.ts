@@ -27,6 +27,7 @@ test('Delete board button should be disabled', async ({ page }) => {
 
 test('temp', async ({ page }) => {
   await page.goto('/')
+
   await logInActions(page)
 
   await page.getByTestId('button-settings').click()

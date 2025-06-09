@@ -1,4 +1,4 @@
-import { test as base, expect } from '@playwright/test'
+import { test as base, BrowserContext, expect } from '@playwright/test'
 import { PostgreSqlContainer } from '@testcontainers/postgresql'
 import { parse } from 'dotenv'
 import { readFileSync } from 'fs'
@@ -11,9 +11,12 @@ import {
 import { v4 as uuid } from 'uuid'
 
 // Global setup / teardown for all test
-// https://playwright.dev/docs/test-fixtures#adding-global-beforeallafterall-hookss
-export const testWithBackend = base.extend<any, { forEachWorker: void }>({
-  forEachWorker: [
+// Injecting the testcontainer's api url through the window object
+export const testWithBackend = base.extend<
+  any,
+  { startTestContainers: { apiUrl: string } }
+>({
+  startTestContainers: [
     // https://github.com/microsoft/playwright/issues/14590
     // eslint-disable-next-line
     async ({}, use) => {
@@ -30,8 +33,6 @@ export const testWithBackend = base.extend<any, { forEachWorker: void }>({
             target: '/docker-entrypoint-initdb.d/init-db.sh',
           },
         ])
-        // .withUser('postgres')
-        // .withPassword('postgres')
         .withNetwork(network)
         .withDatabase('test')
         .start()
@@ -60,6 +61,7 @@ export const testWithBackend = base.extend<any, { forEachWorker: void }>({
       })
 
       let startedBackendContainer: StartedTestContainer | undefined
+      let apiUrl = ''
       try {
         // Override postgres dsn to use the started container
         const containerName = postgresContainer.getName().replace(/^\//, '')
@@ -77,26 +79,32 @@ export const testWithBackend = base.extend<any, { forEachWorker: void }>({
           .start()
 
         // overwrite api url
-        process.env.VITE_API_URL = `http://${startedBackendContainer.getHost()}:${startedBackendContainer.getMappedPort(
+        apiUrl = `http://${startedBackendContainer.getHost()}:${startedBackendContainer.getMappedPort(
           8080,
         )}`
         /** Temp */
-        console.log('hit:', process.env.VITE_API_URL)
+        console.log('hit:', apiUrl)
       } catch (e) {
         console.error('❌ Backend container failed to start:', e)
       }
 
-      /** Temp */
-      // console.log('env:', process.env)
-
       // healthCheck
-      const res = await fetch(`${process.env.VITE_API_URL}/ping`)
+      const res = await fetch(`${apiUrl}/ping`)
       expect(res.ok).toBeTruthy()
 
-      await use()
+      await use({ apiUrl })
       await startedBackendContainer?.stop()
       await postgresContainer.stop()
     },
     { scope: 'worker', auto: true },
+  ],
+  injectApiUrl: [
+    ({ context, startTestContainers: { apiUrl } }, use) => {
+      ;(context as BrowserContext).addInitScript((apiUrl: string) => {
+        ;(window as any).__TEST_ENV__ = { VITE_API_URL: apiUrl }
+      }, apiUrl)
+      use()
+    },
+    { scope: 'test', auto: true },
   ],
 })

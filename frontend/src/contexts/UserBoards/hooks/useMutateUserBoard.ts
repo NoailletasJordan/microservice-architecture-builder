@@ -1,4 +1,4 @@
-import { getDataToStoreObject } from '@/contants'
+import { getApiUrl, getDataToStoreObject } from '@/contants'
 import { AUTH_TOKEN_KEY, BackendQueryResponse } from '@/contexts/User/constants'
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
@@ -136,17 +136,18 @@ function useMutateBoards() {
       const { payload, method, boardId } = params
       if (!authToken) throw new Error('No auth token')
 
+      const apiUrl = getApiUrl()
       const config = {
         POST: {
-          url: `${import.meta.env.VITE_API_URL}/api/board`,
+          url: `${apiUrl}/api/board`,
           errormessage: 'failed to create board',
         },
         PATCH: {
-          url: `${import.meta.env.VITE_API_URL}/api/board/${boardId}`,
+          url: `${apiUrl}/api/board/${boardId}`,
           errormessage: 'failed to update board',
         },
         DELETE: {
-          url: `${import.meta.env.VITE_API_URL}/api/board/${boardId}`,
+          url: `${apiUrl}/api/board/${boardId}`,
           errormessage: 'failed to delete board',
         },
       }

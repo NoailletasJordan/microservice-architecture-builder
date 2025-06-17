@@ -1,8 +1,9 @@
 import { showNotificationSuccess, useEffectEventP } from '@/contants'
+import { userContext } from '@/contexts/User/constants'
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { UseQueryResult } from '@tanstack/react-query'
-import { useEffect, useMemo, useRef } from 'react'
+import { useContext, useEffect, useMemo, useRef } from 'react'
 import { ReactFlowInstance, useReactFlow } from 'reactflow'
 import { TBoardModel } from '../constants'
 import { useMutateUserBoard } from './useMutateUserBoard'
@@ -26,6 +27,8 @@ export function useHandleBoardsOnLoginLogout({
     )
   }, [boardsQuery.data])
 
+  const { isLogged } = useContext(userContext)
+
   const mutator = useMutateUserBoard({
     currentUserBoardId,
     setCurrentUserBoardId,
@@ -39,20 +42,21 @@ export function useHandleBoardsOnLoginLogout({
     setCurrentUserBoardId,
   }))
 
-  const previouslyHadBoard = useRef(false)
+  const usedPreviouslyLoggedIn = useRef(false)
   useEffect(() => {
     const { setCurrentUserBoardId, flowInstance, createNewBoard, boardsQuery } =
       nonReactiveState()
     if (
+      !boardsQuery.isFetched ||
       boardsQuery.isError ||
       (boardsQuery.data && 'error' in boardsQuery.data)
     )
       return
 
-    if (!hasBoards) {
-      if (previouslyHadBoard.current) {
-        // User logged out
-        previouslyHadBoard.current = false
+    if (!isLogged) {
+      if (usedPreviouslyLoggedIn.current) {
+        // User logging out
+        usedPreviouslyLoggedIn.current = false
         setCurrentUserBoardId(undefined)
         showNotificationSuccess({
           title: "You're logged out",
@@ -61,7 +65,7 @@ export function useHandleBoardsOnLoginLogout({
       }
     } else {
       // User logged in
-      previouslyHadBoard.current = true
+      usedPreviouslyLoggedIn.current = true
       const userBoards = boardsQuery.data as TBoardModel[]
       handleLoadRemoteUserBoards({
         setCurrentUserBoardId,
@@ -70,7 +74,7 @@ export function useHandleBoardsOnLoginLogout({
         flowInstance,
       })
     }
-  }, [hasBoards, nonReactiveState])
+  }, [isLogged, boardsQuery.isFetched, nonReactiveState])
 }
 
 async function handleLoadRemoteUserBoards({

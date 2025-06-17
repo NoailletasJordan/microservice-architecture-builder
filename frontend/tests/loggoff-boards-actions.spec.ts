@@ -25,13 +25,14 @@ test('Delete board button should be disabled', async ({ page }) => {
   await expect(page.getByRole('menuitem', { name: 'Delete' })).toBeDisabled()
 })
 
-test('temp', async ({ page }) => {
+test('temp', async ({ page, startTestContainers: { apiUrl } }) => {
   await page.goto('/')
-
-  await logInActions(page)
+  await logInActions({ apiUrl, page })
 
   await page.getByTestId('button-settings').click()
 
-  await page.getByRole('menuitem', { name: 'Load' }).click()
-  await page.waitForTimeout(5000)
+  const loadButton = page.getByRole('menuitem', { name: 'Load' })
+  await expect(loadButton).not.toBeDisabled()
+  await loadButton.hover()
+  await page.waitForTimeout(100000)
 })

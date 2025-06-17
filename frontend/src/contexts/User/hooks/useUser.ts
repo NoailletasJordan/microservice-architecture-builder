@@ -1,4 +1,4 @@
-import { getApiUrl } from '@/contants'
+import { getApiUrl, useEffectEventP } from '@/contants'
 import { useLocalStorage } from '@mantine/hooks'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
@@ -31,12 +31,18 @@ export function useUser({ removeAuthToken }: { removeAuthToken: () => void }) {
     staleTime: Infinity,
   })
 
+  const nonReactiveState = useEffectEventP(() => ({
+    authToken,
+    queryClient,
+    removeAuthToken,
+  }))
   useMemo(() => {
     if (userQuery.isError) {
+      const { authToken, queryClient, removeAuthToken } = nonReactiveState()
       queryClient.setQueryData(['user', authToken], undefined)
       removeAuthToken()
     }
-  }, [userQuery.isError])
+  }, [userQuery.isError, nonReactiveState])
 
   const isLogged = Boolean(
     userQuery.data && !('error' in userQuery.data) && !!userQuery.data?.id,

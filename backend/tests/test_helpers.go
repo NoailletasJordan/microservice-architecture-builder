@@ -201,10 +201,8 @@ func generateRandomStringOfLength(length int) string {
 
 // GetUserStructFromGoogleMock returns a mock GoogleUserResponse for testing purposes.
 func GetUserStructFromGoogleMock(code string) (*helpers.GoogleUserResponse, error) {
-	/** Temp */
-	fmt.Println("HIT")
 	return &helpers.GoogleUserResponse{
-		IDToken:      "mock_id_token",
+		IDToken:      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvZSBEZXZlbG9wZXIiLCJlbWFpbCI6ImpldUBleGFtcGxlLmNvbSIsImlzcyI6Imh0dHBzOi8vYWNjb3VudHMuZ29vZ2xlLmNvbSIsImF1ZCI6InlvdXItY2xpZW50LWlkIiwiZXhwIjoyNTM0MDM5MjAwfQ.abc123abc123abc123abc123abc123abc123abc123abc123abc123abc123abc1",
 		AccessToken:  "mock_access_token",
 		ExpiresIn:    3600,
 		TokenType:    "Bearer",

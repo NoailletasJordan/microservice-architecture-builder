@@ -2,12 +2,14 @@ import { test as base, BrowserContext, expect } from '@playwright/test'
 import { PostgreSqlContainer } from '@testcontainers/postgresql'
 import { parse } from 'dotenv'
 import { readFileSync } from 'fs'
+import path from 'path'
 import {
   GenericContainer,
   Network,
   StartedTestContainer,
   Wait,
 } from 'testcontainers'
+import { fileURLToPath } from 'url'
 import { v4 as uuid } from 'uuid'
 
 // Global setup / teardown for all test
@@ -29,13 +31,24 @@ export const testWithBackend = base.extend<
       const postgresContainer = await new PostgreSqlContainer('postgres:latest')
         .withCopyFilesToContainer([
           {
-            source: '../../postgres/init-db.sh',
+            source: path.join(
+              path.dirname(fileURLToPath(import.meta.url)),
+              '../../postgres/init-db.sh',
+            ),
             target: '/docker-entrypoint-initdb.d/init-db.sh',
           },
         ])
         .withNetwork(network)
         .withDatabase('test')
         .start()
+
+      const checkFile = await postgresContainer.exec([
+        'test',
+        '-f',
+        '/docker-entrypoint-initdb.d/init-db.sh',
+      ])
+      const initFileIsPresentInContainer = checkFile.exitCode === 0
+      expect(initFileIsPresentInContainer).toBeTruthy()
 
       // Start postgres logs
       const postgresLogs = await postgresContainer.logs()
@@ -82,8 +95,6 @@ export const testWithBackend = base.extend<
         apiUrl = `http://${startedBackendContainer.getHost()}:${startedBackendContainer.getMappedPort(
           8080,
         )}`
-        /** Temp */
-        console.log('hit:', apiUrl)
       } catch (e) {
         console.error('❌ Backend container failed to start:', e)
       }

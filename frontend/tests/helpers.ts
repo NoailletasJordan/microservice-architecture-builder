@@ -66,9 +66,21 @@ export const checkInitialSetup = async ({ page }: NodeSetupOptions) => {
   await expect(edge).toHaveCount(1)
 }
 
-export async function logInActions(page: Page) {
-  const validTokenOauth =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEwNjg1NTgwNzQxMDU0NzE2NTMwMSJ9.sMqtrZQ0dYbSd3x1isUPywg2hawbYZqmwHLBXJVWNyc'
-  await page.goto(`/#auth-token=${validTokenOauth}`)
+export async function logInActions({
+  apiUrl,
+  page,
+}: {
+  apiUrl: string
+  page: Page
+}) {
+  // const validTokenOauth =
+  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEwNjg1NTgwNzQxMDU0NzE2NTMwMSJ9.sMqtrZQ0dYbSd3x1isUPywg2hawbYZqmwHLBXJVWNyc'
+  // await page.goto(`/#auth-token=${validTokenOauth}`)
+  // await page.goto(`${apiUrl}/auth/google/callback?code=mock_code`)
+  await page.goto(
+    `${apiUrl}/auth/google/callback?code=4/0AUJR-x4ZviF6qPoJqf920eFjhWfmishmb6bIESO1Zf2WDtqi5xZkVfM78ZdcFhCoHbNeqA`,
+  )
+
+  // /auth/google/callback?code=4%2F0AUJR-x4ZviF6qPoJqf920eFjhWfmishmb6bIESO1Zf2WDtqi5xZkVfM78ZdcFhCoHbNeqA&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+openid&authuser=1&prompt=consent
   await expect(page.getByTestId(testIdLogged)).toBeVisible()
 }

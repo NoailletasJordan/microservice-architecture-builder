@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"microservice-architecture-builder/backend/helpers"
 	"microservice-architecture-builder/backend/service"
 	"net/http"
@@ -22,11 +23,17 @@ func NewOAuthController(getUserStructFromGoogle func(code string) (*helpers.Goog
 
 // GoogleLoginHandler handles GET /auth/google/login
 func (oc *OauthController) GoogleLoginRedirect(w http.ResponseWriter, r *http.Request) {
+
 	clientID := os.Getenv("OAUTH_GOOGLE_CLIENT_ID")
 	redirectURI := os.Getenv("OAUTH_GOOGLE_REDIRECT_URI")
 	if clientID == "" || redirectURI == "" {
 		http.Error(w, "Google OAuth not configured", http.StatusInternalServerError)
 		return
+	}
+	// temp
+	if os.Getenv("MOCK_OAUTH") == "true" {
+		currentURL := fmt.Sprintf("%s://%s%s", r.URL.Scheme, r.URL.Host, r.URL.Path)
+		http.Redirect(w, r, currentURL+"?code=4/0AUJR-x4ZviF6qPoJqf920eFjhWfmishmb6bIESO1Zf2WDtqi5xZkVfM78ZdcFhCoHbNeqA", http.StatusFound)
 	}
 
 	oauthURL := url.URL{
@@ -49,12 +56,16 @@ func (oc *OauthController) GoogleLoginRedirect(w http.ResponseWriter, r *http.Re
 // GoogleCallbackHandler handles GET /auth/google/callback (Google OAuth callback)
 func (oc *OauthController) GoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
+	fmt.Println("url", r.URL.String())
+
+	fmt.Println("code", code)
 	if code == "" {
 		sendError(w, http.StatusBadRequest, "No authorization code received")
 		return
 	}
 
-	tokenResp, err := helpers.GetUserStructFromGoogle(code)
+	tokenResp, err := oc.getTokenFromGoogle(code)
+	fmt.Println("tokenResp", tokenResp)
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, "Failed to exchange code for token")
 		return
@@ -67,6 +78,7 @@ func (oc *OauthController) GoogleCallbackHandler(w http.ResponseWriter, r *http.
 
 	// Parse the id_token JWT (without verifying signature, just to get claims)
 	claims, err := helpers.ParseJWTUnverified(tokenResp.IDToken)
+	fmt.Println("HIT", err)
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, "Failed to parse id_token")
 		return

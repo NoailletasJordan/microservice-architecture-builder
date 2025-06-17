@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"microservice-architecture-builder/backend/helpers"
 	"microservice-architecture-builder/backend/service"
 	"net/http"
@@ -10,14 +9,12 @@ import (
 )
 
 type OauthController struct {
-	getTokenFromGoogle func(code string) (*helpers.GoogleUserResponse, error)
-	userService        *service.UserService
+	userService *service.UserService
 }
 
-func NewOAuthController(getUserStructFromGoogle func(code string) (*helpers.GoogleUserResponse, error), userService *service.UserService) *OauthController {
+func NewOAuthController(userService *service.UserService) *OauthController {
 	return &OauthController{
-		getTokenFromGoogle: getUserStructFromGoogle,
-		userService:        userService,
+		userService: userService,
 	}
 }
 
@@ -30,17 +27,13 @@ func (oc *OauthController) GoogleLoginRedirect(w http.ResponseWriter, r *http.Re
 		http.Error(w, "Google OAuth not configured", http.StatusInternalServerError)
 		return
 	}
-	// temp
-	if os.Getenv("MOCK_OAUTH") == "true" {
-		currentURL := fmt.Sprintf("%s://%s%s", r.URL.Scheme, r.URL.Host, r.URL.Path)
-		http.Redirect(w, r, currentURL+"?code=4/0AUJR-x4ZviF6qPoJqf920eFjhWfmishmb6bIESO1Zf2WDtqi5xZkVfM78ZdcFhCoHbNeqA", http.StatusFound)
+
+	oauthURL, err := url.Parse(os.Getenv("OAUTH_GOOGLE_ACCOUNT_BASE_URL") + "/o/oauth2/v2/auth")
+	if err != nil {
+		http.Error(w, "Invalid OAuth Google host", http.StatusInternalServerError)
+		return
 	}
 
-	oauthURL := url.URL{
-		Scheme: "https",
-		Host:   "accounts.google.com",
-		Path:   "/o/oauth2/v2/auth",
-	}
 	q := oauthURL.Query()
 	q.Set("client_id", clientID)
 	q.Set("redirect_uri", redirectURI)
@@ -56,16 +49,12 @@ func (oc *OauthController) GoogleLoginRedirect(w http.ResponseWriter, r *http.Re
 // GoogleCallbackHandler handles GET /auth/google/callback (Google OAuth callback)
 func (oc *OauthController) GoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
-	fmt.Println("url", r.URL.String())
-
-	fmt.Println("code", code)
 	if code == "" {
 		sendError(w, http.StatusBadRequest, "No authorization code received")
 		return
 	}
 
-	tokenResp, err := oc.getTokenFromGoogle(code)
-	fmt.Println("tokenResp", tokenResp)
+	tokenResp, err := helpers.GetUserStructFromGoogle(code)
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, "Failed to exchange code for token")
 		return
@@ -78,7 +67,6 @@ func (oc *OauthController) GoogleCallbackHandler(w http.ResponseWriter, r *http.
 
 	// Parse the id_token JWT (without verifying signature, just to get claims)
 	claims, err := helpers.ParseJWTUnverified(tokenResp.IDToken)
-	fmt.Println("HIT", err)
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, "Failed to parse id_token")
 		return

@@ -51,12 +51,10 @@ type GoogleUserResponse struct {
 
 // (For prod) Will really request Google's token response.
 func GetUserStructFromGoogle(code string) (*GoogleUserResponse, error) {
-	tokenURL := url.URL{
-		Scheme: "https",
-		Host:   "oauth2.googleapis.com",
-		Path:   "/token",
+	tokenURL, err := url.Parse(os.Getenv("OAUTH_GOOGLE_BASE_URL") + "/token")
+	if err != nil {
+		return nil, errors.New("invalid OAuth Google host")
 	}
-
 	data := url.Values{}
 	data.Set("code", code)
 	data.Set("client_id", os.Getenv("OAUTH_GOOGLE_CLIENT_ID"))
@@ -82,7 +80,6 @@ func GetUserStructFromGoogle(code string) (*GoogleUserResponse, error) {
 
 	return &googleUserResponse, nil
 }
-
 
 // Centralized user-facing error messages
 var ErrorMessages = struct {

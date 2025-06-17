@@ -41,11 +41,14 @@ VITE_POSTHOG_REVERSE_PROXY_URL=<frontend-url>/ingest
 VITE_API_URL=
 
 # Backend api
-POSTGRES_DSN=host=db_local port=5432 user=postgres password=postgres dbname=mas sslmode=disable
+POSTGRES_DSN=host=db_local port=XXXX user=xxxxxxx password=xxxxxxx dbname=mas sslmode=disable
+OAUTH_GOOGLE_ACCOUNT_BASE_URL=https://accounts.google.com
+OAUTH_GOOGLE_BASE_URL=https://oauth2.googleapis.com
 OAUTH_GOOGLE_CLIENT_ID=
 OAUTH_GOOGLE_SECRET=
+OAUTH_GOOGLE_REDIRECT_URI=http://localhost:8080/auth/google/callback
 JWT_SECRET=
-FRONTEND_URL=
+FRONTEND_URL=http://localhost:5173
 
 # Postgres
 POSTGRES_USER=

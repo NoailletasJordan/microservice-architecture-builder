@@ -83,7 +83,6 @@ export const testWithBackend = base.extend<
         startedBackendContainer = await apiContainer
           .withEnvironment({
             ...envVars,
-            MOCK_OAUTH: 'true',
             POSTGRES_DSN: postgresDSN,
           })
           .withExposedPorts(8080)

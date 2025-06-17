@@ -8,10 +8,8 @@ import (
 
 	"microservice-architecture-builder/backend/controller"
 	"microservice-architecture-builder/backend/data"
-	helpers "microservice-architecture-builder/backend/helpers"
 	"microservice-architecture-builder/backend/server"
 	"microservice-architecture-builder/backend/service"
-	"microservice-architecture-builder/backend/tests"
 
 	"github.com/rs/cors"
 
@@ -47,14 +45,7 @@ func main() {
 	boardService := service.NewBoardService(boardStore, userService)
 	boardController := controller.NewBoardController(boardService)
 
-	// Special env var, to be injected only on e2e test
-	var oauthHandler func(code string) (*helpers.GoogleUserResponse, error)
-	if os.Getenv("MOCK_OAUTH") == "true" {
-		oauthHandler = tests.GetUserStructFromGoogleMock
-	} else {
-		oauthHandler = helpers.GetUserStructFromGoogle
-	}
-	oauthController := controller.NewOAuthController(oauthHandler, userService)
+	oauthController := controller.NewOAuthController(userService)
 
 	r := server.NewServer(boardController, userController, userService, oauthController)
 

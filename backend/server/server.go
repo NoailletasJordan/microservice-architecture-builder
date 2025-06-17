@@ -39,6 +39,7 @@ func grabAssociatedUserMiddleware(userService *service.UserService) func(http.Ha
 				return
 			}
 			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
 			jwtSecret := os.Getenv("JWT_SECRET")
 			if jwtSecret == "" {
 				next.ServeHTTP(w, r)
@@ -59,19 +60,16 @@ func grabAssociatedUserMiddleware(userService *service.UserService) func(http.Ha
 				next.ServeHTTP(w, r)
 				return
 			}
-
 			userId, ok := claims["id"].(string)
 			if !ok || userId == "" {
 				next.ServeHTTP(w, r)
 				return
 			}
-
 			user, err := userService.GetUserByID(userId)
 			if err != nil {
 				next.ServeHTTP(w, r)
 				return
 			}
-
 			ctx := r.Context()
 			ctx = context.WithValue(ctx, controller.UserContextKey, user)
 			next.ServeHTTP(w, r.WithContext(ctx))

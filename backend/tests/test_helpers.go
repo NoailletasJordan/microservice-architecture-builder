@@ -90,7 +90,7 @@ func NewTestServer(t *testing.T) (*TestServer, func()) {
 	boardService := service.NewBoardService(boardStore, userService)
 	boardController := controller.NewBoardController(boardService)
 
-	oauthController := controller.NewOAuthController(GetUserStructFromGoogleMock, userService)
+	oauthController := controller.NewOAuthController(userService)
 
 	r := server.NewServer(boardController, userController, userService, oauthController)
 

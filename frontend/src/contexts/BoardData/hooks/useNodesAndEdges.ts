@@ -1,3 +1,4 @@
+import { getApiUrl } from '@/contants'
 import { AUTH_TOKEN_KEY } from '@/contexts/User/constants'
 import { TBoardModel } from '@/contexts/UserBoards/constants'
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
@@ -45,7 +46,7 @@ export function useNodesAndEdges() {
         }
 
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/board/${currentUserBoardId}`,
+          `${getApiUrl()}/api/board/${currentUserBoardId}`,
           {
             headers: { Authorization: `Bearer ${authToken}` },
           },

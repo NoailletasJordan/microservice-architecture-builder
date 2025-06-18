@@ -46,7 +46,6 @@ OAUTH_GOOGLE_ACCOUNT_BASE_URL=https://accounts.google.com
 OAUTH_GOOGLE_BASE_URL=https://oauth2.googleapis.com
 OAUTH_GOOGLE_CLIENT_ID=
 OAUTH_GOOGLE_SECRET=
-OAUTH_GOOGLE_REDIRECT_URI=http://localhost:8080/auth/google/callback
 JWT_SECRET=
 FRONTEND_URL=http://localhost:5173
 

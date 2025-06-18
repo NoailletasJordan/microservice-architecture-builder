@@ -1,14 +1,16 @@
 package main
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"hash/fnv"
 	"log"
 	"math/rand"
 	"net/http"
-	"os"
-	"strings"
+	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 // GoogleUserResponse matches the structure expected by the main app
@@ -40,59 +42,65 @@ type UserInfoResponse struct {
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 func main() {
-	// _ = godotenv.Load("../.env")
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8081"
-	}
+	port := "8081"
 
 	http.HandleFunc("/o/oauth2/v2/auth", createCodeAndRedirect)
 	http.HandleFunc("/token", findUser)
 
-	log.Printf("Mock OAuth service starting on port %s", port)
+	log.Printf("Server starting on port %s", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }
 
 func createCodeAndRedirect(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	code := fmt.Sprint(rand.Int63())
-	redirectURL := os.Getenv("OAUTH_GOOGLE_REDIRECT_URI") + "?code=" + code
-	if redirectURL == "" {
-		http.Error(w, "Missing OAUTH_GOOGLE_REDIRECT_URI environment variable", http.StatusInternalServerError)
-		return
-	}
-	http.Redirect(w, r, redirectURL, http.StatusFound)
-}
-
-func findUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	auth := r.Header.Get("Authorization")
-	if auth == "" || !strings.HasPrefix(auth, "Bearer ") {
+	code := fmt.Sprint(rand.Int63())
+	baseRedirectUrl := r.URL.Query().Get("redirect_uri")
+	if baseRedirectUrl == "" {
+		http.Error(w, "Missing redirect_uri", http.StatusInternalServerError)
+		return
+	}
+	redirectURL := baseRedirectUrl + "?code=" + code
+	http.Redirect(w, r, redirectURL, http.StatusFound)
+}
+
+func findUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Parse form data
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Failed to parse form data", http.StatusBadRequest)
+		return
+	}
+
+	code := r.PostForm.Get("code")
+
+	if code == "" {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	// Verify the token matches our mock token
-	token := strings.TrimPrefix(auth, "Bearer ")
-
+	idToken, err := generateDeterministicJWT(code)
+	if err != nil {
+		http.Error(w, "Internal server error - failed to generate id_token", http.StatusInternalServerError)
+		return
+	}
 	// Generate deterministic user info
 	response := UserInfoResponse{
-		IDToken:       deterministicRandomString(token, 7),
-		Sub:           deterministicRandomString(token, 10),
-		Email:         fmt.Sprintf("%s@%s", deterministicRandomString(token, 16), "yahoo.com"),
+		IDToken:       idToken,
+		Sub:           deterministicRandomString(code, 10),
+		Email:         fmt.Sprintf("%s@%s", deterministicRandomString(code, 16), "yahoo.com"),
 		EmailVerified: true,
-		Name:          fmt.Sprintf("User %s", token[:8]),
-		GivenName:     fmt.Sprintf("User %s", token[:8]),
+		Name:          fmt.Sprintf("User %s", code[:1]),
+		GivenName:     fmt.Sprintf("User %s", code[:1]),
 		FamilyName:    "OAuth",
 		Locale:        "en",
 	}
@@ -116,4 +124,23 @@ func deterministicRandomString(seed string, length int) string {
 		b[i] = charset[r.Intn(len(charset))]
 	}
 	return string(b)
+}
+
+// Derive a secret key from the seed using SHA-256
+func deriveSecretKey(seed string) []byte {
+	hash := sha256.Sum256([]byte(seed))
+	return hash[:]
+}
+
+func generateDeterministicJWT(seed string) (string, error) {
+	secretKey := deriveSecretKey(seed)
+
+	claims := jwt.MapClaims{
+		"sub":   seed,
+		"email": fmt.Sprintf("%s@example.com", seed),
+		"exp":   time.Now().Add(time.Hour * 1).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString(secretKey)
 }

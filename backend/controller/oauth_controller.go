@@ -20,13 +20,14 @@ func NewOAuthController(userService *service.UserService) *OauthController {
 
 // GoogleLoginHandler handles GET /auth/google/login
 func (oc *OauthController) GoogleLoginRedirect(w http.ResponseWriter, r *http.Request) {
-
 	clientID := os.Getenv("OAUTH_GOOGLE_CLIENT_ID")
-	redirectURI := os.Getenv("OAUTH_GOOGLE_REDIRECT_URI")
-	if clientID == "" || redirectURI == "" {
+	if clientID == "" {
 		http.Error(w, "Google OAuth not configured", http.StatusInternalServerError)
 		return
 	}
+
+	// Get redirect URI using helper function
+	redirectURI := helpers.GetOAuthRedirectURI(r)
 
 	oauthURL, err := url.Parse(os.Getenv("OAUTH_GOOGLE_ACCOUNT_BASE_URL") + "/o/oauth2/v2/auth")
 	if err != nil {
@@ -54,7 +55,7 @@ func (oc *OauthController) GoogleCallbackHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	tokenResp, err := helpers.GetUserStructFromGoogle(code)
+	tokenResp, err := helpers.GetUserStructFromGoogle(r, code)
 	if err != nil {
 		sendError(w, http.StatusInternalServerError, "Failed to exchange code for token")
 		return

@@ -3,6 +3,7 @@ package helpers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -49,8 +50,16 @@ type GoogleUserResponse struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-// (For prod) Will really request Google's token response.
-func GetUserStructFromGoogle(code string) (*GoogleUserResponse, error) {
+// GetOAuthRedirectURI returns the OAuth redirect URI based on the current request context
+func GetOAuthRedirectURI(r *http.Request) string {
+	scheme := "http"
+	if r.TLS != nil {
+		scheme = "https"
+	}
+	return fmt.Sprintf("%s://%s/auth/google/callback", scheme, r.Host)
+}
+
+func GetUserStructFromGoogle(r *http.Request, code string) (*GoogleUserResponse, error) {
 	tokenURL, err := url.Parse(os.Getenv("OAUTH_GOOGLE_BASE_URL") + "/token")
 	if err != nil {
 		return nil, errors.New("invalid OAuth Google host")
@@ -59,9 +68,8 @@ func GetUserStructFromGoogle(code string) (*GoogleUserResponse, error) {
 	data.Set("code", code)
 	data.Set("client_id", os.Getenv("OAUTH_GOOGLE_CLIENT_ID"))
 	data.Set("client_secret", os.Getenv("OAUTH_GOOGLE_SECRET"))
-	data.Set("redirect_uri", os.Getenv("OAUTH_GOOGLE_REDIRECT_URI"))
+	data.Set("redirect_uri", GetOAuthRedirectURI(r))
 	data.Set("grant_type", "authorization_code")
-
 	resp, err := http.Post(tokenURL.String(), "application/x-www-form-urlencoded", strings.NewReader(data.Encode()))
 	if err != nil {
 		return nil, err
@@ -74,6 +82,7 @@ func GetUserStructFromGoogle(code string) (*GoogleUserResponse, error) {
 	}
 
 	var googleUserResponse GoogleUserResponse
+
 	if err := json.Unmarshal(body, &googleUserResponse); err != nil {
 		return nil, err
 	}

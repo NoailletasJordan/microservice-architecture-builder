@@ -28,6 +28,7 @@ export default function LoadBoard() {
             const isCurrent = board.id === currentUserBoardId
             return (
               <Menu.Item
+                data-testid={`load-board-board-${board.id}`}
                 onClick={() => setCurrentUserBoardId(board.id)}
                 key={board.id}
                 disabled={isCurrent}

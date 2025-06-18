@@ -55,7 +55,7 @@ const router = createBrowserRouter(
     </Route>,
   ),
 )
-/** Temp */
+
 export default function App() {
   useEffect(() => {
     // Inject css colors in root

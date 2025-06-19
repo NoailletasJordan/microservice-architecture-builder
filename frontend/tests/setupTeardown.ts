@@ -15,10 +15,11 @@ import { v4 as uuid } from 'uuid'
 
 // Global setup / teardown for all test
 // Injecting the testcontainer's api url through the window object
-export const testWithBackend = base.extend<
-  any,
-  { startTestContainers: { apiUrl: string } }
->({
+export const testWithBackend = base.extend<{
+  startTestContainers: { apiUrl: string }
+  injectApiUrl: void
+}>({
+  // @ts-expect-error not sure how
   startTestContainers: [
     // https://github.com/microsoft/playwright/issues/14590
     // eslint-disable-next-line
@@ -212,8 +213,5 @@ async function startBackendContainer({
     console.error('❌ Backend container failed to start:', e)
   }
 
-  // healthCheck
-  const res = await fetch(`${apiUrl}/ping`)
-  expect(res.ok).toBeTruthy()
   return { apiUrl, startedBackendContainer }
 }

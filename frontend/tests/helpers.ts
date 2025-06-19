@@ -20,6 +20,29 @@ interface NodeSetupOptions {
   page: Page
 }
 
+export const getSettingsButtonLocator = ({ page }: { page: Page }) =>
+  page.getByTestId('button-settings')
+export const getNodesLocator = ({ page }: { page: Page }) =>
+  page.getByLabel(/node-type-/)
+export const getNewBoardButtonLocator = ({ page }: { page: Page }) =>
+  page.getByRole('menuitem', { name: 'Create new' })
+export const getDeleteButtonLocator = ({ page }: { page: Page }) =>
+  page.getByRole('menuitem', { name: 'Delete' })
+export const getLoadButtonLocator = ({ page }: { page: Page }) =>
+  page.getByRole('menuitem', { name: 'Load' })
+export const getConfirmationDeleteButtonLocator = ({ page }: { page: Page }) =>
+  page.getByRole('button', { name: 'Yes, delete the board' })
+export const getLogoutButtonLocator = ({ page }: { page: Page }) =>
+  page.getByRole('menuitem', { name: 'Log out' })
+export const getLoginPushWorkNotificationLocator = ({ page }: { page: Page }) =>
+  page.getByText(/created a new board for your active work/)
+export const getDeletionNotificationLocator = ({ page }: { page: Page }) =>
+  page.getByText(/Successfully deleted/i)
+export const getLogoutNotificationLocator = ({ page }: { page: Page }) =>
+  page.getByText("You're logged out")
+export const getBoardsSubMenuLocator = ({ page }: { page: Page }) =>
+  page.getByTestId(/load-board-board/)
+
 export const initialTwoNodesSetup = async ({ page }: NodeSetupOptions) => {
   // Create 'frontend' node
   const frontendIcon = page.locator('#icon-draggable-frontend')
@@ -67,15 +90,24 @@ export const checkInitialSetup = async ({ page }: NodeSetupOptions) => {
 }
 
 export async function logInActions({ page }: { page: Page }) {
-  // const validTokenOauth =
-  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEwNjg1NTgwNzQxMDU0NzE2NTMwMSJ9.sMqtrZQ0dYbSd3x1isUPywg2hawbYZqmwHLBXJVWNyc'
-  // await page.goto(`/#auth-token=${validTokenOauth}`)
-  // await page.goto(`${apiUrl}/auth/google/callback?code=mock_code`)
-  // await page.goto(
-  //   `${apiUrl}/auth/google/callback?code=4/0AUJR-x4ZviF6qPoJqf920eFjhWfmishmb6bIESO1Zf2WDtqi5xZkVfM78ZdcFhCoHbNeqA`,
-  // )
-  await page.getByTestId('button-settings').click()
+  const listenForCodePromise = new Promise<string>((resolve) => {
+    let code: string | null = null
+    page.on('response', (response) => {
+      const url = response.url()
+      if (!code && url.includes('auth/google/callback?code=')) {
+        code = url.split('code=')[1]
+        resolve(code)
+      }
+    })
+  })
+
+  await getSettingsButtonLocator({ page }).click()
   await page.getByRole('menuitem', { name: 'Log in with Google' }).click()
-  // /auth/google/callback?code=4%2F0AUJR-x4ZviF6qPoJqf920eFjhWfmishmb6bIESO1Zf2WDtqi5xZkVfM78ZdcFhCoHbNeqA&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+openid&authuser=1&prompt=consent
   await expect(page.getByTestId(testIdLogged)).toBeVisible()
+
+  const code = await listenForCodePromise
+  const reLogSameUser = ({ apiUrl }: { apiUrl: string }) =>
+    page.goto(`${apiUrl}/auth/google/callback?code=${code}`)
+
+  return { reLogSameUser }
 }

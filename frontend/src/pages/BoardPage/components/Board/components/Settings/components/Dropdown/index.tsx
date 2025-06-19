@@ -14,7 +14,7 @@ interface Props {
   openDeleteCurrentBoardModal: () => void
 }
 
-const disabledTooltip = 'Save on the cloud and work with multiple boards'
+const disabledTooltip = 'Log in to work with multiple boards'
 
 export default function Dropdown({
   openClearCurrentBoardModal,

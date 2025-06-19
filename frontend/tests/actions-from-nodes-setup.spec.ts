@@ -1,7 +1,11 @@
 import { test as base, expect } from '@playwright/test'
 import { primaryActionText as clearActionText } from '../src/pages/BoardPage/components/Board/components/ClearCurrentBoardModal/index'
 import { itemLabel as clearItemLabel } from '../src/pages/BoardPage/components/Board/components/Settings/components/Dropdown/components/ClearBoard'
-import { checkInitialSetup, initialTwoNodesSetup } from './helpers'
+import {
+  checkInitialSetup,
+  getNodesLocator,
+  initialTwoNodesSetup,
+} from './helpers'
 
 const testWithNodesSetup = base.extend({
   page: async ({ page }, use) => {
@@ -49,7 +53,7 @@ testWithNodesSetup('should delete a node', async ({ page }) => {
   await deleteButton.hover()
   await deleteButton.click()
 
-  await expect(page.getByLabel(/node-type-/)).toHaveCount(1)
+  await expect(getNodesLocator({ page })).toHaveCount(1)
 })
 
 testWithNodesSetup('should delete an edge', async ({ page }) => {
@@ -70,11 +74,11 @@ testWithNodesSetup('should reset board', async ({ page }) => {
     .getByRole('button', { name: clearActionText, includeHidden: true })
     .click()
   await page.waitForTimeout(100)
-  await expect(page.getByTestId(/node-type-/)).toHaveCount(0)
+  await expect(getNodesLocator({ page })).toHaveCount(0)
 })
 
 testWithNodesSetup('should write a note on NODE', async ({ page }) => {
-  const someNode = page.getByLabel(/node-type-/).first()
+  const someNode = getNodesLocator({ page }).first()
   await someNode.hover()
   await page.waitForTimeout(700)
   await page.getByLabel('Add a note').first().click()

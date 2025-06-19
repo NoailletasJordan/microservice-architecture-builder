@@ -21,7 +21,7 @@ export default function NewBoard() {
       </Menu.Sub.Target>
 
       <Menu.Sub.Dropdown>
-        <Menu.Item onClick={createNewBoard}>Emtpy board</Menu.Item>
+        <Menu.Item onClick={createNewBoard}>Empty board</Menu.Item>
         <Menu.Item onClick={duplicateCurrentBoard}>
           Duplicate current board
         </Menu.Item>

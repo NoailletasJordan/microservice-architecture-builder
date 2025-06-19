@@ -6,7 +6,7 @@ test('should display and navigate through onboarding modal', async ({
   page,
 }) => {
   await page.goto('/')
-  await logInActions(page)
+  await logInActions({ page })
 
   const demoButton = page.getByLabel(/watch demo/i)
   await demoButton.click()

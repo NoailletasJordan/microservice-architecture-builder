@@ -40,6 +40,11 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Install services dependencies
         run: |
           make install

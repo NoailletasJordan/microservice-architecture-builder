@@ -16,7 +16,7 @@ export default function InputEdit({
   onClickValidate,
   options,
 }: Props) {
-  const { ref } = useFocusWithin()
+  const { ref } = useFocusWithin<HTMLInputElement>()
 
   useEffect(() => {
     ref.current && ref.current.select()

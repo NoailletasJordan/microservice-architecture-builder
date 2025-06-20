@@ -1,7 +1,7 @@
 import { NO_DRAG_REACTFLOW_CLASS } from '@/pages/BoardPage/configs/constants'
 import { Autocomplete, AutocompleteProps, Kbd } from '@mantine/core'
-import { getHotkeyHandler, useFocusWithin } from '@mantine/hooks'
-import { useEffect } from 'react'
+import { getHotkeyHandler } from '@mantine/hooks'
+import { useEffect, useState } from 'react'
 
 interface Props {
   onChange: (event: string) => void
@@ -16,17 +16,17 @@ export default function InputEdit({
   onClickValidate,
   options,
 }: Props) {
-  const { ref } = useFocusWithin<HTMLInputElement>()
+  const [refInput, setRefInput] = useState<HTMLInputElement | null>(null)
 
   useEffect(() => {
-    ref.current && ref.current.select()
-  }, [ref])
+    refInput && refInput.select()
+  }, [refInput])
 
   return (
     <Autocomplete
       className={NO_DRAG_REACTFLOW_CLASS}
       onBlur={onClickValidate}
-      ref={ref}
+      ref={setRefInput}
       autoFocus
       onChange={onChange}
       value={value}

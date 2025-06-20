@@ -3,7 +3,7 @@ import { userContext } from '@/contexts/User/constants'
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { UseQueryResult } from '@tanstack/react-query'
-import { useContext, useEffect, useMemo, useRef } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import { ReactFlowInstance, useReactFlow } from 'reactflow'
 import { TBoardModel } from '../constants'
 import { useMutateUserBoard } from './useMutateUserBoard'
@@ -19,14 +19,6 @@ export function useHandleBoardsOnLoginLogout({
   >
   boardsQuery: UseQueryResult<TBoardModel[], Error>
 }) {
-  const hasBoards = useMemo(() => {
-    return (
-      boardsQuery.data &&
-      !('error' in boardsQuery.data) &&
-      boardsQuery.data.length > 0
-    )
-  }, [boardsQuery.data])
-
   const { isLogged } = useContext(userContext)
 
   const mutator = useMutateUserBoard({

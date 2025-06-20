@@ -1,0 +1,24 @@
+# Build Stage
+FROM imbios/bun-node as builder
+
+WORKDIR /app
+
+COPY frontend/bun.lock frontend/package.json ./
+RUN bun install
+
+COPY frontend/ .
+COPY .env .
+RUN bun run build
+
+# Serve stage
+FROM node:alpine
+
+WORKDIR /app
+
+# Install http-server globally
+RUN npm install -g http-server
+
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 4173
+CMD ["http-server", "dist", "-p", "4173"]

@@ -1,0 +1,95 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [newbackend]
+  pull_request:
+    branches: [newbackend]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      # Frontend env vars
+      VITE_API_URL: http://localhost:8080
+      VITE_POSTHOG_HOST: 'wrongOnPurpose'
+      VITE_POSTHOG_KEY: 'wrongOnPurpose'
+      VITE_POSTHOG_REVERSE_PROXY_URL: 'wrongOnPurpose'
+
+      # Backend env vars
+      POSTGRES_DSN: host=localhost port=5432 user=postgres password=postgres dbname=mas sslmode=disable
+      OAUTH_GOOGLE_ACCOUNT_BASE_URL: 'wrongOnPurpose'
+      OAUTH_GOOGLE_BASE_URL: 'wrongOnPurpose'
+      OAUTH_GOOGLE_CLIENT_ID: 'wrongOnPurpose'
+      OAUTH_GOOGLE_SECRET: 'wrongOnPurpose'
+      JWT_SECRET: 'some-secret'
+      FRONTEND_URL: http://localhost:5173
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install services dependencies
+        run: |
+          make install
+
+      - name: Install Playwright browsers
+        run: |
+          cd frontend
+          npx playwright install --with-deps chromium
+
+      - name: Start Docker services
+        run: |
+          make prod
+
+      - name: Wait for backend to be ready
+        run: |
+          echo "Waiting for backend service..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8080/health; then
+              echo "Backend is ready!"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Backend failed to start"
+          docker compose logs
+          exit 1
+
+      - name: Run backend tests
+        run: |
+          make test-b ARGS="-v"
+
+      - name: Run frontend tests
+        run: |
+          make test-f ARGS="-v"
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-results
+          path: |
+            backend/test-results
+            frontend/test-results
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: coverage
+          path: |
+            backend/coverage
+            frontend/coverage

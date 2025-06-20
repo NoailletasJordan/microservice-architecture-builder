@@ -8,10 +8,17 @@ dev:
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build 
 
 prod:
-	docker compose -f docker-compose.yml up --build 
+	docker compose -f docker-compose.yml up -d --build 
 
 temp: 
 	docker compose exec backend go test $(ARGS) ./tests/temp_test.go ./tests/test_helpers.go 
 
 docs-backend:
 	cd backend && ~/go/bin/swag init --output docs 
+
+install:
+	@echo "🔧 Installing frontend dependencies..."
+	cd frontend && npm ci --legacy-peer-deps
+
+	@echo "🔧 Installing backend dependencies..."
+	cd backend && go mod download

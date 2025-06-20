@@ -1,16 +1,14 @@
 services:
-
   frontend:
     image: imbios/bun-node
-    working_dir: /app
-    env_file:
-      - ./.env
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile.prod
     volumes:
       - ./frontend:/app
       - /app/node_modules
     ports:
-      - "5173:5173"
-    command: sh -c "bun install && bun run dev -- --host"
+      - '4173:4173'
     restart: on-failure
     depends_on:
       - backend
@@ -20,7 +18,7 @@ services:
       context: ./backend
       dockerfile: ./Dockerfile
     ports:
-      - "8080:8080"
+      - '8080:8080'
     env_file:
       - ./.env
     restart: on-failure
@@ -32,13 +30,21 @@ services:
     env_file:
       - ./.env
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
       - ./postgres/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 5s
       retries: 5
       start_period: 10s
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - '5050:80'
+    depends_on:
+      - db_local
+    restart: on-failure

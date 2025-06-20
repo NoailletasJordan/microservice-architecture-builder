@@ -54,6 +54,11 @@ jobs:
         run: |
           make install
 
+      - name: Log TypeScript version
+        run: |
+          tsc --version
+          npx --version
+
       - name: Install Playwright browsers
         run: |
           cd frontend

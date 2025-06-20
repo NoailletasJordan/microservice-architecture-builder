@@ -18,7 +18,7 @@ docs-backend:
 
 install:
 	@echo "🔧 Installing frontend dependencies..."
-	cd frontend && npm ci --legacy-peer-deps
+	cd frontend && bun install
 
 	@echo "🔧 Installing backend dependencies..."
 	cd backend && go mod download

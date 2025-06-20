@@ -21,7 +21,6 @@ const test = base.extend<{ other: void }>({
     async ({ page }, use) => {
       await page.goto('/')
       await logInActions({ page })
-      // eslint-disable-next-line react-hooks/rules-of-hooks -- not a react component
       use()
     },
     { scope: 'test', auto: true },

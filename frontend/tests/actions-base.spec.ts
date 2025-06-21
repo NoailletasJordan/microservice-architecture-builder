@@ -1,13 +1,10 @@
 import { expect } from '@playwright/test'
-import { logInActions } from './helpers'
 import { testWithBackend as test } from './setupTeardown'
 
 test('should display and navigate through onboarding modal', async ({
   page,
 }) => {
   await page.goto('/')
-  await logInActions({ page })
-
   const demoButton = page.getByLabel(/watch demo/i)
   await demoButton.click()
   const modal = page.getByLabel(/onboarding-modal/i)

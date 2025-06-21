@@ -70,20 +70,6 @@ jobs:
         run: |
           make prod
 
-      - name: Wait for backend to be ready
-        run: |
-          echo "Waiting for backend service..."
-          for i in {1..30}; do
-            if curl -s http://localhost:8080/ping; then
-              echo "Backend is ready!"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "Backend failed to start"
-          docker compose logs
-          exit 1
-
       - name: Run backend tests
         run: |
           make test-b ARGS="-v"

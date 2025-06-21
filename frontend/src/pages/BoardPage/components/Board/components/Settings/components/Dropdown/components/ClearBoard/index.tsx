@@ -4,15 +4,23 @@ import { IconWashDryOff } from '@tabler/icons-react'
 
 interface Props {
   openClearCurrentBoardModal: () => void
+  closeMenu: () => void
 }
 
 export const itemLabel = 'Clear data'
 
-export default function ClearBoard({ openClearCurrentBoardModal }: Props) {
+export default function ClearBoard({
+  openClearCurrentBoardModal,
+  closeMenu,
+}: Props) {
   return (
     <Menu.Item
       leftSection={<IconWashDryOff stroke={1} style={ICON_STYLE} />}
-      onClick={openClearCurrentBoardModal}
+      onClick={(e) => {
+        e.stopPropagation()
+        closeMenu()
+        openClearCurrentBoardModal()
+      }}
     >
       <Text component="span" size="sm">
         {itemLabel}

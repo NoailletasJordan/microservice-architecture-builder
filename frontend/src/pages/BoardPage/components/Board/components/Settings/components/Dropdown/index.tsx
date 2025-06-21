@@ -12,6 +12,7 @@ import NewBoard from './components/NewBoard'
 interface Props {
   openClearCurrentBoardModal: () => void
   openDeleteCurrentBoardModal: () => void
+  closeMenu: () => void
 }
 
 const disabledTooltip = 'Log in to work with multiple boards'
@@ -19,41 +20,50 @@ const disabledTooltip = 'Log in to work with multiple boards'
 export default function Dropdown({
   openClearCurrentBoardModal,
   openDeleteCurrentBoardModal,
+  closeMenu,
 }: Props) {
   const { isLogged } = useContext(userContext)
   return (
     <Menu.Dropdown>
       <Menu.Label>Board actions</Menu.Label>
-      <ClearBoard openClearCurrentBoardModal={openClearCurrentBoardModal} />
+      <ClearBoard
+        openClearCurrentBoardModal={openClearCurrentBoardModal}
+        closeMenu={closeMenu}
+      />
       {isLogged ? (
         <ProtectedItems
           openDeleteCurrentBoardModal={openDeleteCurrentBoardModal}
+          closeMenu={closeMenu}
         />
       ) : (
         <LockItemsWrapper>
           <ProtectedItems
             openDeleteCurrentBoardModal={openDeleteCurrentBoardModal}
+            closeMenu={closeMenu}
           />
         </LockItemsWrapper>
       )}
       <Menu.Divider my="xs" />
       <LogInLogOut />
-      <Github />
+      <Github closeMenu={closeMenu} />
     </Menu.Dropdown>
   )
 }
 
 function ProtectedItems({
   openDeleteCurrentBoardModal,
+  closeMenu,
 }: {
   openDeleteCurrentBoardModal: () => void
+  closeMenu: () => void
 }) {
   return (
     <>
-      <NewBoard />
-      <LoadBoard />
+      <NewBoard closeMenu={closeMenu} />
+      <LoadBoard closeMenu={closeMenu} />
       <DeleteCurrentBoard
         openDeleteCurrentBoardModal={openDeleteCurrentBoardModal}
+        closeMenu={closeMenu}
       />
     </>
   )

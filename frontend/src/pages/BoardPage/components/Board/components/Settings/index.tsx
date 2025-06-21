@@ -34,6 +34,7 @@ export default function Settings({
         <Dropdown
           openClearCurrentBoardModal={openClearCurrentBoardModal}
           openDeleteCurrentBoardModal={openDeleteCurrentBoardModal}
+          closeMenu={close}
         />
       </Menu>
     </Panel>
@@ -51,7 +52,10 @@ function Target({ toggleOpenModal }: { toggleOpenModal: () => void }) {
             <ActionIcon
               mt={4}
               variant="transparent"
-              onClick={toggleOpenModal}
+              onClick={(e) => {
+                e.stopPropagation()
+                toggleOpenModal()
+              }}
               data-testid="button-settings"
             >
               <IconMenu2 />

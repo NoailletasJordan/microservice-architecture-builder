@@ -5,7 +5,11 @@ import { useCreateNewBoard } from './hooks/useCreateNewBoard.tsx'
 import { useDuplicateCurrentBoard } from './hooks/useDuplicateCurrentBoard.ts'
 import { IsEnabled } from './hooks/useIsEnabled.tsx'
 
-export default function NewBoard() {
+interface Props {
+  closeMenu: () => void
+}
+
+export default function NewBoard({ closeMenu }: Props) {
   const duplicateCurrentBoard = useDuplicateCurrentBoard()
   const createNewBoard = useCreateNewBoard()
   const isEnabled = IsEnabled()
@@ -21,8 +25,20 @@ export default function NewBoard() {
       </Menu.Sub.Target>
 
       <Menu.Sub.Dropdown>
-        <Menu.Item onClick={createNewBoard}>Empty board</Menu.Item>
-        <Menu.Item onClick={duplicateCurrentBoard}>
+        <Menu.Item
+          onClick={() => {
+            closeMenu()
+            createNewBoard()
+          }}
+        >
+          Empty board
+        </Menu.Item>
+        <Menu.Item
+          onClick={() => {
+            closeMenu()
+            duplicateCurrentBoard()
+          }}
+        >
           Duplicate current board
         </Menu.Item>
       </Menu.Sub.Dropdown>

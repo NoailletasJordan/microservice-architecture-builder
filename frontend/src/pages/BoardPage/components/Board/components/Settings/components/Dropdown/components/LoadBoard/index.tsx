@@ -5,7 +5,11 @@ import { Badge, Menu, ScrollArea } from '@mantine/core'
 import { IconPinEnd } from '@tabler/icons-react'
 import { useContext } from 'react'
 
-export default function LoadBoard() {
+interface Props {
+  closeMenu: () => void
+}
+
+export default function LoadBoard({ closeMenu }: Props) {
   const { boards, currentUserBoardId, setCurrentUserBoardId } =
     useContext(userBoardsContext)
 
@@ -29,7 +33,10 @@ export default function LoadBoard() {
             return (
               <Menu.Item
                 data-testid={`load-board-board-${board.id}`}
-                onClick={() => setCurrentUserBoardId(board.id)}
+                onClick={() => {
+                  setCurrentUserBoardId(board.id)
+                  closeMenu()
+                }}
                 key={board.id}
                 disabled={isCurrent}
                 rightSection={

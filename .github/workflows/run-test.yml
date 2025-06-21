@@ -71,7 +71,16 @@ jobs:
     steps:
       - name: Notify on success
         if: ${{ needs.tests.result == 'success' && env.RAN_ON_GITHUB == 'true' }}
-        run: curl -X POST ${{ secrets.N8N_SUCCESS_NOTIFICATION_URL }}
+        run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d '{"content": "✅ CI succeeded!"}' \
+          ${{ secrets.DISCORD_BOT_WEBHOOK_URL }}
+
       - name: Notify on failure
         if: ${{ needs.tests.result != 'success' && env.RAN_ON_GITHUB == 'true' }}
-        run: curl -X POST ${{ secrets.N8N_FAILURE_NOTIFICATION_URL }}
+        run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d '{"content": "❌ CI failed!"}' \
+          ${{ secrets.DISCORD_BOT_WEBHOOK_URL }}

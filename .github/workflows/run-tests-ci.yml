@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -95,3 +95,27 @@ jobs:
           path: |
             backend/coverage
             frontend/coverage
+
+  notifyMe:
+    if: always() && github.event_name == 'push'
+    env:
+      RAN_ON_GITHUB: ${{ secrets.RAN_ON_GITHUB }}
+    name: Send Deployment Notifications
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - name: Notify on success
+        if: ${{ needs.tests.result == 'success' && env.RAN_ON_GITHUB == 'true' }}
+        run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d '{"content": "✅ CI succeeded!"}' \
+          ${{ secrets.DISCORD_BOT_WEBHOOK_URL }}
+
+      - name: Notify on failure
+        if: ${{ needs.tests.result != 'success' && env.RAN_ON_GITHUB == 'true' }}
+        run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d '{"content": "❌ CI failed!"}' \
+          ${{ secrets.DISCORD_BOT_WEBHOOK_URL }}

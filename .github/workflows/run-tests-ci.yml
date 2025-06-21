@@ -74,7 +74,7 @@ jobs:
         run: |
           echo "Waiting for backend service..."
           for i in {1..30}; do
-            if curl -s http://localhost:8080/health; then
+            if curl -s http://localhost:8080/ping; then
               echo "Backend is ready!"
               exit 0
             fi

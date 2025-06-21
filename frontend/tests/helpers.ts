@@ -33,7 +33,7 @@ export const getLoadButtonLocator = ({ page }: { page: Page }) =>
 export const getConfirmationDeleteButtonLocator = ({ page }: { page: Page }) =>
   page.getByRole('button', { name: 'Yes, delete the board' })
 export const getLogoutButtonLocator = ({ page }: { page: Page }) =>
-  page.getByRole('menuitem', { name: 'Log out' })
+  page.getByRole('menuitem', { name: 'Log out', includeHidden: true })
 export const getLoginPushWorkNotificationLocator = ({ page }: { page: Page }) =>
   page.getByText(/created a new board for your active work/)
 export const getDeletionNotificationLocator = ({ page }: { page: Page }) =>

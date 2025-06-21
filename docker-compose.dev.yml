@@ -3,17 +3,10 @@
 # Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 services:
-  backend:
-    build:
-      target: dev
-    volumes:
-      - ./backend:/app # Mount entire backend directory for hot reloading
-    depends_on:
-      db_local:
-        condition: service_healthy
-
   frontend:
-    image: imbios/bun-node
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile.dev
     working_dir: /app
     env_file:
       - ./.env
@@ -22,7 +15,15 @@ services:
       - /app/node_modules
     ports:
       - '5173:5173'
-    command: sh -c "bun install && bun run dev --host"
     restart: on-failure
     depends_on:
       - backend
+
+  backend:
+    build:
+      target: dev
+    volumes:
+      - ./backend:/app # Mount entire backend directory for hot reloading
+    depends_on:
+      db_local:
+        condition: service_healthy

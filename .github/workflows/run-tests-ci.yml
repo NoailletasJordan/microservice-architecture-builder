@@ -2,9 +2,9 @@ name: Run Tests
 
 on:
   push:
-    branches: [newbackend]
+    branches: [master, newbackend]
   pull_request:
-    branches: [newbackend]
+    branches: [master, newbackend]
   workflow_dispatch:
 
 jobs:

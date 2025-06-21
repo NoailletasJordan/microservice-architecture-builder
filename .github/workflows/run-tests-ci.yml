@@ -76,7 +76,7 @@ jobs:
 
       - name: Run frontend tests
         run: |
-          make test-f ARGS="-v"
+          make test-f
 
       - name: Upload test results
         uses: actions/upload-artifact@v4

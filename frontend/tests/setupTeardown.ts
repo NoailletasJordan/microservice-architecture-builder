@@ -30,20 +30,14 @@ export const testWithBackend = base.extend<{
 
       const network = await new Network({ nextUuid: uuid }).start()
 
-      /** Temp */
-      console.log('next line: startPostgresContainer')
       const postgresContainer = await startPostgresContainer({ network })
 
-      /** Temp */
-      console.log('next line: startMockOauthContainer')
       const {
         mockOauthInDockerUrl,
         mockOauthExposedUrl,
         startedMockOauthContainer,
       } = await startMockOauthContainer({ network, envVars })
 
-      /** Temp */
-      console.log('next line: startBackendContainer')
       const { apiUrl, startedBackendContainer } = await startBackendContainer({
         network,
         postgresContainer,
@@ -52,8 +46,6 @@ export const testWithBackend = base.extend<{
         mockOauthExposedUrl,
       })
 
-      /** Temp */
-      console.log('next line: apiUrl')
       await use({ apiUrl })
       await startedBackendContainer?.stop()
       await postgresContainer.stop()
@@ -149,9 +141,6 @@ async function startPostgresContainer({
     .withNetwork(network)
     .withDatabase('test')
     .start()
-
-  // Wait for postgres to be ready
-  await new Promise((resolve) => setTimeout(resolve, 5000))
 
   const checkFile = await postgresContainer.exec([
     'test',

@@ -46,6 +46,9 @@ export const testWithBackend = base.extend<{
         mockOauthExposedUrl,
       })
 
+      // Wait to avoid flakyness
+      await new Promise((resolve) => setTimeout(resolve, 5000))
+
       await use({ apiUrl })
       await startedBackendContainer?.stop()
       await postgresContainer.stop()

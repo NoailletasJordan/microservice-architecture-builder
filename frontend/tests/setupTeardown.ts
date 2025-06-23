@@ -1,4 +1,4 @@
-import { test as base, BrowserContext, expect } from '@playwright/test'
+import { test as base, BrowserContext } from '@playwright/test'
 import { PostgreSqlContainer } from '@testcontainers/postgresql'
 import { parse } from 'dotenv'
 import { readFileSync } from 'fs'
@@ -30,14 +30,20 @@ export const testWithBackend = base.extend<{
 
       const network = await new Network({ nextUuid: uuid }).start()
 
+      /** Temp */
+      console.log('next line: startPostgresContainer')
       const postgresContainer = await startPostgresContainer({ network })
 
+      /** Temp */
+      console.log('next line: startMockOauthContainer')
       const {
         mockOauthInDockerUrl,
         mockOauthExposedUrl,
         startedMockOauthContainer,
       } = await startMockOauthContainer({ network, envVars })
 
+      /** Temp */
+      console.log('next line: startBackendContainer')
       const { apiUrl, startedBackendContainer } = await startBackendContainer({
         network,
         postgresContainer,
@@ -46,9 +52,8 @@ export const testWithBackend = base.extend<{
         mockOauthExposedUrl,
       })
 
-      // Wait to avoid flakyness
-      await new Promise((resolve) => setTimeout(resolve, 5000))
-
+      /** Temp */
+      console.log('next line: apiUrl')
       await use({ apiUrl })
       await startedBackendContainer?.stop()
       await postgresContainer.stop()
@@ -145,13 +150,17 @@ async function startPostgresContainer({
     .withDatabase('test')
     .start()
 
+  // Wait for postgres to be ready
+  await new Promise((resolve) => setTimeout(resolve, 5000))
+
   const checkFile = await postgresContainer.exec([
     'test',
     '-f',
     '/docker-entrypoint-initdb.d/init-db.sh',
   ])
   const initFileIsPresentInContainer = checkFile.exitCode === 0
-  expect(initFileIsPresentInContainer).toBeTruthy()
+  if (!initFileIsPresentInContainer) throw new Error('Init file not present')
+
   return postgresContainer
 }
 

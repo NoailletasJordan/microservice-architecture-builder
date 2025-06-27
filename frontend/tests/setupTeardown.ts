@@ -29,7 +29,17 @@ export const testWithBackend = base.extend<{
       const envVars = parse(envFileContent)
 
       const network = await new Network({ nextUuid: uuid }).start()
-      const postgresContainer = await startPostgresContainer({ network })
+      const { postgresContainer, isError: postgresIsError } =
+        await startPostgresContainer({ network })
+
+      if (postgresIsError || !postgresContainer) {
+        await closeConnections({
+          network,
+          postgresContainer,
+        })
+        throw new Error('setupTeardown ❌ abort')
+      }
+
       const {
         isError: mockOauthIsError,
         mockOauthInDockerUrl,
@@ -40,7 +50,12 @@ export const testWithBackend = base.extend<{
         envVars,
       })
 
-      if (mockOauthIsError) {
+      if (mockOauthIsError || !startedMockOauthContainer) {
+        await closeConnections({
+          network,
+          postgresContainer,
+          startedMockOauthContainer,
+        })
         throw new Error('setupTeardown ❌ abort')
       }
 
@@ -56,13 +71,22 @@ export const testWithBackend = base.extend<{
         mockOauthExposedUrl,
       })
       if (backendIsError) {
+        await closeConnections({
+          network,
+          startedBackendContainer,
+          postgresContainer,
+          startedMockOauthContainer,
+        })
         throw new Error('setupTeardown ❌ abort')
       }
 
       await use({ apiUrl })
-      await startedBackendContainer?.stop()
-      await postgresContainer.stop()
-      await startedMockOauthContainer?.stop()
+      await closeConnections({
+        network,
+        startedBackendContainer,
+        postgresContainer,
+        startedMockOauthContainer,
+      })
     },
     { scope: 'worker', auto: true },
   ],
@@ -143,30 +167,37 @@ async function startPostgresContainer({
 }: {
   network: StartedNetwork
 }) {
-  // Start postgres container
-  const postgresContainer = await new PostgreSqlContainer('postgres:latest')
-    .withCopyFilesToContainer([
-      {
-        source: path.join(
-          path.dirname(fileURLToPath(import.meta.url)),
-          '../../postgres/init-db.sh',
-        ),
-        target: '/docker-entrypoint-initdb.d/init-db.sh',
-      },
+  let isError = false
+  let postgresContainer: StartedTestContainer | undefined
+  try {
+    // Start postgres container
+    postgresContainer = await new PostgreSqlContainer('postgres:latest')
+      .withCopyFilesToContainer([
+        {
+          source: path.join(
+            path.dirname(fileURLToPath(import.meta.url)),
+            '../../postgres/init-db.sh',
+          ),
+          target: '/docker-entrypoint-initdb.d/init-db.sh',
+        },
+      ])
+      .withNetwork(network)
+      .withDatabase('test')
+      .start()
+
+    const checkFile = await postgresContainer.exec([
+      'test',
+      '-f',
+      '/docker-entrypoint-initdb.d/init-db.sh',
     ])
-    .withNetwork(network)
-    .withDatabase('test')
-    .start()
+    const initFileIsPresentInContainer = checkFile.exitCode === 0
+    if (!initFileIsPresentInContainer) throw new Error('Init file not present')
+  } catch (e) {
+    console.error('❌ Postgres container failed to start:', e)
+    isError = true
+  }
 
-  const checkFile = await postgresContainer.exec([
-    'test',
-    '-f',
-    '/docker-entrypoint-initdb.d/init-db.sh',
-  ])
-  const initFileIsPresentInContainer = checkFile.exitCode === 0
-  if (!initFileIsPresentInContainer) throw new Error('Init file not present')
-
-  return postgresContainer
+  return { postgresContainer, isError }
 }
 
 async function startBackendContainer({
@@ -233,4 +264,21 @@ async function startBackendContainer({
   }
 
   return { apiUrl, startedBackendContainer, isError }
+}
+
+async function closeConnections({
+  network,
+  startedBackendContainer,
+  postgresContainer,
+  startedMockOauthContainer,
+}: {
+  network?: StartedNetwork
+  startedBackendContainer?: StartedTestContainer
+  postgresContainer?: StartedTestContainer
+  startedMockOauthContainer?: StartedTestContainer
+}) {
+  await startedBackendContainer?.stop()
+  await postgresContainer?.stop()
+  await startedMockOauthContainer?.stop()
+  await network?.stop()
 }

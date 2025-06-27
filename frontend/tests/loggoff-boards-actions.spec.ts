@@ -1,5 +1,4 @@
-import { expect } from '@playwright/test'
-import { testWithBackend as test } from './setupTeardown'
+import { expect, test } from '@playwright/test'
 
 test('Load button should be disabled', async ({ page }) => {
   await page.goto('/')

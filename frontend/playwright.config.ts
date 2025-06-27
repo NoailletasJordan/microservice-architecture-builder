@@ -23,7 +23,7 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:6005',
     launchOptions: {
       /* Necessary to avoid flakyness */
       slowMo: 100,
@@ -57,7 +57,7 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'bun run dev',
-    url: 'http://localhost:5173',
+    url: 'http://localhost:6005',
     reuseExistingServer: !process.env.CI,
   },
 })

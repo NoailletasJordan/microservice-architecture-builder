@@ -14,7 +14,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
     ports:
-      - '5173:5173'
+      - '6005:6005'
     restart: on-failure
     depends_on:
       - backend

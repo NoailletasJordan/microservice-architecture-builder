@@ -19,7 +19,7 @@ import (
 // @title Microservice Architecture Builder API
 // @version 1.0
 // @description This is the API documentation for the Microservice Architecture Builder backend.
-// @host localhost:8080
+// @host localhost:6006
 // @BasePath /api
 // @securityDefinitions.apikey Bearer
 // @in header
@@ -63,7 +63,7 @@ func main() {
 	}).Handler(r)
 
 	// Start server
-	port := ":8080"
+	port := ":6006"
 	fmt.Printf("Server starting on port %s\n", port)
 	log.Fatal(http.ListenAndServe(port, handler))
 }

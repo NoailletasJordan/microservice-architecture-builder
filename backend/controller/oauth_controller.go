@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"microservice-architecture-builder/backend/helpers"
 	"microservice-architecture-builder/backend/service"
 	"net/http"
@@ -28,7 +29,8 @@ func (oc *OauthController) GoogleLoginRedirect(w http.ResponseWriter, r *http.Re
 
 	// Get redirect URI using helper function
 	redirectURI := helpers.GetOAuthRedirectURI(r)
-
+	/** Temp */
+	fmt.Println("redirectURI", redirectURI)
 	oauthURL, err := url.Parse(os.Getenv("OAUTH_GOOGLE_ACCOUNT_BASE_URL") + "/o/oauth2/v2/auth")
 	if err != nil {
 		http.Error(w, "Invalid OAuth Google host", http.StatusInternalServerError)

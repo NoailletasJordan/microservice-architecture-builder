@@ -10,6 +10,7 @@ export default defineConfig({
     extensions: ['.js', '.jsx', '.ts', '.d.ts', '.tsx'],
   },
   server: {
+    port: 6005,
     proxy: {
       '/ingest/static': {
         target: 'https://us-assets.i.posthog.com',

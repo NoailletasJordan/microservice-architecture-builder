@@ -68,267 +68,270 @@ definitions:
       username:
         type: string
     type: object
-host: localhost:8080
+host: localhost:6006
 info:
   contact: {}
-  description: This is the API documentation for the Microservice Architecture Builder
+  description:
+    This is the API documentation for the Microservice Architecture Builder
     backend.
   title: Microservice Architecture Builder API
-  version: "1.0"
+  version: '1.0'
 paths:
   /board/:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get a list of all boards
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
-        "200":
+        '200':
           description: OK
           schema:
             items:
               $ref: '#/definitions/model.Board'
             type: array
-        "401":
+        '401':
           description: Unauthorized
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
       security:
-      - Bearer: []
+        - Bearer: []
       summary: Get all boards
       tags:
-      - boards
+        - boards
     post:
       consumes:
-      - application/json
+        - application/json
       description: 'Create a new board. Allowed fields in the request body:'
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Board creation payload
-        in: body
-        name: board
-        required: true
-        schema:
-          $ref: '#/definitions/controller.CreateBoardRequest'
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+        - description: Board creation payload
+          in: body
+          name: board
+          required: true
+          schema:
+            $ref: '#/definitions/controller.CreateBoardRequest'
       produces:
-      - application/json
+        - application/json
       responses:
-        "201":
+        '201':
           description: Created
           schema:
             $ref: '#/definitions/model.Board'
-        "400":
-          description: 'Bad Request. Example: {\"error\": \"unexpected fields: [foo,
+        '400':
+          description:
+            'Bad Request. Example: {\"error\": \"unexpected fields: [foo,
             bar]\"}'
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
-        "401":
+        '401':
           description: Unauthorized
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
       security:
-      - Bearer: []
+        - Bearer: []
       summary: Create a new board
       tags:
-      - boards
+        - boards
   /board/{id}:
     delete:
       consumes:
-      - application/json
+        - application/json
       description: Delete a board by its unique ID
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Board ID
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+        - description: Board ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
-        "200":
+        '200':
           description: OK
           schema:
             additionalProperties:
               type: string
             type: object
-        "401":
+        '401':
           description: Unauthorized
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
-        "404":
+        '404':
           description: Not Found
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
       security:
-      - Bearer: []
+        - Bearer: []
       summary: Delete a board by ID
       tags:
-      - boards
+        - boards
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get a board by its unique ID
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Board ID
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+        - description: Board ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
-        "200":
+        '200':
           description: OK
           schema:
             $ref: '#/definitions/model.Board'
-        "401":
+        '401':
           description: Unauthorized
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
-        "404":
+        '404':
           description: Not Found
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
       security:
-      - Bearer: []
+        - Bearer: []
       summary: Get a board by ID
       tags:
-      - boards
+        - boards
     patch:
       consumes:
-      - application/json
-      description: 'Update a board''s details by its unique ID. Allowed fields in
-        the request body:'
+        - application/json
+      description: "Update a board's details by its unique ID. Allowed fields in
+        the request body:"
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Board ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Board update payload
-        in: body
-        name: board
-        required: true
-        schema:
-          $ref: '#/definitions/controller.UpdateBoardRequest'
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+        - description: Board ID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Board update payload
+          in: body
+          name: board
+          required: true
+          schema:
+            $ref: '#/definitions/controller.UpdateBoardRequest'
       produces:
-      - application/json
+        - application/json
       responses:
-        "200":
+        '200':
           description: OK
           schema:
             $ref: '#/definitions/model.Board'
-        "400":
-          description: 'Bad Request. Example: {\"error\": \"unexpected fields: [foo,
+        '400':
+          description:
+            'Bad Request. Example: {\"error\": \"unexpected fields: [foo,
             bar]\"} or {\"error\": \"at least one of title, data, password is required\"}'
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
-        "401":
+        '401':
           description: Unauthorized
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
-        "404":
+        '404':
           description: Not Found
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
       security:
-      - Bearer: []
+        - Bearer: []
       summary: Update a board by ID
       tags:
-      - boards
+        - boards
   /board/{id}/sharefragment:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get only the share_fragment field for a board by its unique ID
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: Board ID
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+        - description: Board ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
-        "200":
+        '200':
           description: OK
           schema:
             $ref: '#/definitions/controller.BoardShareFragmentResponse'
-        "401":
+        '401':
           description: Unauthorized
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
-        "404":
+        '404':
           description: Not Found
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
       security:
-      - Bearer: []
+        - Bearer: []
       summary: Get the share fragment of a board by ID
       tags:
-      - boards
+        - boards
   /users/me:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get the details of the currently authenticated user
       parameters:
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
-        "200":
+        '200':
           description: OK
           schema:
             $ref: '#/definitions/model.User'
-        "401":
+        '401':
           description: Unauthorized
           schema:
             $ref: '#/definitions/controller.ErrorResponse'
       security:
-      - Bearer: []
+        - Bearer: []
       summary: Get current user
       tags:
-      - users
+        - users
 securityDefinitions:
   Bearer:
     description: Type "Bearer" followed by a space and JWT token.
     in: header
     name: Authorization
     type: apiKey
-swagger: "2.0"
+swagger: '2.0'

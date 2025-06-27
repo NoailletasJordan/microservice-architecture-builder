@@ -42,7 +42,7 @@ type UserInfoResponse struct {
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 func main() {
-	port := "8081"
+	port := "6008"
 
 	http.HandleFunc("/o/oauth2/v2/auth", createCodeAndRedirect)
 	http.HandleFunc("/token", findUser)

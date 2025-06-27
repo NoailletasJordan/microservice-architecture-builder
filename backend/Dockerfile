@@ -13,13 +13,13 @@ RUN go install github.com/air-verse/air@latest
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-EXPOSE 8080
+EXPOSE 6006
 CMD ["air", "-c", ".air.toml"]
 
 # Stage 3: Production stage
 FROM alpine:latest
 WORKDIR /app
 COPY --from=builder /app/backend ./toExecute
-EXPOSE 8080
+EXPOSE 6006
 RUN chmod +x ./toExecute
 CMD ["./toExecute"]

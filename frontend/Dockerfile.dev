@@ -10,6 +10,6 @@ RUN bun install
 # Copy source (in dev, this is often overridden by a volume)
 COPY frontend/ .
 
-EXPOSE 5173
+EXPOSE 6000
 
-CMD ["bun", "run", "dev", "--host"]
+CMD ["bun", "run", "dev", "--", "--port=6000", "--host"]

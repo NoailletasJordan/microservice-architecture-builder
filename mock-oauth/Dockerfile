@@ -6,6 +6,6 @@ COPY . .
 
 RUN go build -o mock-oauth .
 
-EXPOSE 8081
+EXPOSE 6008
 
 CMD ["./mock-oauth"]

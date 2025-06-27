@@ -33,18 +33,33 @@ export const testWithBackend = base.extend<{
       const postgresContainer = await startPostgresContainer({ network })
 
       const {
+        isError: mockOauthIsError,
         mockOauthInDockerUrl,
         mockOauthExposedUrl,
         startedMockOauthContainer,
-      } = await startMockOauthContainer({ network, envVars })
+      } = await startMockOauthContainer({
+        network,
+        envVars,
+      })
 
-      const { apiUrl, startedBackendContainer } = await startBackendContainer({
+      if (mockOauthIsError) {
+        throw new Error('setupTeardown ❌ abort')
+      }
+
+      const {
+        apiUrl,
+        startedBackendContainer,
+        isError: backendIsError,
+      } = await startBackendContainer({
         network,
         postgresContainer,
         envVars,
         mockOauthInDockerUrl,
         mockOauthExposedUrl,
       })
+      if (backendIsError) {
+        throw new Error('setupTeardown ❌ abort')
+      }
 
       await use({ apiUrl })
       await startedBackendContainer?.stop()
@@ -89,36 +104,39 @@ async function startMockOauthContainer({
   let mockOauthInDockerUrl = ''
   let mockOauthExposedUrl = ''
   let startedMockOauthContainer: StartedTestContainer | undefined
+  let isError = false
   try {
     // Override mock oauth url to use the started container
     startedMockOauthContainer = await mockOauthContainer
       .withNetwork(network)
-      .withExposedPorts(8081)
+      .withExposedPorts(6008)
       .withWaitStrategy(Wait.forLogMessage(/Server starting on port/))
       .withEnvironment({
         ...envVars,
-        VITE_API_URL: 'http://backend:8080',
+        VITE_API_URL: 'http://backend:6006',
       })
       .start()
 
     const mockOauthContainerName = startedMockOauthContainer
       .getName()
       .replace(/^\//, '')
-    mockOauthInDockerUrl = `http://${mockOauthContainerName}:8081`
+    mockOauthInDockerUrl = `http://${mockOauthContainerName}:6008`
     mockOauthExposedUrl = `http://localhost:${startedMockOauthContainer.getMappedPort(
-      8081,
+      6008,
     )}`
     console.log('mockOauthExposedUrl', mockOauthExposedUrl)
     console.log('mockOauthInDockerUrl', mockOauthInDockerUrl)
     // TODO - separate url for front and api
   } catch (e) {
     console.error('❌ Mock oauth container failed to start:', e)
+    isError = true
   }
 
   return {
     mockOauthInDockerUrl,
     mockOauthExposedUrl,
     startedMockOauthContainer,
+    isError,
   }
 }
 
@@ -189,6 +207,7 @@ async function startBackendContainer({
 
   let startedBackendContainer: StartedTestContainer | undefined
   let apiUrl = ''
+  let isError = false
   try {
     // Override postgres dsn to use the started container
     const postGresContainerName = postgresContainer.getName().replace(/^\//, '')
@@ -201,18 +220,19 @@ async function startBackendContainer({
         OAUTH_GOOGLE_BASE_URL: mockOauthInDockerUrl,
         OAUTH_GOOGLE_ACCOUNT_BASE_URL: mockOauthExposedUrl,
       })
-      .withExposedPorts(8080)
-      .withWaitStrategy(Wait.forLogMessage('Server starting on port :8080'))
+      .withExposedPorts(6006)
+      .withWaitStrategy(Wait.forLogMessage('Server starting on port :6006'))
       .withNetwork(network)
       .start()
 
     // overwrite api url
     apiUrl = `http://${startedBackendContainer.getHost()}:${startedBackendContainer.getMappedPort(
-      8080,
+      6006,
     )}`
   } catch (e) {
     console.error('❌ Backend container failed to start:', e)
+    isError = true
   }
 
-  return { apiUrl, startedBackendContainer }
+  return { apiUrl, startedBackendContainer, isError }
 }

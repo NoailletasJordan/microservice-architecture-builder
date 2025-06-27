@@ -29,9 +29,7 @@ export const testWithBackend = base.extend<{
       const envVars = parse(envFileContent)
 
       const network = await new Network({ nextUuid: uuid }).start()
-
       const postgresContainer = await startPostgresContainer({ network })
-
       const {
         isError: mockOauthIsError,
         mockOauthInDockerUrl,
@@ -193,7 +191,7 @@ async function startBackendContainer({
   // Start api container
   const apiContainer = await GenericContainer.fromDockerfile(
     '../backend/',
-    'Dockerfile',
+    'Dockerfile.dev',
   ).build()
 
   // Start api logs

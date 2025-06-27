@@ -1,5 +1,5 @@
 # Build Stage
-FROM imbios/bun-node as builder
+FROM oven/bun AS builder
 
 WORKDIR /app
 
@@ -19,6 +19,7 @@ WORKDIR /app
 RUN npm install -g http-server
 
 COPY --from=builder /app/dist ./dist
+
 
 EXPOSE 6005
 CMD ["http-server", "dist", "-p", "6005"]

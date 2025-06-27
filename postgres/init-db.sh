@@ -1,12 +1,6 @@
 #!/bin/bash
 set -e
 
-# Wait until PostgreSQL is ready
-# until pg_isready -U "${POSTGRES_USER:-postgres}" -h localhost; do
-#   echo "Waiting for PostgreSQL to be ready..."
-#   sleep 1
-# done
-
 # Run SQL in the default database
 echo "Running schema in default database..."
 psql -v ON_ERROR_STOP=1 --username "${POSTGRES_USER:-postgres}" --dbname "${POSTGRES_DB:-postgres}" <<-EOSQL

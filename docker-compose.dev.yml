@@ -7,23 +7,17 @@ services:
     build:
       context: .
       dockerfile: ./frontend/Dockerfile.dev
-    working_dir: /app
     env_file:
       - ./.env
     volumes:
+      # Mount entire directory for hot reloading
       - ./frontend:/app
       - /app/node_modules
-    ports:
-      - '6005:6005'
-    restart: on-failure
-    depends_on:
-      - backend
 
   backend:
     build:
-      target: dev
+      context: ./backend
+      dockerfile: ./Dockerfile.dev
     volumes:
-      - ./backend:/app # Mount entire backend directory for hot reloading
-    depends_on:
-      db_local:
-        condition: service_healthy
+      # Mount entire directory for hot reloading
+      - ./backend:/app

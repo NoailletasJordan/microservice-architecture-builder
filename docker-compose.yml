@@ -1,12 +1,8 @@
 services:
   frontend:
-    image: imbios/bun-node
     build:
       context: .
       dockerfile: ./frontend/Dockerfile.prod
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
     ports:
       - '6005:6005'
     restart: on-failure
@@ -16,13 +12,15 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.prod
     ports:
       - '6006:6006'
     env_file:
       - ./.env
     restart: on-failure
-    working_dir: /app
+    depends_on:
+      db_local:
+        condition: service_healthy
 
   db_local:
     image: postgres:latest
@@ -49,5 +47,7 @@ services:
     depends_on:
       - db_local
     restart: on-failure
+    env_file:
+      - ./.env
     environment:
       PGADMIN_LISTEN_PORT: 6009

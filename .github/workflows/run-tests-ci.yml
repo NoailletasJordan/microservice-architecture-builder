@@ -32,18 +32,18 @@ jobs:
       - name: Create .env file
         run: |
           cat <<EOF > .env
-          VITE_API_URL=http://localhost:8080
+          VITE_API_URL=http://localhost:6006
           VITE_POSTHOG_HOST=wrongOnPurpose
           VITE_POSTHOG_KEY=wrongOnPurpose
           VITE_POSTHOG_REVERSE_PROXY_URL=wrongOnPurpose
 
-          POSTGRES_DSN=host=localhost port=5432 user=postgres password=postgres dbname=mas sslmode=disable
+          POSTGRES_DSN=host=localhost port=6007 user=postgres password=postgres dbname=mas sslmode=disable
           OAUTH_GOOGLE_ACCOUNT_BASE_URL=wrongOnPurpose
           OAUTH_GOOGLE_BASE_URL=wrongOnPurpose
           OAUTH_GOOGLE_CLIENT_ID=wrongOnPurpose
           OAUTH_GOOGLE_SECRET=wrongOnPurpose
           JWT_SECRET=some-secret
-          FRONTEND_URL=http://localhost:5173
+          FRONTEND_URL=http://localhost:6005
 
           POSTGRES_USER=postgres
           POSTGRES_PASSWORD=postgres
@@ -68,7 +68,6 @@ jobs:
       - name: Run backend tests
         run: |
           make test-b ARGS="-v"
-          sleep 5
 
       - name: Run frontend tests
         run: |

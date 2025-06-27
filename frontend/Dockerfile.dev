@@ -7,9 +7,6 @@ WORKDIR /app
 COPY frontend/bun.lock frontend/package.json ./
 RUN bun install
 
-# Copy source (in dev, this is often overridden by a volume)
-COPY frontend/ .
+EXPOSE 6005
 
-EXPOSE 6000
-
-CMD ["bun", "run", "dev", "--", "--port=6000", "--host"]
+CMD ["bun", "run", "dev", "--", "--port=6005", "--host"]

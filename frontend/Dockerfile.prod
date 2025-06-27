@@ -22,4 +22,4 @@ COPY --from=builder /app/dist ./dist
 
 
 EXPOSE 6005
-CMD ["http-server", "dist", "-p", "6005"]
+CMD ["http-server", "dist", "-p", "6005", "-a", "localhost"]

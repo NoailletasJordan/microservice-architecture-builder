@@ -1,7 +1,6 @@
 import { ReactFlowInstance, XYPosition } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 
-import { cloneDeep } from 'lodash'
 import {
   IConnexion,
   TCustomEdge,
@@ -72,7 +71,7 @@ export const getNodesAfterDeleteSubservice = ({
       (compSubService) => compSubService.id != deleteId,
     )
 
-    const newCompNode = cloneDeep(compNode)
+    const newCompNode = structuredClone(compNode)
     newCompNode.data.subServices = filteredSubServices
 
     return newCompNode

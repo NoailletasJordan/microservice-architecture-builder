@@ -33,7 +33,6 @@
     "@tiptap/starter-kit": "2.3.2",
     "dotenv": "^16.5.0",
     "install": "0.13.0",
-    "lodash": "^4.17.21",
     "motion": "^12.4.3",
     "npm": "10.7.0",
     "path": "0.12.7",
@@ -47,7 +46,6 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.51.1",
-    "@types/lodash": "^4.14.198",
     "@types/node": "^22.15.30",
     "@types/react": "^18.2.15",
     "@types/react-beautiful-dnd": "^13.1.4",
@@ -61,6 +59,7 @@
     "eslint-plugin-react-compiler": "^19.0.0-beta-aeaed83-20250323",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.3",
+    "rollup-plugin-visualizer": "^6.0.3",
     "typescript": "5.8.3",
     "vite": "^4.4.5"
   }

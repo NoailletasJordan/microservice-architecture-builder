@@ -38,7 +38,6 @@ const accessEnvVariable = (
     | 'VITE_POSTHOG_KEY',
 ) => {
   const fullEnvVar = import.meta.env[key]
-  if (!fullEnvVar) throw new Error(`Environnement variable not set : ${key}`)
 
   return fullEnvVar
 }

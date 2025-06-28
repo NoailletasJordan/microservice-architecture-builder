@@ -23,7 +23,6 @@ import {
 } from '@mantine/core'
 import { IconTrash } from '@tabler/icons-react'
 import { Editor } from '@tiptap/react'
-import { groupBy } from 'lodash'
 import { useReactFlow } from 'reactflow'
 
 interface Props {
@@ -34,7 +33,22 @@ interface Props {
   collapseAll: boolean
 }
 
+function groupBy<T extends Record<string, any>, K extends keyof T[keyof T]>(
+  obj: T,
+  key: K,
+): Record<string, T[keyof T][]> {
+  return Object.values(obj).reduce((result, item) => {
+    const groupKey = item[key]
+    if (!result[groupKey]) {
+      result[groupKey] = []
+    }
+    result[groupKey].push(item)
+    return result
+  }, {} as Record<string, T[keyof T][]>)
+}
+
 const connexionsByGroup = groupBy(connexionConfig, 'group')
+
 const selectData = Object.entries(connexionsByGroup).map(
   ([group, listItem]) => {
     return {
@@ -55,7 +69,6 @@ export default function ConnexionCollapsableMenu({
   editor,
 }: Props) {
   const flowInstance = useReactFlow()
-
   return (
     <Collapse in={!collapseAll}>
       <Paper

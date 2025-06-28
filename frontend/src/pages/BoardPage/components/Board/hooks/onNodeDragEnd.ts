@@ -4,7 +4,6 @@ import {
   getNodeOverlapped,
   getStateAfterDeleteNode,
 } from '@/pages/BoardPage/configs/helpers'
-import { omit } from 'lodash'
 import { useContext } from 'react'
 import { NodeDragHandler, useReactFlow } from 'reactflow'
 
@@ -21,8 +20,10 @@ export function useOnNodeDragEnd() {
     // Delete node and add it as a subService
     const { nodes: nodesAfterDelete, edges: edgesAfterDelete } =
       getStateAfterDeleteNode({ currentEdges, currentNodes, nodeId: node.id })
+
+    const { subServices: _, ...nodeDataOmitSubServices } = node.data
     const newSubService: SubService = {
-      ...omit(node.data, 'subServices'),
+      ...nodeDataOmitSubServices,
       parentId: targetNode.data.id,
     }
     targetNode.data.subServices = [

@@ -52,11 +52,12 @@ type GoogleUserResponse struct {
 
 // GetOAuthRedirectURI returns the OAuth redirect URI based on the current request context
 func GetOAuthRedirectURI(r *http.Request) string {
-	scheme := "http"
-	if r.TLS != nil {
-		scheme = "https"
+	// Hack for e2e tests using testContainers
+	if os.Getenv("VITE_API_URL") == "dynamic-test-container" {
+		return fmt.Sprintf("http://%s/auth/google/callback", r.Host)
 	}
-	return fmt.Sprintf("%s://%s/auth/google/callback", scheme, r.Host)
+
+	return os.Getenv("VITE_API_URL") + "/auth/google/callback"
 }
 
 func GetUserStructFromGoogle(r *http.Request, code string) (*GoogleUserResponse, error) {

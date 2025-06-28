@@ -248,6 +248,7 @@ async function startBackendContainer({
         POSTGRES_DSN: postgresDSN,
         OAUTH_GOOGLE_BASE_URL: mockOauthInDockerUrl,
         OAUTH_GOOGLE_ACCOUNT_BASE_URL: mockOauthExposedUrl,
+        VITE_API_URL: 'dynamic-test-container',
       })
       .withExposedPorts(6006)
       .withWaitStrategy(Wait.forLogMessage('Server starting on port :6006'))

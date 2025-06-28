@@ -29,7 +29,8 @@ export default defineConfig({
       slowMo: 100,
     },
     /* Collect trace on failure. See https://playwright.dev/docs/trace-viewer */
-    trace: 'retain-on-failure',
+    // trace: 'retain-on-failure',
+    trace: 'on',
   },
 
   timeout: 120 * 1000,

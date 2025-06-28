@@ -10,9 +10,6 @@ dev:
 prod:
 	docker compose -f docker-compose.yml up -d --wait --wait-timeout 100 --build 
 
-temp: 
-	docker compose exec backend go test $(ARGS) ./tests/temp_test.go ./tests/test_helpers.go 
-
 docs-backend:
 	cd backend && ~/go/bin/swag init --output docs 
 
@@ -22,3 +19,6 @@ install:
 
 	@echo "🔧 Installing backend dependencies..."
 	cd backend && go mod download
+
+down:
+	docker compose down --remove-orphans

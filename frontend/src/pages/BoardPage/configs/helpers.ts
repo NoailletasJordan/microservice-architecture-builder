@@ -87,9 +87,10 @@ export const getNodesAfterUpdateNode = ({
   newNode: TCustomNode
   currentNodes: TCustomNode[]
 }): TCustomNode[] => {
-  return oldNodes.map((compNode) =>
+  const result = oldNodes.map((compNode) =>
     compNode.id === newNode.id ? newNode : compNode,
   )
+  return result
 }
 
 export const handleUpdateEdge = (

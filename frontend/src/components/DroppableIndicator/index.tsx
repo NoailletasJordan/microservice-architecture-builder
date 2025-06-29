@@ -100,11 +100,10 @@ export default function DroppableIndicator({
     >
       <svg
         // Rerender on values changes
-        // https://github.com/software-mansion/react-native-svg/issues/142#issuecomment-247319732
         key={height + String(showIndicator) + String(width)}
         preserveAspectRatio="none"
-        width={`calc(${width}px - ${padding * 2}px)`}
-        height={`calc(${height}px - ${padding * 2}px)`}
+        width={`calc(${width}px - ${width === 0 ? 0 : padding * 2}px)`}
+        height={`calc(${height}px - ${height === 0 ? 0 : padding * 2}px)`}
         className="svg-border"
       >
         <rect

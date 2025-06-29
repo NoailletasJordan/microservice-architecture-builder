@@ -4,6 +4,7 @@ import { NodeProps, Position, useReactFlow } from 'reactflow'
 import DroppableIndicator from '@/components/DroppableIndicator'
 import { getEditorParams } from '@/components/RichEditor'
 import { CSSVAR } from '@/contants'
+import { boardDataContext } from '@/contexts/BoardData/constants'
 import {
   CARD_WIDTH,
   IService,
@@ -16,7 +17,7 @@ import {
 import { Box } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
 import { useEditor } from '@tiptap/react'
-import { useMemo, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import DroppableArea from '../../../../../../components/DroppableArea/index'
 import CustomHandle from './components/CustomHandle'
 import EditableTitle from './components/EditableTitle'
@@ -27,7 +28,10 @@ import SubServiceSection from './components/SubServicesSection'
 
 export default function CustomNode(props: NodeProps<IService>) {
   const flowInstance = useReactFlow()
+  // Ineficient, but NodeProps misses rerenders on some nested changes (subservices)
+  const { nodes: _forceRerender } = useContext(boardDataContext)
   const service = props.data
+
   const [isHovered, setIsHovered] = useState(false)
   const { ref, height, width } = useElementSize()
   const isOverlapingNode = useMemo(

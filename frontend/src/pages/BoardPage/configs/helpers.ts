@@ -101,7 +101,7 @@ export const handleUpdateEdge = (
     edges.map((compEdge) => {
       if (compEdge.id !== connexionId) return compEdge
 
-      const edgeCopy = compEdge
+      const edgeCopy = structuredClone(compEdge)
       edgeCopy.data = { ...edgeCopy.data, ...partialEdge }
       return edgeCopy
     }),

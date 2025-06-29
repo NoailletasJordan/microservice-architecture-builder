@@ -44,7 +44,7 @@ export default function Dropdown({
         </LockItemsWrapper>
       )}
       <Menu.Divider my="xs" />
-      <LogInLogOut />
+      <LogInLogOut closeMenu={closeMenu} />
       <Github closeMenu={closeMenu} />
     </Menu.Dropdown>
   )

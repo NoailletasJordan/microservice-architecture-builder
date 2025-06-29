@@ -4,7 +4,11 @@ import { Menu } from '@mantine/core'
 import { IconLogin, IconLogout } from '@tabler/icons-react'
 import { useContext, useMemo } from 'react'
 
-export default function LogInLogOut() {
+interface Props {
+  closeMenu: () => void
+}
+
+export default function LogInLogOut({ closeMenu }: Props) {
   const { isLogged, handleLogout, handlePushToGoogleOauth, userQuery } =
     useContext(userContext)
 
@@ -16,7 +20,10 @@ export default function LogInLogOut() {
       color={!isLogged ? 'primary' : ''}
       disabled={isLoading}
       leftSection={<Icon stroke={1} style={ICON_STYLE} />}
-      onClick={isLogged ? handleLogout : handlePushToGoogleOauth}
+      onClick={() => {
+        closeMenu()
+        isLogged ? handleLogout() : handlePushToGoogleOauth()
+      }}
     >
       {isLogged ? 'Log out' : 'Log in with Google'}
     </Menu.Item>

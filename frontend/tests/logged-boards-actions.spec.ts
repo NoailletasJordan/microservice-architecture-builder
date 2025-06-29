@@ -109,6 +109,22 @@ test('should clear the board on logout', async ({ page }) => {
   await expect(getNodesLocator({ page })).toHaveCount(0)
 })
 
+test('should maintain cursor position when typing', async ({ page }) => {
+  const boardTitleInput = page.getByTestId('board-title')
+  await boardTitleInput.fill('')
+  await boardTitleInput.focus()
+  for (const letter of 'test') {
+    await boardTitleInput.press(letter)
+  }
+
+  await boardTitleInput.press('ArrowLeft')
+  await boardTitleInput.press('o')
+  await page.waitForTimeout(100)
+  await boardTitleInput.press('o')
+
+  expect(boardTitleInput).toHaveValue('tesoot')
+})
+
 base('should push unlogged board to login page', async ({ page }) => {
   await page.goto('/')
   await initialTwoNodesSetup({ page })

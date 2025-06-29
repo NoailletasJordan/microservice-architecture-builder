@@ -5,7 +5,7 @@ import { userBoardsContext } from '@/contexts/UserBoards/constants'
 import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import { Loader, TextInput } from '@mantine/core'
 import { IconRouter, IconRouterOff } from '@tabler/icons-react'
-import { useContext, useMemo } from 'react'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import useOnTitleChange from './hooks/useOnTitleChange'
 import usePushMutation from './hooks/usePushMutation'
 import { useTitleValidator } from './hooks/useTitleValidator'
@@ -24,44 +24,56 @@ export default function BoardTitle() {
   )
   const { error, isError } = useTitleValidator()
 
-  return (
-    <>
-      <TextInput
-        error={!isLoading && error}
-        maxLength={50}
-        onChange={onChange}
-        onBlur={() => {
-          if (!currentUserBoardId || isError || isLoading) return
+  // prevents caret from jumping on query cache update
+  // https://stackoverflow.com/a/68928267
+  const [cursor, setCursor] = useState<number | null>(null)
+  const ref = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    ref.current?.setSelectionRange(cursor, cursor)
+  }, [ref, cursor, title])
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCursor(e.target.selectionStart)
+    onChange?.(e)
+  }
 
-          return pushMutation(title)
-        }}
-        value={title}
-        fw="bold"
-        variant={isLogged ? 'default' : 'unstyled'}
-        readOnly={!isLogged}
-        rightSection={
-          isLoading ? (
-            <Loader size="xs" />
-          ) : (
-            <TooltipWrapper
-              position="right"
-              label={
-                isLogged
-                  ? 'Your work is saved in the cloud'
-                  : 'Your work is saved on your browser'
-              }
-            >
-              <Icon
-                data-testid={isLogged ? testIdLogged : testIdLogoff}
-                stroke={1.5}
-                color={isLogged ? 'white' : 'gray'}
-                style={ICON_STYLE}
-              />
-            </TooltipWrapper>
-          )
-        }
-      />
-    </>
+  return (
+    <TextInput
+      ref={ref}
+      data-testid="board-title"
+      error={!isLoading && error}
+      maxLength={50}
+      onChange={handleChange}
+      onBlur={() => {
+        if (!currentUserBoardId || isError || isLoading) return
+
+        return pushMutation(title)
+      }}
+      value={title}
+      fw="bold"
+      variant={isLogged ? 'default' : 'unstyled'}
+      readOnly={!isLogged}
+      rightSection={
+        isLoading ? (
+          <Loader size="xs" />
+        ) : (
+          <TooltipWrapper
+            position="right"
+            label={
+              isLogged
+                ? 'Your work is saved in the cloud'
+                : 'Your work is saved on your browser'
+            }
+          >
+            <Icon
+              data-testid={isLogged ? testIdLogged : testIdLogoff}
+              stroke={1.5}
+              color={isLogged ? 'white' : 'gray'}
+              style={ICON_STYLE}
+            />
+          </TooltipWrapper>
+        )
+      }
+    />
   )
 }
 

@@ -58,6 +58,7 @@ export default function DeleteButton({ parentId }: Props) {
             animate={isOver ? 'on' : 'off'}
           >
             <ThemeIcon
+              data-testid="delete-service"
               component="div"
               variant="transparent"
               color={CSSVAR['--surface']}

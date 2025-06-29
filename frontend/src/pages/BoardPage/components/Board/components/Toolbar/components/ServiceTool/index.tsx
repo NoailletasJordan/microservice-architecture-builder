@@ -17,7 +17,7 @@ export function ServiceTool({ serviceIdType, draggableIndicator }: Props) {
   return (
     <ThemeIcon
       size="xl"
-      id={`icon-draggable-${serviceIdType}`}
+      data-testid={`icon-draggable-${serviceIdType}`}
       variant="transparent"
       style={{
         border: `1px solid ${CSSVAR['--border']}`,

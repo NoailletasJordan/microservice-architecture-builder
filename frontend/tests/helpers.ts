@@ -42,10 +42,18 @@ export const getLogoutNotificationLocator = ({ page }: { page: Page }) =>
   page.getByText("You're logged out")
 export const getBoardsSubMenuLocator = ({ page }: { page: Page }) =>
   page.getByTestId(/load-board-board/)
+export const getNodeServerLocator = ({ page }: { page: Page }) =>
+  page.getByLabel(/node-type-server/)
+export const getNodeFrontendLocator = ({ page }: { page: Page }) =>
+  page.getByLabel(/node-type-frontend/)
+export const getNodeDatabaseLocator = ({ page }: { page: Page }) =>
+  page.getByLabel(/node-type-database/)
+export const getIconDatabaseLocator = ({ page }: { page: Page }) =>
+  page.getByTestId('icon-draggable-database')
 
 export const initialTwoNodesSetup = async ({ page }: NodeSetupOptions) => {
   // Create 'frontend' node
-  const frontendIcon = page.locator('#icon-draggable-frontend')
+  const frontendIcon = page.getByTestId('icon-draggable-frontend')
   await expect(frontendIcon).toBeVisible()
   await grabElementTo(page, {
     coordonate: [300, 300],
@@ -53,7 +61,7 @@ export const initialTwoNodesSetup = async ({ page }: NodeSetupOptions) => {
   })
 
   // Create 'server' node
-  const serverIcon = page.locator('#icon-draggable-server')
+  const serverIcon = page.getByTestId('icon-draggable-server')
   await expect(serverIcon).toBeVisible()
   await grabElementTo(page, {
     coordonate: [600, 300],
@@ -63,8 +71,8 @@ export const initialTwoNodesSetup = async ({ page }: NodeSetupOptions) => {
   await page.waitForTimeout(1000)
 
   // Get node elements and their handles
-  const frontendNode = page.getByLabel('node-type-frontend')
-  const serverNode = page.getByLabel('node-type-server')
+  const frontendNode = getNodeFrontendLocator({ page })
+  const serverNode = getNodeServerLocator({ page })
 
   await frontendNode.waitFor({ state: 'visible', timeout: 10000 })
   await serverNode.waitFor({ state: 'visible', timeout: 10000 })

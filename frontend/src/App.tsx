@@ -92,7 +92,7 @@ export default function App() {
             </UserProvider>
             {process.env.NODE_ENV === 'development' && (
               <ReactQueryDevtools
-                buttonPosition="bottom-left"
+                buttonPosition="top-right"
                 initialIsOpen={false}
               />
             )}

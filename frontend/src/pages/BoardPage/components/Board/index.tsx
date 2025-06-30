@@ -1,12 +1,16 @@
 import DroppableIndicator from '@/components/DroppableIndicator'
 import GuidanceTextsMain from '@/components/GuidanceTextsComponents/GuidanceTextsMain'
-import { CSSVAR } from '@/contants'
+import { CSSVAR, useEffectEventP } from '@/contants'
 import { boardDataContext } from '@/contexts/BoardData/constants'
+import { useQueryKey } from '@/contexts/BoardData/hooks/useQueryKey'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
-import { Box } from '@mantine/core'
+import { userBoardsContext } from '@/contexts/UserBoards/constants'
+import { ActionIcon, Box } from '@mantine/core'
 import { useDisclosure, useElementSize } from '@mantine/hooks'
-import { useContext } from 'react'
+import { IconArrowBackUp, IconArrowForwardUp } from '@tabler/icons-react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useContext, useEffect, useRef } from 'react'
 import ReactFlow, {
   Background,
   BackgroundVariant,
@@ -14,17 +18,22 @@ import ReactFlow, {
   EdgeTypes,
   MiniMap,
   NodeTypes,
+  Panel,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { v4 } from 'uuid'
 import DroppableArea from '../../../../components/DroppableArea/index'
 import { clickCanvaContext } from '../../../../contexts/ClickCanvaCapture/constants'
 import {
+  ICON_STYLE,
   NO_DRAG_REACTFLOW_CLASS,
   NO_PAN_REACTFLOW_CLASS,
   NO_WhEEL_REACTFLOW_CLASS,
+  TCustomNode,
 } from '../../configs/constants'
+import { useStateHistory } from '../../temp'
 import ClearCurrentBoard from './components/ClearCurrentBoardModal'
+import { TCustomEdge } from './components/connexionContants'
 import ConnexionPreview from './components/ConnexionPreview'
 import CustomEdge from './components/CustomEdge'
 import CustomNode from './components/CustomNode/'
@@ -40,6 +49,7 @@ import { useOnNodeDragEnd } from './hooks/onNodeDragEnd'
 import { useOnConnect } from './hooks/useOnConnect'
 import { useOnEdgesChange } from './hooks/useOnEdgesChange'
 import { useOnNodesChange } from './hooks/useOnNodesChange'
+import { TBoardDataStore } from './hooks/useSetNodes'
 import LoadUrlBoardModal from './services/LoadUrlBoardModal'
 
 const nodeTypes: NodeTypes = {
@@ -150,6 +160,7 @@ export default function Board() {
               openDeleteCurrentBoardModal={deleteCurrentBoardModalHandlers.open}
             />
             <PrimaryActionsPanel openShareModal={shareModalHanders.open} />
+            <PanelBottomLeft />
             <DraggableGhost />
           </Box>
         </DroppableArea>
@@ -174,6 +185,153 @@ export default function Board() {
         opened={showOnboarding}
       />
     </>
+  )
+}
+
+function PanelBottomLeft() {
+  const [_, handlers, history] = useStateHistory<{
+    nodes: TCustomNode[]
+    edges: TCustomEdge[]
+  }>({
+    nodes: [],
+    edges: [],
+  })
+
+  const { nodes, edges, boardDataQuery } = useContext(boardDataContext)
+  const { currentUserBoardId } = useContext(userBoardsContext)
+
+  /** Temp */
+  console.log('history:', history.history)
+
+  const isFetched = boardDataQuery.isFetched
+
+  const queryClient = useQueryClient()
+  const queryKey = useQueryKey()
+
+  function revertHistory() {
+    const newIndex = history.current - 1
+
+    const currentData: TBoardDataStore | undefined =
+      queryClient.getQueryData(queryKey)
+    queryClient.setQueryData(queryKey, {
+      ...currentData,
+      nodes: history.history[newIndex].nodes,
+      edges: history.history[newIndex].edges,
+    })
+    handlers.back()
+  }
+
+  function forwardHistory() {
+    if (history.current === history.history.length - 1) return
+
+    const newIndex = history.current + 1
+    const currentData: TBoardDataStore | undefined =
+      queryClient.getQueryData(queryKey)
+    queryClient.setQueryData(queryKey, {
+      ...currentData,
+      nodes: history.history[newIndex].nodes,
+      edges: history.history[newIndex].edges,
+    })
+    handlers.forward()
+  }
+
+  const nonReactiveState = useEffectEventP(() => ({
+    handlers,
+    history,
+  }))
+
+  const isFetchedRefPrev = useRef(isFetched)
+  const queryKeyRefPrev = useRef(queryKey)
+  useEffect(() => {
+    const justChangedBoard = queryKeyRefPrev.current[1] !== queryKey[1]
+
+    if (justChangedBoard) {
+      queryKeyRefPrev.current = queryKey
+
+      console.log('HAT:', queryKeyRefPrev.current, queryKey)
+      handlers.reset({ nodes, edges })
+      return
+    }
+
+    if (!isFetched) {
+      isFetchedRefPrev.current = false
+      return
+    }
+
+    const justBeenFetched = !isFetchedRefPrev.current && isFetched
+    if (justBeenFetched) {
+      isFetchedRefPrev.current = true
+      handlers.updateIndex({ value: { nodes, edges }, index: 0 })
+      return
+    }
+
+    const { history } = nonReactiveState()
+    const timeoutDelay =
+      history.current === history.history.length - 1 ? 350 : 0
+
+    const handle = setTimeout(() => {
+      const { handlers } = nonReactiveState()
+
+      const isDraggingNode = nodes.some((node) => node.dragging)
+
+      const currentData = { nodes, edges }
+      const dataInHistory = {
+        nodes: history.history[history.current].nodes,
+        edges: history.history[history.current].edges,
+      }
+
+      const isEqual =
+        JSON.stringify(currentData) === JSON.stringify(dataInHistory)
+
+      /** Temp */
+      console.log(
+        'isEqual:',
+        isEqual,
+        JSON.stringify(currentData),
+        JSON.stringify(dataInHistory),
+      )
+
+      if (!isEqual && !isDraggingNode && isFetched) {
+        handlers.set(currentData)
+        /** Temp */
+        console.log('saved:')
+      }
+      /** Temp */
+    }, timeoutDelay)
+
+    return () => {
+      clearTimeout?.(handle)
+    }
+  }, [nodes, edges, isFetched, nonReactiveState])
+
+  return (
+    <Panel position="bottom-left">
+      <ActionIcon.Group>
+        <ActionIcon
+          disabled={!isFetched || history.current === 0}
+          size="lg"
+          variant="light"
+          color="white"
+          aria-label="Fit to view"
+          onClick={revertHistory}
+        >
+          <IconArrowBackUp style={ICON_STYLE} />
+        </ActionIcon>
+
+        <ActionIcon
+          disabled={
+            !isFetched || history.current === history.history.length - 1
+          }
+          onClick={forwardHistory}
+          size="lg"
+          variant="light"
+          color="white"
+          aria-label="Fit to view"
+        >
+          <IconArrowForwardUp style={ICON_STYLE} />
+        </ActionIcon>
+      </ActionIcon.Group>
+    </Panel>
   )
 }
 

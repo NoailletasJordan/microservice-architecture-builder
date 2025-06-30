@@ -8,7 +8,6 @@ RUN bun install
 
 COPY frontend/ .
 COPY .env .
-RUN echo "🔍 Dumping .env for debugging:" && cat .env
 RUN bun run build
 
 # Serve stage

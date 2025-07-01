@@ -24,13 +24,6 @@ export default function OnboardingModal({ opened, close }: Props) {
     setTimeout(() => setSelectedIndex(0), 200)
   }
 
-  const setNextIndex = () => {
-    setSelectedIndex((prev) => Math.min(prev + 1, SECTIONS.length - 1))
-  }
-  const setPreviousIndex = () => {
-    setSelectedIndex((prev) => Math.max(prev - 1, 0))
-  }
-
   const { contentHeight, setElementStateRef } = useContentHeight_({
     opened,
     selectedIndex,

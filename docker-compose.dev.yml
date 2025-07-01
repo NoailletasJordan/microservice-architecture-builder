@@ -1,0 +1,23 @@
+# docker-compose.dev.yml
+# This file is used to override settings in docker-compose.yml for development purposes.
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile.dev
+    env_file:
+      - ./.env
+    volumes:
+      # Mount entire directory for hot reloading
+      - ./frontend:/app
+      - /app/node_modules
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile.dev
+    volumes:
+      # Mount entire directory for hot reloading
+      - ./backend:/app

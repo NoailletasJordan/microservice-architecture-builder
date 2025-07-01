@@ -1,0 +1,25 @@
+# Build Stage
+FROM oven/bun AS builder
+
+WORKDIR /app
+
+COPY frontend/bun.lock frontend/package.json ./
+RUN bun install
+
+COPY frontend/ .
+COPY .env .
+RUN bun run build
+
+# Serve stage
+FROM node:alpine
+
+WORKDIR /app
+
+# Install http-server globally
+RUN npm install -g http-server
+
+COPY --from=builder /app/dist ./dist
+
+
+EXPOSE 6005
+CMD ["http-server", "dist", "-p", "6005"]

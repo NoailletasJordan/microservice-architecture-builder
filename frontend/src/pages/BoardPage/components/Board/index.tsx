@@ -1,0 +1,194 @@
+import DroppableIndicator from '@/components/DroppableIndicator'
+import GuidanceTextsMain from '@/components/GuidanceTextsComponents/GuidanceTextsMain'
+import { CSSVAR } from '@/contants'
+import { boardDataContext } from '@/contexts/BoardData/constants'
+import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
+import { onBoardingContext } from '@/contexts/Onboarding/constants'
+import { Box } from '@mantine/core'
+import { useDisclosure, useElementSize } from '@mantine/hooks'
+import { useContext } from 'react'
+import ReactFlow, {
+  Background,
+  BackgroundVariant,
+  ConnectionMode,
+  EdgeTypes,
+  MiniMap,
+  NodeTypes,
+} from 'reactflow'
+import 'reactflow/dist/style.css'
+import { v4 } from 'uuid'
+import DroppableArea from '../../../../components/DroppableArea/index'
+import { clickCanvaContext } from '../../../../contexts/ClickCanvaCapture/constants'
+import {
+  NO_DRAG_REACTFLOW_CLASS,
+  NO_PAN_REACTFLOW_CLASS,
+  NO_WhEEL_REACTFLOW_CLASS,
+} from '../../configs/constants'
+import ClearCurrentBoard from './components/ClearCurrentBoardModal'
+import ConnexionPreview from './components/ConnexionPreview'
+import CustomEdge from './components/CustomEdge'
+import CustomNode from './components/CustomNode/'
+import DeleteCurrentBoardModal from './components/DeleteCurrentBoardModal'
+import DraggableGhost from './components/DraggableGhost/index'
+import DemoModal from './components/OnboardingModal'
+import PrimaryActionsPanel from './components/PrimaryActionsPanel'
+import SecondaryActionsPaner from './components/SecondaryActionsPanel'
+import Settings from './components/Settings/index'
+import ShareModal from './components/ShareModal'
+import TertiaryActionsPanel from './components/TertiaryActionsPanel'
+import Toolbar from './components/Toolbar'
+import { useOnNodeDragEnd } from './hooks/onNodeDragEnd'
+import { useOnConnect } from './hooks/useOnConnect'
+import { useOnEdgesChange } from './hooks/useOnEdgesChange'
+import { useOnNodesChange } from './hooks/useOnNodesChange'
+import LoadUrlBoardModal from './services/LoadUrlBoardModal'
+
+const nodeTypes: NodeTypes = {
+  service: CustomNode,
+}
+
+const edgeTypes: EdgeTypes = {
+  custom: CustomEdge,
+}
+
+const preventScrollbarOnPan = { overflow: 'hidden' }
+const droppableType = 'board'
+
+export default function Board() {
+  const { showGuidanceTexts, showOnboarding, updateShowOnboarding } =
+    useContext(onBoardingContext)
+  const { nodes, edges } = useContext(boardDataContext)
+  const [showResetBoardModal, clearCurrentBoardModalHandlers] =
+    useDisclosure(false)
+  const [showDeleteCurrentBoardModal, deleteCurrentBoardModalHandlers] =
+    useDisclosure(false)
+  const [showShareModal, shareModalHanders] = useDisclosure(false)
+
+  const { ref, height, width } = useElementSize()
+  const { triggerClickCanva } = useContext(clickCanvaContext)
+
+  const onNodesChange = useOnNodesChange()
+  const onEdgesChange = useOnEdgesChange()
+  const onConnect = useOnConnect({ edges })
+  const onNodeDragEnd = useOnNodeDragEnd()
+
+  return (
+    <>
+      <DroppableHintProvider>
+        <DroppableArea id="board" data={{ droppableType }}>
+          <Box
+            data-testid="board"
+            w="100%"
+            h="100vh"
+            style={{
+              ...preventScrollbarOnPan,
+              cursor: showGuidanceTexts ? '' : '',
+            }}
+            pos="relative"
+            ref={ref}
+            className={showGuidanceTexts ? NO_PAN_REACTFLOW_CLASS : ''}
+          >
+            <DroppableIndicator
+              height={height}
+              padding={20}
+              width={width}
+              droppableType={droppableType}
+            />
+            {showGuidanceTexts && defaultPointerStyle}
+
+            <ReactFlow
+              translateExtent={[
+                [-2520, -1890],
+                [2520, 1890],
+              ]}
+              nodeExtent={[
+                [-2320, -1690],
+                [2320, 1690],
+              ]}
+              minZoom={0.65}
+              fitViewOptions={{ duration: 700, maxZoom: 1, minZoom: 0.65 }}
+              maxZoom={1}
+              onConnect={onConnect}
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              nodeTypes={nodeTypes}
+              connectionMode={ConnectionMode.Loose}
+              edgeTypes={edgeTypes}
+              connectionLineComponent={ConnexionPreview}
+              onNodeDragStop={onNodeDragEnd}
+              noDragClassName={NO_DRAG_REACTFLOW_CLASS}
+              noWheelClassName={NO_WhEEL_REACTFLOW_CLASS}
+              noPanClassName={NO_PAN_REACTFLOW_CLASS}
+              zoomOnDoubleClick={false}
+              snapGrid={[30, 30]}
+              snapToGrid={true}
+              proOptions={{
+                hideAttribution: true,
+              }}
+              onPaneClick={triggerClickCanva}
+            >
+              {!showGuidanceTexts && !showOnboarding && (
+                <Background id={v4()} variant={BackgroundVariant.Dots} />
+              )}
+              <Toolbar />
+              {showGuidanceTexts && <GuidanceTextsMain />}
+              <MiniMap
+                style={{ backgroundColor: CSSVAR['--surface-strong'] }}
+                nodeBorderRadius={10}
+                nodeStrokeWidth={5}
+                nodeStrokeColor={CSSVAR['--text']}
+                nodeColor={CSSVAR['--surface-strong']}
+                maskColor="#00000066"
+              />
+              <SecondaryActionsPaner
+                openOnboarding={() => updateShowOnboarding(true)}
+                showGuidanceTexts={showGuidanceTexts}
+              />
+            </ReactFlow>
+            <Settings
+              openClearCurrentBoardModal={clearCurrentBoardModalHandlers.open}
+              openDeleteCurrentBoardModal={deleteCurrentBoardModalHandlers.open}
+            />
+            <PrimaryActionsPanel openShareModal={shareModalHanders.open} />
+            <TertiaryActionsPanel />
+            <DraggableGhost />
+          </Box>
+        </DroppableArea>
+      </DroppableHintProvider>
+
+      <ClearCurrentBoard
+        close={clearCurrentBoardModalHandlers.close}
+        opened={showResetBoardModal}
+      />
+      <DeleteCurrentBoardModal
+        close={deleteCurrentBoardModalHandlers.close}
+        opened={showDeleteCurrentBoardModal}
+      />
+      <ShareModal
+        nodes={nodes}
+        opened={showShareModal}
+        close={shareModalHanders.close}
+      />
+      <LoadUrlBoardModal />
+      <DemoModal
+        close={() => updateShowOnboarding(false)}
+        opened={showOnboarding}
+      />
+    </>
+  )
+}
+
+const defaultPointerStyle = (
+  <style>
+    {`
+        .react-flow__pane {
+          cursor: default;
+        }
+        .react-flow__pane.dragging {
+          cursor: default;
+        }
+      `}
+  </style>
+)

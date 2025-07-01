@@ -1,0 +1,116 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [master, newbackend]
+  pull_request:
+    branches: [master, newbackend]
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Create .env file
+        run: |
+          cat <<EOF > .env
+          VITE_API_URL=http://localhost:6006
+          VITE_POSTHOG_HOST=wrongOnPurpose
+          VITE_POSTHOG_KEY=wrongOnPurpose
+          VITE_POSTHOG_REVERSE_PROXY_URL=wrongOnPurpose
+
+          POSTGRES_DSN=host=localhost port=6007 user=postgres password=postgres dbname=mas sslmode=disable
+          OAUTH_GOOGLE_ACCOUNT_BASE_URL=wrongOnPurpose
+          OAUTH_GOOGLE_BASE_URL=wrongOnPurpose
+          OAUTH_GOOGLE_CLIENT_ID=wrongOnPurpose
+          OAUTH_GOOGLE_SECRET=wrongOnPurpose
+          JWT_SECRET=some-secret
+          FRONTEND_URL=http://localhost:6005
+
+          POSTGRES_USER=postgres
+          POSTGRES_PASSWORD=postgres
+          POSTGRES_DB=mas
+          PGADMIN_DEFAULT_EMAIL=admin@admin.com
+          PGADMIN_DEFAULT_PASSWORD=admin
+          EOF
+
+      - name: Install services dependencies
+        run: |
+          make install
+
+      - name: Install Playwright browsers
+        run: |
+          cd frontend
+          npx playwright install --with-deps
+
+      - name: Start Docker services
+        run: |
+          make prod
+
+      - name: Run backend tests
+        run: |
+          make test-b ARGS="-v"
+
+      - name: Run frontend tests
+        run: |
+          make test-f
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: |
+            backend/test-results
+            frontend/test-results
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: |
+            backend/coverage
+            frontend/coverage
+
+  notifyMe:
+    if: always() && github.event_name == 'push'
+    env:
+      RAN_ON_GITHUB: ${{ secrets.RAN_ON_GITHUB }}
+    name: Send Deployment Notifications
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - name: Notify on success
+        if: ${{ needs.tests.result == 'success' && env.RAN_ON_GITHUB == 'true' }}
+        run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d '{"content": "✅ CI succeeded @everyone"}' \
+          ${{ secrets.DISCORD_BOT_WEBHOOK_URL }}
+
+      - name: Notify on failure
+        if: ${{ needs.tests.result != 'success' && env.RAN_ON_GITHUB == 'true' }}
+        run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d '{"content": "❌ CI failed @everyone"}' \
+          ${{ secrets.DISCORD_BOT_WEBHOOK_URL }}

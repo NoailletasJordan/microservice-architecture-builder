@@ -1,0 +1,12 @@
+# Use a base image with Bun preinstalled
+FROM oven/bun:latest
+
+WORKDIR /app
+
+# Install dependencies
+COPY frontend/bun.lock frontend/package.json ./
+RUN bun install
+
+EXPOSE 6005
+
+CMD ["bun", "run", "dev", "--", "--port=6005", "--host"]

@@ -445,6 +445,38 @@ func TestListBoards(t *testing.T) {
 }
 
 // TestGetBoardShareFragment tests BoardService.GetBoardShareFragment
+func TestBoardCreationLimit(t *testing.T) {
+	ts, _ := NewTestServer(t)
+	defer ts.Close()
+
+	user := createTestUser(t, ts)
+
+	// Create 50 boards for the user
+	for i := 0; i < 50; i++ {
+		board := createTestBoard(t, ts, user.ID)
+		if board == nil {
+			t.Fatalf("Failed to create board %d", i+1)
+		}
+	}
+
+	// Attempt to create 51st board - should fail
+	boardData := validBoardData()
+
+	rr := makeRequest(t, ts, "POST", "/api/board", boardData, &user.ID)
+
+	if rr.Code != http.StatusForbidden {
+		t.Errorf("Expected 403 Forbidden when creating 51st board, got %d", rr.Code)
+	}
+
+	var errResp map[string]string
+	if err := json.NewDecoder(rr.Body).Decode(&errResp); err != nil {
+		t.Fatalf("Failed to decode error response: %v", err)
+	}
+	if errMsg, ok := errResp["error"]; !ok || errMsg != helpers.ErrorMessages.MaxBoardsReached {
+		t.Errorf("Expected error '%s', got '%s'", helpers.ErrorMessages.MaxBoardsReached, errMsg)
+	}
+}
+
 func TestGetBoardShareFragment(t *testing.T) {
 	ts, _ := NewTestServer(t)
 	defer ts.Close()

@@ -122,6 +122,11 @@ func (c *BoardController) CreateBoard(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		if err.Error() == helpers.ErrorMessages.MaxBoardsReached {
+			sendError(w, http.StatusForbidden, err.Error())
+			return
+		}
+
 		sendError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

@@ -98,6 +98,7 @@ var ErrorMessages = struct {
 	Unauthorized            string
 	Forbidden               string
 	InternalServerError     string
+	MaxBoardsReached        string
 	InvalidRequestBody      string
 	DataMustBeValidJSON     string
 	AtLeastOneFieldRequired string
@@ -108,6 +109,7 @@ var ErrorMessages = struct {
 	Unauthorized:            "unauthorized",
 	Forbidden:               "forbidden",
 	InternalServerError:     "internal server error",
+	MaxBoardsReached:        "maximum number of boards reached",
 	InvalidRequestBody:      "Invalid request body",
 	DataMustBeValidJSON:     "data must be valid JSON",
 	AtLeastOneFieldRequired: "at least one of title, data, password is required",

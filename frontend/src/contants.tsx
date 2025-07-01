@@ -146,14 +146,16 @@ export function showNotificationSuccess({
   })
 }
 
-// I inject the url during playwright tests with `__TEST_ENV__`
-export const getApiUrl = () => {
-  const url =
-    (window as any).__TEST_ENV__?.VITE_API_URL || import.meta.env.VITE_API_URL
-
-  return url
+export const getIsRanByPlaywright = () => {
+  return window.navigator.webdriver
 }
 
-export const getIsPlaywrightTest = () => {
-  return !!(window as any).__TEST_ENV__?.VITE_API_URL
+// I inject the url during playwright tests with `__TEST_ENV__`
+export const getApiUrl = () => {
+  const isPlaywrightTest = getIsRanByPlaywright()
+  const url = isPlaywrightTest
+    ? (window as any).__TEST_ENV__?.VITE_API_URL
+    : import.meta.env.VITE_API_URL
+
+  return url
 }

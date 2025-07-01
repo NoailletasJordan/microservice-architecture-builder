@@ -27,7 +27,7 @@ import { ReactFlowProvider } from 'reactflow'
 import {
   CSSVAR,
   customColors,
-  getIsPlaywrightTest,
+  getIsRanByPlaywright,
   themeDarkColorVariables,
 } from './contants'
 import BoardDataProvider from './contexts/BoardData/Provider'
@@ -95,7 +95,7 @@ export default function App() {
                 </BoardDataProvider>
               </UserBoardsProvider>
             </UserProvider>
-            {!getIsPlaywrightTest() &&
+            {!getIsRanByPlaywright() &&
               process.env.NODE_ENV === 'development' && (
                 <ReactQueryDevtools
                   buttonPosition="top-right"

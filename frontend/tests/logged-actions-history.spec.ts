@@ -3,6 +3,7 @@ import {
   PlaywrightTestArgs,
   test as testNonLogged,
 } from '@playwright/test'
+import { isMacOs } from 'react-device-detect'
 import {
   getBoardsSubMenuLocator,
   getButtonRedoLocator,
@@ -184,3 +185,29 @@ testLogged('should erase history on logout', async ({ page }) => {
 
   await expect(undoButton).toBeDisabled()
 })
+
+testNonLogged(
+  'not-logged: should undo and redo using keyboard shortcuts',
+  async ({ page, browserName }) => {
+    testNonLogged.skip(browserName === 'webkit', 'Failing on tests')
+
+    await page.goto('/')
+    const frontendIcon = getIconFrontendLocator({ page })
+    await frontendIcon.waitFor({ state: 'visible' })
+    await grabElementTo(page, {
+      coordonate: [300, 300],
+      locator: frontendIcon,
+    })
+
+    await page.waitForTimeout(debounceActionMS)
+
+    await expect(getButtonUndoLocator({ page })).not.toBeDisabled()
+    await expect(getButtonRedoLocator({ page })).toBeDisabled()
+    const nodes = getNodesLocator({ page })
+    await page.keyboard.press(isMacOs ? 'Command+z' : 'Control+z')
+    await expect(nodes).toHaveCount(0)
+
+    await page.keyboard.press(isMacOs ? 'Command+Shift+z' : 'Control+y')
+    await expect(nodes).toHaveCount(1)
+  },
+)

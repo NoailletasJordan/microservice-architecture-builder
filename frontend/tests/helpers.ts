@@ -49,9 +49,9 @@ export const getNodeFrontendLocator = ({ page }: { page: Page }) =>
 export const getNodeDatabaseLocator = ({ page }: { page: Page }) =>
   page.getByLabel(/node-type-database/)
 export const getIconFrontendLocator = ({ page }: { page: Page }) =>
-  page.getByTestId('icon-draggable-database')
+  page.getByTestId('icon-draggable-frontend')
 export const getIconServerLocator = ({ page }: { page: Page }) =>
-  page.getByTestId('icon-draggable-database')
+  page.getByTestId('icon-draggable-server')
 export const getIconDatabaseLocator = ({ page }: { page: Page }) =>
   page.getByTestId('icon-draggable-database')
 export const getButtonUndoLocator = ({ page }: { page: Page }) =>

@@ -1,10 +1,13 @@
+import { useEffectEventP } from '@/contants'
 import { boardDataContext } from '@/contexts/BoardData/constants'
 import { useQueryKey } from '@/contexts/BoardData/hooks/useQueryKey'
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { TBoardDataStore } from '@/pages/BoardPage/components/Board/hooks/useSetNodes'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
+import { useHotkeys } from '@mantine/hooks'
 import { useQueryClient } from '@tanstack/react-query'
-import { useCallback, useContext, useEffect, useRef } from 'react'
+import { useContext, useEffect, useRef } from 'react'
+import { isMacOs } from 'react-device-detect'
 import { useStateHistoryCustom } from './useStateHistoryCustom'
 
 export function useHistoryControls() {
@@ -21,14 +24,11 @@ export function useHistoryControls() {
   const queryClient = useQueryClient()
   const queryKey = useQueryKey()
 
-  const nonReactiveState = useCallback(
-    () => ({
-      handlers,
-      history,
-      queryKey,
-    }),
-    [handlers, history, queryKey],
-  )
+  const nonReactiveState = useEffectEventP(() => ({
+    handlers,
+    history,
+    queryKey,
+  }))
 
   const isFetchedRefPrev = useRef(isFetched)
   const queryKeyRefPrev = useRef(queryKey)
@@ -72,10 +72,11 @@ export function useHistoryControls() {
         edges: history.history[history.current].edges,
       }
 
-      const isEqual =
-        JSON.stringify(currentData) === JSON.stringify(dataInHistory)
-
-      if (!isEqual && !isDraggingNode && isFetched) {
+      if (
+        !getIsEqual([currentData, dataInHistory]) &&
+        !isDraggingNode &&
+        isFetched
+      ) {
         handlers.set(currentData)
       }
     }, timeoutDelay)
@@ -85,34 +86,65 @@ export function useHistoryControls() {
     }
   }, [nodes, edges, isFetched, nonReactiveState])
 
+  const undoIsDisabled = !isFetched || history.current === 0
+  const redoIsDisabled =
+    !isFetched || history.current === history.history.length - 1
+
+  function actionUndo() {
+    if (undoIsDisabled) return
+    const newIndex = history.current - 1
+    const currentData: TBoardDataStore | undefined =
+      queryClient.getQueryData(queryKey)
+    queryClient.setQueryData(queryKey, {
+      ...currentData,
+      nodes: history.history[newIndex].nodes,
+      edges: history.history[newIndex].edges,
+    })
+    handlers.back()
+  }
+
+  function actionRedo() {
+    if (redoIsDisabled) return
+    const newIndex = history.current + 1
+    const currentData: TBoardDataStore | undefined =
+      queryClient.getQueryData(queryKey)
+    queryClient.setQueryData(queryKey, {
+      ...currentData,
+      nodes: history.history[newIndex].nodes,
+      edges: history.history[newIndex].edges,
+    })
+    handlers.forward()
+  }
+
+  useHotkeys([
+    [isMacOs ? 'meta+z' : 'ctrl+z', actionUndo],
+    [isMacOs ? 'meta+shift+z' : 'ctrl+y', actionRedo],
+  ])
+
   return {
     undo: {
-      isDisabled: !isFetched || history.current === 0,
-      action: () => {
-        const newIndex = history.current - 1
-        const currentData: TBoardDataStore | undefined =
-          queryClient.getQueryData(queryKey)
-        queryClient.setQueryData(queryKey, {
-          ...currentData,
-          nodes: history.history[newIndex].nodes,
-          edges: history.history[newIndex].edges,
-        })
-        handlers.back()
-      },
+      isDisabled: undoIsDisabled,
+      action: actionUndo,
     },
     redo: {
-      isDisabled: !isFetched || history.current === history.history.length - 1,
-      action: () => {
-        const newIndex = history.current + 1
-        const currentData: TBoardDataStore | undefined =
-          queryClient.getQueryData(queryKey)
-        queryClient.setQueryData(queryKey, {
-          ...currentData,
-          nodes: history.history[newIndex].nodes,
-          edges: history.history[newIndex].edges,
-        })
-        handlers.forward()
-      },
+      isDisabled: redoIsDisabled,
+      action: actionRedo,
     },
   }
+}
+
+function getIsEqual([data1, data2]: [
+  { nodes: TCustomNode[]; edges: TCustomEdge[] },
+  { nodes: TCustomNode[]; edges: TCustomEdge[] },
+]) {
+  function removeSelectedKey(state: { nodes: any[]; edges: any[] }) {
+    return {
+      ...state,
+      nodes: state.nodes.map(({ selected: _selected, ...rest }) => rest),
+    }
+  }
+  const isEqual =
+    JSON.stringify(removeSelectedKey(data1)) ===
+    JSON.stringify(removeSelectedKey(data2))
+  return isEqual
 }

@@ -1,12 +1,15 @@
 import CustomModal from '@/components/CustomModal'
-import { CSSVAR, themeDarkColorVariables } from '@/contants'
-import { Box, Button, Center, Group, Space, Stack } from '@mantine/core'
+import { CSSVAR, useEffectEventP } from '@/contants'
+import { Box, Center, Group, Space, Stack } from '@mantine/core'
 import { motion } from 'motion/react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Canva from './components/Canva'
 import NavigationItem from './components/NavigationItem'
+import { ButtonPrimary } from './components/PrimaryButton'
+import { SecondaryButton } from './components/SecondaryButton/index'
 import Timeline from './components/Timeline'
 import { SECTIONS } from './constants'
+import { useContentHeight_ } from './hooks/useContentHeight_'
 
 interface Props {
   opened: boolean
@@ -28,82 +31,42 @@ export default function OnboardingModal({ opened, close }: Props) {
     setSelectedIndex((prev) => Math.max(prev - 1, 0))
   }
 
-  const { contentHeight, setElementStateRef } = useContentHeight({
+  const { contentHeight, setElementStateRef } = useContentHeight_({
     opened,
     selectedIndex,
   })
 
-  const closeRef = useRef(handleClose)
-  closeRef.current = handleClose
-  const buttonSecondary = useMemo(
-    () => (
-      <Button
-        onClick={setPreviousIndex}
-        aria-label="secondary-action"
-        variant="outline"
-        color={themeDarkColorVariables['--text']}
-      >
-        Previous
-      </Button>
-    ),
-    [],
-  )
+  const nonReactiveState = useEffectEventP(() => ({
+    handleClose,
+    setNextIndex: () =>
+      setSelectedIndex((prev) => Math.min(prev + 1, SECTIONS.length - 1)),
+    setPreviousIndex: () => setSelectedIndex((prev) => Math.max(prev - 1, 0)),
+  }))
 
-  const buttonPrimary = useMemo(
-    () => (
-      <Button
-        onClick={setNextIndex}
-        aria-label="primary-action"
-        color={themeDarkColorVariables['--text-primary']}
-        c={CSSVAR['--background']}
-      >
-        Next Step
-      </Button>
-    ),
-    [],
-  )
-
-  const buttonIntroSecondary = useMemo(
-    () => (
-      <Button
-        onClick={closeRef.current}
-        variant="outline"
-        aria-label="secondary-action"
-        color={themeDarkColorVariables['--text']}
-      >
-        Close
-      </Button>
-    ),
-    [],
-  )
-
-  const buttonOutroPrimary = useMemo(
-    () => (
-      <Button
-        color={CSSVAR['--text-primary']}
-        aria-label="primary-action"
-        c={CSSVAR['--background']}
-        onClick={closeRef.current}
-      >
-        Close and Start Building
-      </Button>
-    ),
-    [],
-  )
-
-  const buttonIntroPrimary = useMemo(
-    () => (
-      <Button
-        onClick={setNextIndex}
-        aria-label="primary-action"
-        color={CSSVAR['--text-primary']}
-        c={CSSVAR['--background']}
-      >
-        See introduction
-      </Button>
-    ),
-    [],
-  )
+  const buttonsConfig = useMemo(() => {
+    const { handleClose, setNextIndex, setPreviousIndex } = nonReactiveState()
+    return [
+      {
+        primary: { onClick: setNextIndex, label: 'Learn about Services' },
+        secondary: { onClick: handleClose, label: 'Close' },
+      },
+      {
+        primary: { onClick: setNextIndex, label: 'Learn about Connections' },
+        secondary: {
+          onClick: setPreviousIndex,
+          label: 'Previous',
+        },
+      },
+      {
+        primary: { onClick: setNextIndex, label: 'Learn about Sharing' },
+        secondary: { onClick: setPreviousIndex, label: 'Previous' },
+      },
+      {
+        primary: { onClick: handleClose, label: 'Close and Start Building' },
+        secondary: { onClick: setPreviousIndex, label: 'Previous' },
+      },
+    ]
+  }, [nonReactiveState])
 
   return (
     <CustomModal
@@ -150,56 +113,30 @@ export default function OnboardingModal({ opened, close }: Props) {
             transition={{ duration: 0.3, ease: 'easeOut' }}
             animate={{ height: contentHeight }}
           >
-            <motion.div
+            <motion.p
               ref={setElementStateRef}
               key={selectedIndex}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
-              style={{ display: 'grid', gap: 10, fontSize: 20 }}
+              style={{ display: 'grid', gap: 10, fontSize: '115%' }}
             >
               {SECTIONS[selectedIndex].content}
-            </motion.div>
+            </motion.p>
           </motion.div>
         </Box>
       </Box>
       <Space h="lg" />
       <Group justify="end">
-        {selectedIndex === 0 ? buttonIntroSecondary : buttonSecondary}
-        {selectedIndex === 0
-          ? buttonIntroPrimary
-          : selectedIndex === SECTIONS.length - 1
-          ? buttonOutroPrimary
-          : buttonPrimary}
+        <SecondaryButton
+          onClick={buttonsConfig[selectedIndex].secondary.onClick}
+          label={buttonsConfig[selectedIndex].secondary.label}
+        />
+        <ButtonPrimary
+          onClick={buttonsConfig[selectedIndex].primary.onClick}
+          label={buttonsConfig[selectedIndex].primary.label}
+        />
       </Group>
     </CustomModal>
   )
-}
-
-function useContentHeight({
-  opened,
-  selectedIndex,
-}: {
-  opened: boolean
-  selectedIndex: number
-}) {
-  const [elementStateRef, setElementStateRef] = useState<HTMLElement | null>(
-    null,
-  )
-  const [height, setHeight] = useState(0)
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout
-    if (elementStateRef) {
-      interval = setTimeout(() => {
-        setHeight(elementStateRef.clientHeight)
-      }, 50)
-    }
-
-    return () => {
-      if (interval) clearTimeout(interval)
-    }
-  }, [elementStateRef, selectedIndex, opened])
-
-  return { contentHeight: height, setElementStateRef }
 }

@@ -5,7 +5,6 @@ import { boardDataContext } from '@/contexts/BoardData/constants'
 import { useQueryKey } from '@/contexts/BoardData/hooks/useQueryKey'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
-import { userBoardsContext } from '@/contexts/UserBoards/constants'
 import { ActionIcon, Box } from '@mantine/core'
 import { useDisclosure, useElementSize } from '@mantine/hooks'
 import { IconArrowBackUp, IconArrowForwardUp } from '@tabler/icons-react'
@@ -86,6 +85,7 @@ export default function Board() {
       <DroppableHintProvider>
         <DroppableArea id="board" data={{ droppableType }}>
           <Box
+            data-testid="board"
             w="100%"
             h="100vh"
             style={{
@@ -198,11 +198,6 @@ function PanelBottomLeft() {
   })
 
   const { nodes, edges, boardDataQuery } = useContext(boardDataContext)
-  const { currentUserBoardId } = useContext(userBoardsContext)
-
-  /** Temp */
-  console.log('history:', history.history)
-
   const isFetched = boardDataQuery.isFetched
 
   const queryClient = useQueryClient()
@@ -238,17 +233,17 @@ function PanelBottomLeft() {
   const nonReactiveState = useEffectEventP(() => ({
     handlers,
     history,
+    queryKey,
   }))
 
   const isFetchedRefPrev = useRef(isFetched)
   const queryKeyRefPrev = useRef(queryKey)
   useEffect(() => {
+    const { handlers, queryKey } = nonReactiveState()
     const justChangedBoard = queryKeyRefPrev.current[1] !== queryKey[1]
 
     if (justChangedBoard) {
       queryKeyRefPrev.current = queryKey
-
-      console.log('HAT:', queryKeyRefPrev.current, queryKey)
       handlers.reset({ nodes, edges })
       return
     }
@@ -270,8 +265,6 @@ function PanelBottomLeft() {
       history.current === history.history.length - 1 ? 350 : 0
 
     const handle = setTimeout(() => {
-      const { handlers } = nonReactiveState()
-
       const isDraggingNode = nodes.some((node) => node.dragging)
 
       const currentData = { nodes, edges }
@@ -283,20 +276,9 @@ function PanelBottomLeft() {
       const isEqual =
         JSON.stringify(currentData) === JSON.stringify(dataInHistory)
 
-      /** Temp */
-      console.log(
-        'isEqual:',
-        isEqual,
-        JSON.stringify(currentData),
-        JSON.stringify(dataInHistory),
-      )
-
       if (!isEqual && !isDraggingNode && isFetched) {
         handlers.set(currentData)
-        /** Temp */
-        console.log('saved:')
       }
-      /** Temp */
     }, timeoutDelay)
 
     return () => {
@@ -312,7 +294,7 @@ function PanelBottomLeft() {
           size="lg"
           variant="light"
           color="white"
-          aria-label="Fit to view"
+          aria-label="Undo"
           onClick={revertHistory}
         >
           <IconArrowBackUp style={ICON_STYLE} />
@@ -322,11 +304,11 @@ function PanelBottomLeft() {
           disabled={
             !isFetched || history.current === history.history.length - 1
           }
+          aria-label="Redo"
           onClick={forwardHistory}
           size="lg"
           variant="light"
           color="white"
-          aria-label="Fit to view"
         >
           <IconArrowForwardUp style={ICON_STYLE} />
         </ActionIcon>

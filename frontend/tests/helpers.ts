@@ -48,12 +48,22 @@ export const getNodeFrontendLocator = ({ page }: { page: Page }) =>
   page.getByLabel(/node-type-frontend/)
 export const getNodeDatabaseLocator = ({ page }: { page: Page }) =>
   page.getByLabel(/node-type-database/)
+export const getIconFrontendLocator = ({ page }: { page: Page }) =>
+  page.getByTestId('icon-draggable-database')
+export const getIconServerLocator = ({ page }: { page: Page }) =>
+  page.getByTestId('icon-draggable-database')
 export const getIconDatabaseLocator = ({ page }: { page: Page }) =>
   page.getByTestId('icon-draggable-database')
+export const getButtonUndoLocator = ({ page }: { page: Page }) =>
+  page.getByRole('button', { name: 'Undo' })
+export const getButtonRedoLocator = ({ page }: { page: Page }) =>
+  page.getByRole('button', { name: 'Redo' })
+export const getBoardLocator = ({ page }: { page: Page }) =>
+  page.getByTestId('rf__wrapper')
 
 export const initialTwoNodesSetup = async ({ page }: NodeSetupOptions) => {
   // Create 'frontend' node
-  const frontendIcon = page.getByTestId('icon-draggable-frontend')
+  const frontendIcon = getIconFrontendLocator({ page })
   await expect(frontendIcon).toBeVisible()
   await grabElementTo(page, {
     coordonate: [300, 300],
@@ -61,7 +71,7 @@ export const initialTwoNodesSetup = async ({ page }: NodeSetupOptions) => {
   })
 
   // Create 'server' node
-  const serverIcon = page.getByTestId('icon-draggable-server')
+  const serverIcon = getIconServerLocator({ page })
   await expect(serverIcon).toBeVisible()
   await grabElementTo(page, {
     coordonate: [600, 300],

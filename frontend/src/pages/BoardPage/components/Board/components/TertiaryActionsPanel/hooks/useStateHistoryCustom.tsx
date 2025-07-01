@@ -19,7 +19,7 @@ export type UseStateHistoryReturnValue<T> = [
   UseStateHistoryValue<T>,
 ]
 
-export function useStateHistory<T>(
+export function useStateHistoryCustom<T>(
   initialValue: T,
 ): UseStateHistoryReturnValue<T> {
   const [state, setState] = useState<UseStateHistoryValue<T>>({

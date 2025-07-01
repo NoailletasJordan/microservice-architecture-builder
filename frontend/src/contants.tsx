@@ -153,3 +153,7 @@ export const getApiUrl = () => {
 
   return url
 }
+
+export const getIsPlaywrightTest = () => {
+  return !!(window as any).__TEST_ENV__?.VITE_API_URL
+}

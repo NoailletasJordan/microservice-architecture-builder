@@ -24,7 +24,12 @@ import {
   createRoutesFromElements,
 } from 'react-router-dom'
 import { ReactFlowProvider } from 'reactflow'
-import { CSSVAR, customColors, themeDarkColorVariables } from './contants'
+import {
+  CSSVAR,
+  customColors,
+  getIsPlaywrightTest,
+  themeDarkColorVariables,
+} from './contants'
 import BoardDataProvider from './contexts/BoardData/Provider'
 import { ReactQueryProvider } from './contexts/ReactQuery/Provider'
 import UserProvider from './contexts/User/UserProvider'
@@ -90,12 +95,13 @@ export default function App() {
                 </BoardDataProvider>
               </UserBoardsProvider>
             </UserProvider>
-            {process.env.NODE_ENV === 'development' && (
-              <ReactQueryDevtools
-                buttonPosition="top-right"
-                initialIsOpen={false}
-              />
-            )}
+            {!getIsPlaywrightTest() &&
+              process.env.NODE_ENV === 'development' && (
+                <ReactQueryDevtools
+                  buttonPosition="top-right"
+                  initialIsOpen={false}
+                />
+              )}
           </ReactQueryProvider>
         </ReactFlowProvider>
       </PostHogProvider>

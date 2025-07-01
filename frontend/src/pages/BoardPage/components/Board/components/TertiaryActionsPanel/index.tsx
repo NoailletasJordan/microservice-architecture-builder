@@ -28,7 +28,7 @@ export default function TertiaryActionsPanel() {
             label={
               <Group gap="xs">
                 <Box>Undo</Box>
-                <Kbd size="xs">{isMacOs ? 'meta + z' : 'ctrl + z'}</Kbd>
+                <Kbd size="xs">{isMacOs ? 'cmd + z' : 'ctrl + z'}</Kbd>
               </Group>
             }
           >
@@ -47,7 +47,7 @@ export default function TertiaryActionsPanel() {
             label={
               <Group gap="xs">
                 <div>Redo</div>
-                <Kbd size="xs">{isMacOs ? 'meta + shift + z' : 'ctrl + y'}</Kbd>
+                <Kbd size="xs">{isMacOs ? 'cmd + shift + z' : 'ctrl + y'}</Kbd>
               </Group>
             }
           >

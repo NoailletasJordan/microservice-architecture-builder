@@ -117,8 +117,8 @@ export function useHistoryControls() {
   }
 
   useHotkeys([
-    [isMacOs ? 'meta+z' : 'ctrl+z', actionUndo],
-    [isMacOs ? 'meta+shift+z' : 'ctrl+y', actionRedo],
+    [isMacOs ? 'mod+z' : 'ctrl+z', actionUndo],
+    [isMacOs ? 'mod+shift+z' : 'ctrl+y', actionRedo],
   ])
 
   return {

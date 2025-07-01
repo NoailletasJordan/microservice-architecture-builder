@@ -19,6 +19,8 @@ export type UseStateHistoryReturnValue<T> = [
   UseStateHistoryValue<T>,
 ]
 
+// custom implementation of mantine's useStateHistory
+// https://mantine.dev/hooks/use-state-history/
 export function useStateHistoryCustom<T>(
   initialValue: T,
 ): UseStateHistoryReturnValue<T> {

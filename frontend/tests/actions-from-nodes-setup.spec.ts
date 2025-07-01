@@ -12,11 +12,10 @@ import {
 
 const testWithNodes = base.extend<{ setup: void }>({
   setup: [
-    async ({ page }, use) => {
+    async ({ page }, use_) => {
       await page.goto('/')
       await initialTwoNodesSetup({ page })
-      // eslint-disable-next-line react-hooks/rules-of-hooks -- not a react component
-      use()
+      use_()
     },
     { auto: true },
   ],

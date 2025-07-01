@@ -111,8 +111,7 @@ export default function SharableModal({ close, opened, nodes }: Props) {
           </Grid>
           <Space h="xs" />
           <Text size="sm">
-            *This link creates a snapshot of the current board, it will not
-            include future changes.
+            *This link captures a snapshot of your work at this point in time.
           </Text>
         </div>
       )}

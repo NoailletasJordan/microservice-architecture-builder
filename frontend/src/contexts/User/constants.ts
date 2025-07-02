@@ -1,4 +1,5 @@
 import { getApiUrl } from '@/contants'
+import { readLocalStorageValue } from '@mantine/hooks'
 import { createContext } from 'react'
 import { useUser } from './hooks/useUser'
 
@@ -27,7 +28,7 @@ export const AUTH_TOKEN_KEY = 'auth-token'
 export const userContext = createContext<IUserContext>({
   isLogged: false,
   userQuery: undefined,
-  authToken: undefined,
+  authToken: readLocalStorageValue({ key: AUTH_TOKEN_KEY }),
   handleLogout: () => {},
   handlePushToGoogleOauth: () => {},
 })

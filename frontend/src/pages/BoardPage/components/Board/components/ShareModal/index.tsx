@@ -1,6 +1,7 @@
 import CustomButtonPrimary from '@/components/CustomButtonPrimary'
 import CustomModal from '@/components/CustomModal'
-import { showNotificationSuccess, themeDarkColorVariables } from '@/contants'
+import { themeDarkColorVariables } from '@/contants'
+import { showNotificationSuccess } from '@/helpers-react'
 import {
   ICON_STYLE,
   TCustomNode,

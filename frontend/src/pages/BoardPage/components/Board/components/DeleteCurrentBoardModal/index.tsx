@@ -1,6 +1,7 @@
 import CustomModal from '@/components/CustomModal'
-import { CSSVAR, showNotificationSuccess } from '@/contants'
+import { CSSVAR } from '@/contants'
 import { userBoardsContext } from '@/contexts/UserBoards/constants'
+import { showNotificationSuccess } from '@/helpers-react'
 import { Button, Group, Stack, Text } from '@mantine/core'
 import { useContext } from 'react'
 import { useIsDeleting_ } from './hooks/useIsDeleting_'

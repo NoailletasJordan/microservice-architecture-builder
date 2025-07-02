@@ -1,4 +1,4 @@
-import { showNotificationError, showNotificationSuccess } from '@/contants'
+import { showNotificationError, showNotificationSuccess } from '@/helpers-react'
 import { shareHashTocken } from '@/pages/BoardPage/configs/constants'
 import { getNodesBounds, useReactFlow } from 'reactflow'
 

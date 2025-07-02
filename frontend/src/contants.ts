@@ -1,8 +1,7 @@
-import { notifications } from '@mantine/notifications'
-import { IconCheck, IconX } from '@tabler/icons-react'
-import { useCallback, useInsertionEffect, useRef } from 'react'
+import { useCallback, useContext, useInsertionEffect, useRef } from 'react'
+import { userBoardsContext } from './contexts/UserBoards/constants'
 import { TCustomEdge } from './pages/BoardPage/components/Board/components/connexionContants'
-import { ICON_STYLE, TCustomNode } from './pages/BoardPage/configs/constants'
+import { TCustomNode } from './pages/BoardPage/configs/constants'
 
 export const customColors = {
   primary: [
@@ -110,42 +109,6 @@ export function useEffectEventP<T extends (...args: any[]) => any>(
   }, [])
 }
 
-export function showNotificationError({
-  title,
-  message,
-  autoClose = 8000,
-}: {
-  title?: string
-  message?: string
-  autoClose?: number
-}) {
-  notifications.show({
-    icon: <IconX color="white" style={ICON_STYLE} />,
-    message,
-    color: 'red',
-    title,
-    autoClose,
-  })
-}
-
-export function showNotificationSuccess({
-  title,
-  message,
-  autoClose = 8000,
-}: {
-  title?: string
-  message?: string
-  autoClose?: number
-}) {
-  notifications.show({
-    icon: <IconCheck color="white" style={ICON_STYLE} />,
-    message,
-    color: 'green',
-    title,
-    autoClose,
-  })
-}
-
 export const getIsRanByPlaywright = () => {
   return window.navigator.webdriver
 }
@@ -160,4 +123,8 @@ export const getApiUrl = () => {
   return url
 }
 
-export const USER_MAX_BOARD_AMOUNT = 3
+export const USER_MAX_BOARD_AMOUNT = 50
+export function useMaxBoardsReached() {
+  const { boards } = useContext(userBoardsContext)
+  return boards.length >= USER_MAX_BOARD_AMOUNT
+}

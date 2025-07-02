@@ -24,7 +24,6 @@ export default function DeleteBoard({
     <TooltipWrapper
       position="right"
       label={notEnoughBoardsToDelete ? "Can't delete your only board " : ''}
-      // disabled={!notEnoughBoardsToDelete}
     >
       <Menu.Item
         leftSection={<IconTrash stroke={1} style={ICON_STYLE} />}

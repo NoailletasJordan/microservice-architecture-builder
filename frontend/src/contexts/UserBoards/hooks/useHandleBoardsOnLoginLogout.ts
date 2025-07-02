@@ -1,5 +1,6 @@
-import { showNotificationSuccess, useEffectEventP } from '@/contants'
+import { useEffectEventP } from '@/contants'
 import { userContext } from '@/contexts/User/constants'
+import { showNotificationSuccess } from '@/helpers-react'
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { UseQueryResult } from '@tanstack/react-query'

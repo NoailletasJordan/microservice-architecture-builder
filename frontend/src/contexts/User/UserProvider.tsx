@@ -1,5 +1,5 @@
-import { readLocalStorageValue, useLocalStorage } from '@mantine/hooks'
-import { ReactNode, useCallback } from 'react'
+import { useLocalStorage } from '@mantine/hooks'
+import { ReactNode } from 'react'
 import {
   AUTH_TOKEN_KEY,
   handlePushToGoogleOauth,
@@ -11,17 +11,13 @@ import { useUser } from './hooks/useUser'
 export default function UserProvider({ children }: { children: ReactNode }) {
   const [authToken, setAuthToken, removeAuthToken] = useLocalStorage<string>({
     key: AUTH_TOKEN_KEY,
-    defaultValue: readLocalStorageValue({ key: AUTH_TOKEN_KEY }),
+    defaultValue: localStorage.getItem(AUTH_TOKEN_KEY)!,
   })
   const { userQuery, isLogged } = useUser({ removeAuthToken })
 
   useHandleUserGoogleLogin({
     storeInLocalStorage: (token) => setAuthToken(token),
   })
-
-  const handleLogout = useCallback(() => {
-    removeAuthToken()
-  }, [removeAuthToken])
 
   return (
     <userContext.Provider
@@ -36,4 +32,8 @@ export default function UserProvider({ children }: { children: ReactNode }) {
       {children}
     </userContext.Provider>
   )
+}
+
+const handleLogout = () => {
+  localStorage.removeItem(AUTH_TOKEN_KEY)
 }

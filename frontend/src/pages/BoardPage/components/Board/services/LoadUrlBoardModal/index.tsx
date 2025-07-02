@@ -62,11 +62,11 @@ const copywrigtht = {
     title: 'Load board from URL',
     content: (
       <>
-        Maximum boards amount reached.
+        Maximum board amount reached.
         <br />
         Please{' '}
         <Text component="span" fw="bold">
-          delete one your current board
+          delete one of your current boards
         </Text>{' '}
         and try again.
       </>

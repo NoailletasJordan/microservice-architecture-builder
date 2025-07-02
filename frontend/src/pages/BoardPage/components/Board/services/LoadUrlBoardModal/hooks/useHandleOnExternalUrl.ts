@@ -1,4 +1,8 @@
-import { useEffectEventP } from '@/contants'
+import {
+  showNotificationError,
+  useEffectEventP,
+  USER_MAX_BOARD_AMOUNT,
+} from '@/contants'
 import { boardDataContext } from '@/contexts/BoardData/constants'
 import { userContext } from '@/contexts/User/constants'
 import { userBoardsContext } from '@/contexts/UserBoards/constants'
@@ -21,10 +25,12 @@ export function useHandleOnExternalUrl({
   modalAction,
 }: Props) {
   const { nodes } = useContext(boardDataContext)
+  const { boards } = useContext(userBoardsContext)
   const nonReactiveState = useEffectEventP(() => ({
     modalAction,
     nodes,
     overwriteBoardData,
+    boards,
   }))
 
   const isReady = useIsReadyToAcceptHandle()
@@ -32,13 +38,25 @@ export function useHandleOnExternalUrl({
   useEffect(() => {
     if (!isReady) return
 
-    const { nodes, overwriteBoardData, modalAction } = nonReactiveState()
+    const { boards, nodes, overwriteBoardData, modalAction } =
+      nonReactiveState()
     const isLoadExternalURL = hash.includes(shareHashTocken)
     if (!isLoadExternalURL) return modalAction.close()
 
     if (nodes.length) return modalAction.open()
 
-    // If no nodes in the board, load automatically
+    // If no nodes in the board, check user is under maximum boards amount, if so load automatically
+    /** Temp */
+    console.log('isReady:', isReady, boards.length)
+    const maxBoardsReached = boards.length >= USER_MAX_BOARD_AMOUNT
+    if (maxBoardsReached) {
+      showNotificationError({
+        title: `You reached the maximum boards amount : ${USER_MAX_BOARD_AMOUNT}`,
+        message: 'Delete one of your current boards and try again',
+      })
+      return
+    }
+
     overwriteBoardData()
   }, [hash, isReady, nonReactiveState])
 }

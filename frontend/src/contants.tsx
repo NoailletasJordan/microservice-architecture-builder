@@ -159,3 +159,5 @@ export const getApiUrl = () => {
 
   return url
 }
+
+export const USER_MAX_BOARD_AMOUNT = 3

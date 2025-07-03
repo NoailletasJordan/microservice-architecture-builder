@@ -23,6 +23,7 @@ export default function Dropdown({
   closeMenu,
 }: Props) {
   const { isLogged } = useContext(userContext)
+
   return (
     <Menu.Dropdown>
       <Menu.Label>Board actions</Menu.Label>

@@ -1,6 +1,7 @@
 import Title from '@/components/Title'
 import { themeDarkColorVariables } from '@/contants'
 import { Box, Modal, ModalProps } from '@mantine/core'
+import { useMediaQuery } from '@mantine/hooks'
 import { ReactNode } from 'react'
 
 interface Props extends ModalProps {
@@ -8,7 +9,6 @@ interface Props extends ModalProps {
   onClose: () => void
   children: ReactNode
   title: string
-  fullScreen?: boolean
 }
 
 const PADDING = 'md'
@@ -17,11 +17,12 @@ export default function CustomModal({
   onClose,
   title,
   children,
-  fullScreen,
   ...props
 }: Props) {
+  const maxSM = useMediaQuery('(max-width: 768px)')
   return (
     <Modal
+      fullScreen={maxSM}
       transitionProps={{ transition: 'fade' }}
       centered
       size="lg"
@@ -42,7 +43,6 @@ export default function CustomModal({
         },
       }}
       opened={opened}
-      fullScreen={fullScreen}
       onClose={onClose}
       overlayProps={{
         backgroundOpacity: 0.25,

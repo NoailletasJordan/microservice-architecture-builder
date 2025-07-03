@@ -9,18 +9,20 @@ import { useHandleUserGoogleLogin } from './hooks/useHandleUserGoogleLogin'
 import { useUser } from './hooks/useUser'
 
 export default function UserProvider({ children }: { children: ReactNode }) {
-  const [authToken, setAuthToken, removeAuthToken] = useLocalStorage({
+  const [authToken, setAuthToken] = useLocalStorage<string>({
     key: AUTH_TOKEN_KEY,
+    defaultValue: localStorage.getItem(AUTH_TOKEN_KEY) || '',
   })
+
+  const removeAuthToken = useCallback(() => {
+    setAuthToken('')
+  }, [setAuthToken])
+
   const { userQuery, isLogged } = useUser({ removeAuthToken })
 
   useHandleUserGoogleLogin({
     storeInLocalStorage: (token) => setAuthToken(token),
   })
-
-  const handleLogout = useCallback(() => {
-    removeAuthToken()
-  }, [removeAuthToken])
 
   return (
     <userContext.Provider
@@ -28,7 +30,7 @@ export default function UserProvider({ children }: { children: ReactNode }) {
         isLogged,
         userQuery,
         authToken,
-        handleLogout,
+        handleLogout: removeAuthToken,
         handlePushToGoogleOauth,
       }}
     >

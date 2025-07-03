@@ -149,7 +149,7 @@ base(
     await getLogoutButtonLocator({ page }).click()
     await expect(getLogoutNotificationLocator({ page })).toBeVisible()
 
-    await reLogSameUser({ apiUrl })
+    await reLogSameUser({ apiUrl, page })
     await test.step('should load the previous board', async () => {
       await expect(getNodesLocator({ page })).toHaveCount(2)
     })

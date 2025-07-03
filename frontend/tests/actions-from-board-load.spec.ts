@@ -7,7 +7,7 @@ const loadURL =
 const testWithFixture = base.extend<{
   page: () => BrowserContext
 }>({
-  page: async ({ context }, use) => {
+  page: async ({ context }, use_) => {
     const page1 = await context.newPage()
     await page1.goto('/')
     await initialTwoNodesSetup({ page: page1 })
@@ -16,15 +16,15 @@ const testWithFixture = base.extend<{
 
     const page2 = await context.newPage()
     await page2.goto(loadURL)
-    // eslint-disable-next-line react-hooks/rules-of-hooks -- not a react component
-    await use(page2)
+
+    await use_(page2)
     await page2.close()
     await context.close()
   },
 })
 
 testWithFixture(
-  'board Conflict when loading with shareable url',
+  'board conflict when loading with shareable url',
   async ({ page }) => {
     const warningLabel = page.getByText(/Warning/i)
     await expect(warningLabel).toBeVisible()

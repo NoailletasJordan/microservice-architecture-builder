@@ -4,8 +4,8 @@ import (
 	"errors"
 	"log"
 	"microservice-architecture-builder/backend/data"
+	"microservice-architecture-builder/backend/helpers"
 	"microservice-architecture-builder/backend/model"
-	"microservice-architecture-builder/backend/helpers" 
 	"reflect"
 	"time"
 
@@ -24,6 +24,15 @@ func NewBoardService(store *data.BoardStore, userService *UserService) *BoardSer
 }
 
 func (s *BoardService) CreateBoard(entries *map[string]any, ownerID string) (*model.Board, error) {
+	// Check if user already has 50 boards
+	boards, err := s.store.GetAllFromUser(ownerID)
+	if err != nil {
+		return nil, err
+	}
+	if len(boards) >= 50 {
+		return nil, errors.New(helpers.ErrorMessages.MaxBoardsReached)
+	}
+
 	board := &model.Board{
 		Title: (*entries)["title"].(string),
 		Owner: ownerID,
@@ -37,7 +46,6 @@ func (s *BoardService) CreateBoard(entries *map[string]any, ownerID string) (*mo
 	board.ID = uuid.New().String()
 	board.CreatedAt = time.Now().UTC()
 
-	// Validation is now handled in the controller
 	return board, s.store.Create(board)
 }
 

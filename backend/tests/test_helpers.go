@@ -134,12 +134,16 @@ func createTestUser(t *testing.T, ts *TestServer) *model.User {
 	return &user
 }
 
-// Helper function to create a test board
-func createTestBoard(t *testing.T, ts *TestServer, userID string) *model.Board {
-	board := map[string]string{
+func validBoardData() map[string]string {
+	return map[string]string{
 		"title": "Test Board",
 		"data":  `{"example": "data"}`,
 	}
+}
+
+// Helper function to create a test board
+func createTestBoard(t *testing.T, ts *TestServer, userID string) *model.Board {
+	board := validBoardData()
 
 	rr := makeRequest(t, ts, "POST", "/api/board/", board, &userID)
 	if rr.Code != http.StatusCreated {

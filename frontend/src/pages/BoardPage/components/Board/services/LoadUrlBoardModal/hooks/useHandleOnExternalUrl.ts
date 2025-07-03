@@ -1,4 +1,4 @@
-import { useEffectEventP } from '@/contants'
+import { useEffectEventP, useMaxBoardsReached } from '@/contants'
 import { boardDataContext } from '@/contexts/BoardData/constants'
 import { userContext } from '@/contexts/User/constants'
 import { userBoardsContext } from '@/contexts/UserBoards/constants'
@@ -21,10 +21,12 @@ export function useHandleOnExternalUrl({
   modalAction,
 }: Props) {
   const { nodes } = useContext(boardDataContext)
+  const maxBoardsReached = useMaxBoardsReached()
   const nonReactiveState = useEffectEventP(() => ({
     modalAction,
     nodes,
     overwriteBoardData,
+    maxBoardsReached,
   }))
 
   const isReady = useIsReadyToAcceptHandle()
@@ -32,11 +34,12 @@ export function useHandleOnExternalUrl({
   useEffect(() => {
     if (!isReady) return
 
-    const { nodes, overwriteBoardData, modalAction } = nonReactiveState()
+    const { maxBoardsReached, nodes, overwriteBoardData, modalAction } =
+      nonReactiveState()
     const isLoadExternalURL = hash.includes(shareHashTocken)
     if (!isLoadExternalURL) return modalAction.close()
 
-    if (nodes.length) return modalAction.open()
+    if (nodes.length || maxBoardsReached) return modalAction.open()
 
     // If no nodes in the board, load automatically
     overwriteBoardData()
@@ -60,6 +63,7 @@ function useIsReadyToAcceptHandle() {
   useEffect(() => {
     const { boardsQuery, authToken, boardDataQuery, currentUserBoardId } =
       nonReactiveState()
+
     if (!boardsQuery || !boardDataQuery) return setIsReady(false)
 
     const boardsLoadedSuccess =

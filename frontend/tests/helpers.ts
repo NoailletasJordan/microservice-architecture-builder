@@ -124,7 +124,7 @@ export async function logInActions({ page }: { page: Page }) {
   await expect(page.getByTestId(testIdLogged)).toBeVisible()
 
   const code = await listenForCodePromise
-  const reLogSameUser = ({ apiUrl }: { apiUrl: string }) =>
+  const reLogSameUser = ({ apiUrl, page }: { apiUrl: string; page: Page }) =>
     page.goto(`${apiUrl}/auth/google/callback?code=${code}`)
 
   return { reLogSameUser }

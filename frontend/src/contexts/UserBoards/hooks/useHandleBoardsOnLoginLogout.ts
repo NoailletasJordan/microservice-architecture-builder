@@ -1,4 +1,4 @@
-import { useEffectEventP } from '@/contants'
+import { useEffectEventP, USER_MAX_BOARD_AMOUNT } from '@/contants'
 import { userContext } from '@/contexts/User/constants'
 import { showNotificationSuccess } from '@/helpers-react'
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
@@ -93,8 +93,19 @@ async function handleLoadRemoteUserBoards({
 }) {
   const hadCurrentBoardData = flowInstance.getNodes().length > 0
 
-  // if user Has board data, create new userboard and load it
+  // if user Has board data,
   if (hadCurrentBoardData) {
+    // if user already reached max boards, omit
+    if (userBoards.length >= USER_MAX_BOARD_AMOUNT) {
+      setCurrentUserBoardId(userBoards[0].id)
+      showNotificationSuccess({
+        title: 'Connected to the cloud',
+        message:
+          'You reached a maximum of boards, I could not create a new one for your previous work',
+      })
+      return
+    }
+    // else, create new userboard and load it
     const newBoard = await createNewBoard({
       title: `Pushed-on ${new Intl.DateTimeFormat('en-GB', {
         day: '2-digit',

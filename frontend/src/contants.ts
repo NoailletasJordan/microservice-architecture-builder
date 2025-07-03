@@ -123,7 +123,7 @@ export const getApiUrl = () => {
   return url
 }
 
-export const USER_MAX_BOARD_AMOUNT = 3
+export const USER_MAX_BOARD_AMOUNT = 50
 export function useMaxBoardsReached() {
   const { boards } = useContext(userBoardsContext)
   return boards.length >= USER_MAX_BOARD_AMOUNT

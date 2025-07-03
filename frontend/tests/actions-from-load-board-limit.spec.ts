@@ -74,28 +74,29 @@ testWithBackend(
       },
     )
 
+    await page.waitForTimeout(1000)
     await page.close()
     const page2 = await context.newPage()
 
     await testWithBackend.step(
       'Should load new page and show warning',
       async () => {
-        await page2.goto('/')
+        await page2.goto(loadURL)
         await expect(getWarningModalLocator({ page: page2 })).toHaveCount(1)
         await page2.getByRole('button', { name: 'Close' }).click()
       },
     )
 
     await testWithBackend.step(
-      'Should show warning when relogging from a active board',
+      'Should notify user about max board when relogging from an active board',
       async () => {
         await getSettingsButtonLocator({ page: page2 }).click()
         await getLogoutButtonLocator({ page: page2 }).click()
         await initialTwoNodesSetup({ page: page2 })
-
-        await reLogSameUser({ apiUrl })
-
-        await expect(getWarningModalLocator({ page: page2 })).toHaveCount(1)
+        await reLogSameUser({ apiUrl, page: page2 })
+        await expect(
+          page2.getByText(/reached a maximum of boards/i),
+        ).toBeVisible()
       },
     )
   },

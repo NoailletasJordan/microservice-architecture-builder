@@ -31,6 +31,9 @@ export function useHandleOnExternalUrl({
 
   const isReady = useIsReadyToAcceptHandle()
 
+  /** Temp */
+  console.log('isReady:', isReady)
+
   useEffect(() => {
     if (!isReady) return
 
@@ -63,6 +66,7 @@ function useIsReadyToAcceptHandle() {
   useEffect(() => {
     const { boardsQuery, authToken, boardDataQuery, currentUserBoardId } =
       nonReactiveState()
+
     if (!boardsQuery || !boardDataQuery) return setIsReady(false)
 
     const boardsLoadedSuccess =

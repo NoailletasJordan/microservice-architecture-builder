@@ -2,7 +2,7 @@ import CustomModal from '@/components/CustomModal'
 import { USER_MAX_BOARD_AMOUNT } from '@/contants'
 import { userBoardsContext } from '@/contexts/UserBoards/constants'
 import { Button, Grid, Group, Space, Text, ThemeIcon } from '@mantine/core'
-import { useDisclosure, useMediaQuery } from '@mantine/hooks'
+import { useDisclosure } from '@mantine/hooks'
 import { IconAlertTriangle } from '@tabler/icons-react'
 import { useContext } from 'react'
 import { useCurrentHash } from './hooks/useCurrentHash'
@@ -13,7 +13,6 @@ import { useOverwriteBoardData } from './hooks/useOverwriteBoardData'
 export default function LoadLinkBoardModal() {
   const [opened, modalAction] = useDisclosure(false)
   const hash = useCurrentHash()
-  const maxSM = useMediaQuery('(max-width: 768px)')
   const handleCloseModal = useHandleCloseModal(modalAction.close)
   const overwriteBoardData = useOverwriteBoardData({ hash, handleCloseModal })
   useHandleOnExternalUrl({ overwriteBoardData, hash, modalAction })
@@ -24,12 +23,7 @@ export default function LoadLinkBoardModal() {
     copywrigtht[maxBoardsReached ? 'maximumBoardsAmount' : 'boardConflict']
 
   return (
-    <CustomModal
-      fullScreen={maxSM}
-      opened={opened}
-      onClose={handleCloseModal}
-      title={copy.title}
-    >
+    <CustomModal opened={opened} onClose={handleCloseModal} title={copy.title}>
       <Grid align="center" justify="center">
         <Grid.Col span="content">
           <ThemeIcon size="lg" variant="outline" color="pink">

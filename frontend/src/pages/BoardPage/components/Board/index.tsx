@@ -24,6 +24,7 @@ import {
   NO_PAN_REACTFLOW_CLASS,
   NO_WhEEL_REACTFLOW_CLASS,
 } from '../../configs/constants'
+import { BoardLoading } from './components/BoardLoading/index'
 import ClearCurrentBoard from './components/ClearCurrentBoardModal'
 import ConnexionPreview from './components/ConnexionPreview'
 import CustomEdge from './components/CustomEdge'
@@ -37,10 +38,11 @@ import Settings from './components/Settings/index'
 import ShareModal from './components/ShareModal'
 import TertiaryActionsPanel from './components/TertiaryActionsPanel'
 import Toolbar from './components/Toolbar'
-import { useOnNodeDragEnd } from './hooks/onNodeDragEnd'
 import { useOnConnect } from './hooks/useOnConnect'
 import { useOnEdgesChange } from './hooks/useOnEdgesChange'
+import { useOnNodeDragEnd } from './hooks/useOnNodeDragEnd'
 import { useOnNodesChange } from './hooks/useOnNodesChange'
+import { useShowBoardSpinner } from './hooks/useShowBoardSpinner'
 import LoadUrlBoardModal from './services/LoadUrlBoardModal'
 
 const nodeTypes: NodeTypes = {
@@ -66,7 +68,7 @@ export default function Board() {
 
   const { ref, height, width } = useElementSize()
   const { triggerClickCanva } = useContext(clickCanvaContext)
-
+  const showBoardSpinner = useShowBoardSpinner()
   const onNodesChange = useOnNodesChange()
   const onEdgesChange = useOnEdgesChange()
   const onConnect = useOnConnect({ edges })
@@ -134,6 +136,9 @@ export default function Board() {
               )}
               <Toolbar />
               {showGuidanceTexts && <GuidanceTextsMain />}
+
+              {showBoardSpinner && <BoardLoading />}
+
               <MiniMap
                 style={{ backgroundColor: CSSVAR['--surface-strong'] }}
                 nodeBorderRadius={10}

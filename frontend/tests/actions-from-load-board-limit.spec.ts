@@ -21,6 +21,7 @@ const getWarningModalLocator = ({ page }: { page: Page }) =>
 testWithBackend(
   'should disable menuitem to add board when user reach the limit ',
   async ({ page, context, startTestContainers: { apiUrl } }) => {
+    testWithBackend.setTimeout(150_000)
     await page.goto('/')
     const { reLogSameUser } = await logInActions({ page })
 

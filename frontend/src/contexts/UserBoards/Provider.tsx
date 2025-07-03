@@ -1,6 +1,5 @@
 import { ReactNode, useState } from 'react'
 import { userBoardsContext } from './constants'
-import useFitViewOnBoardLoad from './hooks/useFitViewOnBoardLoad'
 import { useHandleBoardsOnLoginLogout } from './hooks/useHandleBoardsOnLoginLogout'
 import { useMutateUserBoard } from './hooks/useMutateUserBoard'
 import { useUserBoards } from './hooks/useUserBoards'
@@ -24,11 +23,6 @@ export default function UserBoardsProvider({ children }: IProps) {
   const mutator = useMutateUserBoard({
     currentUserBoardId,
     setCurrentUserBoardId,
-  })
-
-  useFitViewOnBoardLoad({
-    isFetched: boardsQuery.isFetched,
-    currentUserBoardId,
   })
 
   return (

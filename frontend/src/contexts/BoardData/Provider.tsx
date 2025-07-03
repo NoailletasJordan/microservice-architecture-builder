@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
 import { boardDataContext } from './constants'
+import useFitViewOnBoardLoad from './hooks/useFitViewOnBoardLoad'
 import { useNodesAndEdges } from './hooks/useNodesAndEdges'
 import { useSaveBoardLocallyOrRemotely } from './hooks/useSaveBoardLocallyOrRemotely'
 
@@ -16,6 +17,9 @@ export default function BoardDataProvider({
     requestStatus: boardDataQuery.status,
   })
 
+  useFitViewOnBoardLoad({
+    isFetched: boardDataQuery.isFetched,
+  })
   return (
     <boardDataContext.Provider
       value={{

@@ -1,14 +1,14 @@
 import { useEffectEventP } from '@/contants'
 import { useEffect } from 'react'
 import { useReactFlow } from 'reactflow'
+import { useQueryKey } from './useQueryKey'
 
 export default function useFitViewOnBoardLoad({
   isFetched,
-  currentUserBoardId,
 }: {
   isFetched: boolean
-  currentUserBoardId: string | undefined
 }) {
+  const [_, boardId] = useQueryKey()
   const FIT_VIEW_DURATION = 700
   const { fitView } = useReactFlow()
   const nonReactiveState = useEffectEventP(() => ({
@@ -16,13 +16,16 @@ export default function useFitViewOnBoardLoad({
   }))
 
   useEffect(() => {
-    const { fitView } = nonReactiveState()
+    let timeout: NodeJS.Timeout
     if (isFetched) {
-      setTimeout(() => {
+      const { fitView } = nonReactiveState()
+      timeout = setTimeout(() => {
         fitView({ duration: FIT_VIEW_DURATION, maxZoom: 1, minZoom: 0.65 })
-      }, 100)
+      }, 50)
     }
 
-    return () => {}
-  }, [currentUserBoardId, isFetched, nonReactiveState])
+    return () => {
+      timeout && clearTimeout(timeout)
+    }
+  }, [boardId, isFetched, nonReactiveState])
 }

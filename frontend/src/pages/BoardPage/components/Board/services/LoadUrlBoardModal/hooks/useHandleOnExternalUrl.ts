@@ -31,9 +31,6 @@ export function useHandleOnExternalUrl({
 
   const isReady = useIsReadyToAcceptHandle()
 
-  /** Temp */
-  console.log('isReady:', isReady)
-
   useEffect(() => {
     if (!isReady) return
 

@@ -23,30 +23,36 @@ export function useHistoryControls() {
   const isFetched = boardDataQuery.isFetched
   const queryClient = useQueryClient()
   const queryKey = useQueryKey()
+  const currentBoardId = queryKey[1]
 
+  const isFetchedRefPrev = useRef(isFetched)
+  const currentBoardIdRefPrev = useRef(currentBoardId)
   const nonReactiveState = useEffectEventP(() => ({
     handlers,
     history,
-    queryKey,
+    currentBoardIdRefPrev,
+    isFetchedRefPrev,
   }))
 
-  const isFetchedRefPrev = useRef(isFetched)
-  const queryKeyRefPrev = useRef(queryKey)
-
   useEffect(() => {
-    const { handlers, queryKey } = nonReactiveState()
-    const justChangedBoard = queryKeyRefPrev.current[1] !== queryKey[1]
+    const { handlers, currentBoardIdRefPrev, isFetchedRefPrev } =
+      nonReactiveState()
+
+    const justChangedBoard = currentBoardIdRefPrev.current !== currentBoardId
 
     // if the board has changed, reset the history with the new board
     if (justChangedBoard) {
-      queryKeyRefPrev.current = queryKey
+      currentBoardIdRefPrev.current = currentBoardId
+
+      if (!isFetched) {
+        isFetchedRefPrev.current = false
+      }
       handlers.reset({ nodes, edges })
       return
     }
 
     // if the board is not fetched, do nothing
     if (!isFetched) {
-      isFetchedRefPrev.current = false
       return
     }
 
@@ -54,7 +60,7 @@ export function useHistoryControls() {
     const justBeenFetched = !isFetchedRefPrev.current && isFetched
     if (justBeenFetched) {
       isFetchedRefPrev.current = true
-      handlers.updateIndex({ value: { nodes, edges }, index: 0 })
+      handlers.reset({ nodes, edges })
       return
     }
 
@@ -84,7 +90,7 @@ export function useHistoryControls() {
     return () => {
       clearTimeout?.(timeout)
     }
-  }, [nodes, edges, isFetched, nonReactiveState])
+  }, [nodes, edges, isFetched, currentBoardId, nonReactiveState])
 
   const undoIsDisabled = !isFetched || history.current === 0
   const redoIsDisabled =

@@ -15,6 +15,7 @@ import {
   getNodesLocator,
   getSettingsButtonLocator,
   grabElementTo,
+  initialTwoNodesSetup,
   logInActions,
 } from './helpers'
 import { testWithBackend as base } from './setupTeardown'
@@ -41,8 +42,11 @@ const toDoTwice: [string, (arg: PlaywrightTestArgs) => Promise<void>][] = [
       const undoButton = getButtonUndoLocator({ page })
       const redoButton = getButtonRedoLocator({ page })
 
-      await expect(undoButton).toBeDisabled()
-      await expect(redoButton).toBeDisabled()
+      await expectToBeTrueFor2s(async () => {
+        return (
+          (await undoButton.isDisabled()) && (await redoButton.isDisabled())
+        )
+      })
     },
   ],
   [
@@ -76,7 +80,7 @@ const toDoTwice: [string, (arg: PlaywrightTestArgs) => Promise<void>][] = [
   [
     'should overwrite history forward, after going back and making a new action',
     async ({ page }) => {
-      page.goto('/')
+      await page.goto('/')
       const frontendIcon = getIconFrontendLocator({ page })
       await frontendIcon.waitFor({ state: 'visible' })
       await grabElementTo(page, {
@@ -113,12 +117,12 @@ const toDoTwice: [string, (arg: PlaywrightTestArgs) => Promise<void>][] = [
 ]
 
 toDoTwice.forEach(([testName, testFn]) => {
-  testLogged(`logged-logged: ${testName}`, testFn)
+  testLogged(`logged: ${testName}`, testFn)
   testNonLogged(`not-logged: ${testName}`, testFn)
 })
 
 testLogged(
-  'should disable history buttons when switching to other boards',
+  'logged: should disable history buttons when switching to other boards',
   async ({ page }) => {
     const frontendIcon = getIconFrontendLocator({ page })
     await frontendIcon.waitFor({ state: 'visible' })
@@ -138,9 +142,15 @@ testLogged(
       await getNewBoardButtonLocator({ page }).hover()
       await page.getByRole('menuitem', { name: 'Empty board' }).click()
 
-      await expect(undoButton).toBeDisabled()
-      await expect(redoButton).toBeDisabled()
+      await expectToBeTrueFor2s(async () => {
+        return (
+          (await undoButton.isDisabled()) && (await redoButton.isDisabled())
+        )
+      })
     })
+
+    await initialTwoNodesSetup({ page })
+    await page.waitForTimeout(debounceActionMS)
 
     await testLogged.step('on new duplicate board', async () => {
       await getSettingsButtonLocator({ page }).click()
@@ -149,8 +159,11 @@ testLogged(
         .getByRole('menuitem', { name: 'Duplicate current board' })
         .click()
 
-      await expect(undoButton).toBeDisabled()
-      await expect(redoButton).toBeDisabled()
+      await expectToBeTrueFor2s(async () => {
+        return (
+          (await undoButton.isDisabled()) && (await redoButton.isDisabled())
+        )
+      })
     })
 
     await testLogged.step('on new load previous board', async () => {
@@ -163,13 +176,16 @@ testLogged(
       await getLoadButtonLocator({ page }).hover()
       await getBoardsSubMenuLocator({ page }).nth(2).click()
 
-      await expect(undoButton).toBeDisabled()
-      await expect(redoButton).toBeDisabled()
+      await expectToBeTrueFor2s(async () => {
+        return (
+          (await undoButton.isDisabled()) && (await redoButton.isDisabled())
+        )
+      })
     })
   },
 )
 
-testLogged('should erase history on logout', async ({ page }) => {
+testLogged('logged: should erase history on logout', async ({ page }) => {
   const frontendIcon = getIconFrontendLocator({ page })
   await frontendIcon.waitFor({ state: 'visible' })
   await grabElementTo(page, {
@@ -211,3 +227,20 @@ testNonLogged(
     await expect(nodes).toHaveCount(1)
   },
 )
+
+async function expectToBeTrueFor2s(callback: () => Promise<boolean>) {
+  return new Promise((resolve) => {
+    let passed = true
+    const interval = setInterval(async () => {
+      if (!(await callback())) {
+        passed = false
+      }
+    }, 100)
+
+    setTimeout(() => {
+      clearInterval(interval)
+      expect(passed).toBe(true)
+      resolve(null)
+    }, 2000)
+  })
+}

@@ -32,8 +32,8 @@ export default function ToolbarMenu({
         pos="relative"
       >
         {Array.from({ length: elements }).map((_, index) => {
-          const targetX = ((index * angle - 180) * Math.PI) / 180
-          const targetY = ((index * angle - 180) * Math.PI) / 180
+          const targetX = ((index * angle - 90) * Math.PI) / 180
+          const targetY = ((index * angle - 90) * Math.PI) / 180
 
           return (
             <motion.div
@@ -53,7 +53,7 @@ export default function ToolbarMenu({
                   type: 'spring',
                   stiffness: 200,
                   damping: 20,
-                  delay: index * 0.1,
+                  delay: index * 0.05,
                 },
               }}
               style={{

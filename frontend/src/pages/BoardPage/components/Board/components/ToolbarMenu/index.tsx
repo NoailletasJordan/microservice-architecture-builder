@@ -2,7 +2,7 @@ import { CSSVAR } from '@/contants'
 import {
   CARD_HEIGHT_DEFAULT,
   CARD_WIDTH,
-  serviceConfig,
+  // serviceConfig,
   ServiceIdType,
 } from '@/pages/BoardPage/configs/constants'
 import { getNewNode } from '@/pages/BoardPage/configs/helpers'
@@ -13,12 +13,29 @@ import { useReactFlow } from 'reactflow'
 
 const elementSize = 80
 
+const serviceConfig = {
+  frontend: {
+    imageUrl: '/board/a-frontend.svg',
+    defaultLabel: 'Frontend',
+  },
+  server: {
+    imageUrl: '/board/a-server.svg',
+    defaultLabel: 'Server',
+  },
+  database: {
+    imageUrl: '/board/a-database.svg',
+    defaultLabel: 'Database',
+  },
+}
+
+const serviceConfigArr = Object.entries(serviceConfig)
+
 export default (function ToolbarMenu() {
   // Calculate the radius based on number of elements and element size
-  const elementsNumber = Object.entries(serviceConfig).length
+  const elementsNumber = serviceConfigArr.length
   const radius = Math.max(50, elementSize * 1.5)
   const containerSize = radius * 2
-  const angle = 360 / elementsNumber
+  const angleStep = 360 / elementsNumber
 
   const [activated, setActivated] = useState<ServiceIdType | null>(null)
 
@@ -34,19 +51,17 @@ export default (function ToolbarMenu() {
     >
       {/* <LayoutGroup> */}
       <Box h={`${containerSize}px`} w={`${containerSize}px`} pos="relative">
-        {Object.entries(serviceConfig).map(([serviceIdType], index) => {
-          const targetX = ((index * angle - 90) * Math.PI) / 180
-          const targetY = ((index * angle - 90) * Math.PI) / 180
-          if (activated === 'frontend') {
-            /** Temp */
-            console.log('targetX:', targetX)
-          }
-          /** Temp */
-          const key = `test-${serviceIdType}`
+        {serviceConfigArr.map(([serviceIdType], index) => {
+          const angle = ((index * angleStep - 90) * Math.PI) / 180
+          const x =
+            radius * Math.cos(angle) + containerSize / 2 - elementSize / 2
+          const y =
+            radius * Math.sin(angle) + containerSize / 2 - elementSize / 2
+          const layoutKey = `toolbar-${serviceIdType}`
           return (
             <motion.div
-              key={key}
-              layoutId={key}
+              key={layoutKey}
+              layoutId={layoutKey}
               initial={{
                 x: containerSize / 2 - elementSize / 2,
                 y: containerSize / 2 - elementSize / 2,
@@ -54,8 +69,8 @@ export default (function ToolbarMenu() {
                 scale: 0.5,
               }}
               animate={{
-                x: `calc(${radius}px * cos(${targetX}rad) + ${elementSize}px)`,
-                y: `calc(${radius}px * sin(${targetY}rad) + ${elementSize}px)`,
+                x,
+                y,
                 opacity: 1,
                 scale: 1,
                 transition: {
@@ -88,21 +103,15 @@ export default (function ToolbarMenu() {
             style={{
               border: '1px solid red',
               position: 'absolute',
-              transform: 'translate(-50%, -50%)',
-              top: '50%',
-              left: '50%',
-              width: '70px',
-              height: '70px',
+              top: `${containerSize / 2 - elementSize / 2}px`,
+              left: `${containerSize / 2 - elementSize / 2}px`,
+              width: `${elementSize}px`,
+              height: `${elementSize}px`,
             }}
-            layoutId={`test-${activated}`}
-            key={`temp-${activated}`}
+            key={`center-${activated}`}
+            layoutId={`toolbar-${activated}`}
           >
-            <Image
-              h="50%"
-              w="50%"
-              src={serviceConfig[activated].imageUrl}
-              alt="frontend"
-            />
+            {activated}
           </motion.div>
         )}
         {/* </AnimatePresence> */}
@@ -122,7 +131,7 @@ const PreButton = function PreButton({
 
   if (isClicked) return null
 
-  const key = `test-${serviceIdType}`
+  const key = `toolbar-${serviceIdType}`
   return (
     <div
       style={{

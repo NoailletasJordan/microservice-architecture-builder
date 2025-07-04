@@ -38,6 +38,7 @@ import Settings from './components/Settings/index'
 import ShareModal from './components/ShareModal'
 import TertiaryActionsPanel from './components/TertiaryActionsPanel'
 import Toolbar from './components/Toolbar'
+import ToolbarMenu from './components/ToolbarMenu'
 import { useOnConnect } from './hooks/useOnConnect'
 import { useOnEdgesChange } from './hooks/useOnEdgesChange'
 import { useOnNodeDragEnd } from './hooks/useOnNodeDragEnd'
@@ -126,6 +127,11 @@ export default function Board() {
               zoomOnDoubleClick={false}
               snapGrid={[30, 30]}
               snapToGrid={true}
+              onPaneContextMenu={(e) => {
+                e.preventDefault()
+
+                return
+              }}
               proOptions={{
                 hideAttribution: true,
               }}
@@ -139,6 +145,7 @@ export default function Board() {
 
               {showBoardSpinner && <BoardLoading />}
 
+              <ToolbarMenu />
               <MiniMap
                 style={{ backgroundColor: CSSVAR['--surface-strong'] }}
                 nodeBorderRadius={10}

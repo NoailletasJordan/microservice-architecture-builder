@@ -17,6 +17,7 @@ import {
 import { Box } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
 import { useEditor } from '@tiptap/react'
+import { motion } from 'motion/react'
 import { useContext, useMemo, useState } from 'react'
 import DroppableArea from '../../../../../../components/DroppableArea/index'
 import CustomHandle from './components/CustomHandle'
@@ -67,7 +68,7 @@ export default function CustomNode(props: NodeProps<IService>) {
       parentId={props.id}
       handleActionClick={() => editor?.view.focus()}
     >
-      <Box aria-label={`node-type-${service.serviceIdType}`} ref={ref}>
+      <div aria-label={`node-type-${service.serviceIdType}`} ref={ref}>
         <DroppableArea
           id={props.id}
           data={{
@@ -92,11 +93,13 @@ export default function CustomNode(props: NodeProps<IService>) {
               {isOverlapingNode && <OverlapOverlay />}
               <Grid gutter="xs" align="center">
                 <Grid.Col span="content">
-                  <Image
-                    h={40}
-                    src={serviceConfig[service.serviceIdType].imageUrl}
-                    alt={service.serviceIdType}
-                  />
+                  <motion.div layoutId={props.id}>
+                    <Image
+                      h={40}
+                      src={serviceConfig[service.serviceIdType].imageUrl}
+                      alt={service.serviceIdType}
+                    />
+                  </motion.div>
                 </Grid.Col>
                 <Grid.Col span="auto">
                   <Box c={CSSVAR['--text-strong']}>
@@ -126,7 +129,7 @@ export default function CustomNode(props: NodeProps<IService>) {
           droppableType={droppableType}
           serviceId={service.id}
         />
-      </Box>
+      </div>
     </ServiceActionsWrapper>
   )
 }

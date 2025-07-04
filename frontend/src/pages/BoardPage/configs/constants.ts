@@ -80,6 +80,7 @@ export const serviceConfig: Record<ServiceIdType, ServiceConfigValue> = {
 export const shareHashTocken = '#json='
 export const STORAGE_DATA_INDEX_KEY = 'board-data-index'
 export const CARD_WIDTH = 210
+export const CARD_HEIGHT_DEFAULT = 72 // not enforced
 export const NO_DRAG_REACTFLOW_CLASS = 'noDragReactflow'
 export const NO_WhEEL_REACTFLOW_CLASS = 'nowheel'
 export const NO_PAN_REACTFLOW_CLASS = 'nopan'

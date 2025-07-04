@@ -33,7 +33,7 @@
     "@tiptap/starter-kit": "2.3.2",
     "dotenv": "^16.5.0",
     "install": "0.13.0",
-    "motion": "^12.4.3",
+    "motion": "^12.23.0",
     "npm": "10.7.0",
     "path": "0.12.7",
     "posthog-js": "^1.235.6",

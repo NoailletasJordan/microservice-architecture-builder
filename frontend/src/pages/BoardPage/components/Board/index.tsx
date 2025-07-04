@@ -125,16 +125,10 @@ export default function Board() {
               noWheelClassName={NO_WhEEL_REACTFLOW_CLASS}
               noPanClassName={NO_PAN_REACTFLOW_CLASS}
               zoomOnDoubleClick={false}
-              snapGrid={[30, 30]}
-              snapToGrid={true}
-              onPaneContextMenu={(e) => {
-                e.preventDefault()
-
-                return
-              }}
               proOptions={{
                 hideAttribution: true,
               }}
+              onClick={(e) => e.preventDefault()}
               onPaneClick={triggerClickCanva}
             >
               {!showGuidanceTexts && !showOnboarding && (
@@ -145,7 +139,6 @@ export default function Board() {
 
               {showBoardSpinner && <BoardLoading />}
 
-              <ToolbarMenu />
               <MiniMap
                 style={{ backgroundColor: CSSVAR['--surface-strong'] }}
                 nodeBorderRadius={10}
@@ -159,6 +152,17 @@ export default function Board() {
                 showGuidanceTexts={showGuidanceTexts}
               />
             </ReactFlow>
+            <div
+              id="toolbar-menu"
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                pointerEvents: 'none',
+              }}
+            >
+              <ToolbarMenu />
+            </div>
             <Settings
               openClearCurrentBoardModal={clearCurrentBoardModalHandlers.open}
               openDeleteCurrentBoardModal={deleteCurrentBoardModalHandlers.open}

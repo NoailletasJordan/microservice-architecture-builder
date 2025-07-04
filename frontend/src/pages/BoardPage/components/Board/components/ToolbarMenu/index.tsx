@@ -1,4 +1,5 @@
 import { Box } from '@mantine/core'
+import { motion } from 'motion/react'
 
 interface ToolbarMenuProps {
   elements?: number
@@ -30,28 +31,41 @@ export default function ToolbarMenu({
         w={`${containerSize}px`}
         pos="relative"
       >
-        {Array.from({ length: elements }).map((_, index) => (
-          <div
-            key={index}
-            style={{
-              position: 'absolute',
-              width: `${elementSize}px`,
-              aspectRatio: '1',
-              border: '1px solid blue',
-              transformOrigin: '50% 50%',
-              transform: `
-                translate(
-                  calc(${radius}px * cos(${
-                ((index * angle - 180) * Math.PI) / 180
-              }rad) + ${elementSize}px),
-                  calc(${radius}px * sin(${
-                ((index * angle - 180) * Math.PI) / 180
-              }rad) + ${elementSize}px)
-                )
-              `,
-            }}
-          />
-        ))}
+        {Array.from({ length: elements }).map((_, index) => {
+          const targetX = ((index * angle - 180) * Math.PI) / 180
+          const targetY = ((index * angle - 180) * Math.PI) / 180
+
+          return (
+            <motion.div
+              key={index}
+              initial={{
+                x: 0,
+                y: 0,
+                opacity: 0,
+                scale: 0.5,
+              }}
+              animate={{
+                x: `calc(${radius}px * cos(${targetX}rad) + ${elementSize}px)`,
+                y: `calc(${radius}px * sin(${targetY}rad) + ${elementSize}px)`,
+                opacity: 1,
+                scale: 1,
+              }}
+              transition={{
+                type: 'spring',
+                stiffness: 200,
+                damping: 20,
+                delay: index * 0.1,
+              }}
+              style={{
+                position: 'absolute',
+                width: `${elementSize}px`,
+                aspectRatio: '1',
+                border: '1px solid blue',
+                transformOrigin: '50% 50%',
+              }}
+            />
+          )
+        })}
       </Box>
     </div>
   )

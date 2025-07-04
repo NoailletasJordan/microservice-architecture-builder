@@ -39,8 +39,8 @@ export default function ToolbarMenu({
             <motion.div
               key={index}
               initial={{
-                x: 0,
-                y: 0,
+                x: containerSize / 2 - elementSize / 2,
+                y: containerSize / 2 - elementSize / 2,
                 opacity: 0,
                 scale: 0.5,
               }}
@@ -49,12 +49,12 @@ export default function ToolbarMenu({
                 y: `calc(${radius}px * sin(${targetY}rad) + ${elementSize}px)`,
                 opacity: 1,
                 scale: 1,
-              }}
-              transition={{
-                type: 'spring',
-                stiffness: 200,
-                damping: 20,
-                delay: index * 0.1,
+                transition: {
+                  type: 'spring',
+                  stiffness: 200,
+                  damping: 20,
+                  delay: index * 0.1,
+                },
               }}
               style={{
                 position: 'absolute',

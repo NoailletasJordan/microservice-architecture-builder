@@ -87,7 +87,13 @@ export default function CustomNode(props: NodeProps<IService>) {
                 {isOverlapingNode && <OverlapOverlay />}
                 <Grid gutter="xs" align="center">
                   <Grid.Col span="content">
-                    <motion.div layout={imageLayout} layoutId={imageLayoutId}>
+                    <motion.div
+                      transition={{
+                        layout: { ease: 'circOut' },
+                      }}
+                      layout={imageLayout}
+                      layoutId={imageLayoutId}
+                    >
                       <Image
                         h={40}
                         src={serviceConfig[service.serviceIdType].imageUrl}

@@ -23,6 +23,6 @@ export function useLayoutIds_({ nodeId }: { nodeId: string }) {
   return {
     bodyLayoutId: layoutId,
     imageLayoutId: layoutIdImage,
-    imageLayout: layoutIdImage ? ('position' as const) : false,
+    imageLayout: layoutIdImage ? true : false,
   }
 }

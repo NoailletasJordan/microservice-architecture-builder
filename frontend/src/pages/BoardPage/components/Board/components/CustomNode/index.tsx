@@ -10,15 +10,11 @@ import {
   IService,
   serviceConfig,
 } from '@/pages/BoardPage/configs/constants'
-import {
-  getNodeOverlapped,
-  getNodesAfterUpdateNode,
-} from '@/pages/BoardPage/configs/helpers'
 import { Box } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
 import { useEditor } from '@tiptap/react'
 import { motion } from 'motion/react'
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useState } from 'react'
 import DroppableArea from '../../../../../../components/DroppableArea/index'
 import CustomHandle from './components/CustomHandle'
 import EditableTitle from './components/EditableTitle'
@@ -26,32 +22,29 @@ import NoteSection from './components/NoteSection/index'
 import OverlapOverlay from './components/OverlapOverlay'
 import ServiceActionsWrapper from './components/ServiceActionsWrapper'
 import SubServiceSection from './components/SubServicesSection'
+import { useHandleNoteChange_ } from './hooks/useHandleNoteChange_'
+import { useIsOverlappingNode } from './hooks/useIsOverLappingNode'
+import { useLayoutIds_ } from './hooks/useLayoutIds_'
+
+const droppableType = 'node'
 
 export default function CustomNode(props: NodeProps<IService>) {
-  const flowInstance = useReactFlow()
   // Ineficient, but NodeProps misses rerenders on some nested changes (subservices)
   const { nodes: _forceRerender } = useContext(boardDataContext)
-  const service = props.data
 
+  const flowInstance = useReactFlow()
+  const service = props.data
   const [isHovered, setIsHovered] = useState(false)
   const { ref, height, width } = useElementSize()
-  const isOverlapingNode = useMemo(
-    () =>
-      !!getNodeOverlapped(
-        flowInstance.getNode(props.id)!,
-        flowInstance.getNodes(),
-      ),
-    [flowInstance, props],
-  )
 
-  const droppableType = 'node'
+  const isOverlapingNode = useIsOverlappingNode({ nodeId: service.id })
 
-  const handleNoteChange = (newNote: string) => {
-    const currentNodes = flowInstance.getNodes()
-    const nodeToEdit = flowInstance.getNode(service.id)!
-    nodeToEdit.data.note = newNote
-    getNodesAfterUpdateNode({ currentNodes, newNode: nodeToEdit })
-  }
+  const ids = useLayoutIds_({
+    service,
+  })
+  const { bodyLayoutId, imageLayout, imageLayoutId } = ids
+
+  const handleNoteChange = useHandleNoteChange_({ serviceId: service.id })
 
   const editor = useEditor(
     getEditorParams({
@@ -59,19 +52,6 @@ export default function CustomNode(props: NodeProps<IService>) {
       onUpdate: handleNoteChange,
     }),
   )
-
-  const [layoutId, setLayoutId] = useState<string | undefined>(service.id)
-  const layoutIdImage = layoutId ? `${layoutId}-image` : undefined
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLayoutId(undefined)
-    }, 400)
-
-    return () => {
-      clearTimeout(timeout)
-    }
-  }, [])
 
   return (
     <ServiceActionsWrapper
@@ -88,7 +68,7 @@ export default function CustomNode(props: NodeProps<IService>) {
             droppableType,
           }}
         >
-          <motion.div layoutId={layoutId}>
+          <motion.div layoutId={bodyLayoutId}>
             <Card
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
@@ -107,10 +87,7 @@ export default function CustomNode(props: NodeProps<IService>) {
                 {isOverlapingNode && <OverlapOverlay />}
                 <Grid gutter="xs" align="center">
                   <Grid.Col span="content">
-                    <motion.div
-                      layout={layoutIdImage ? 'position' : false}
-                      layoutId={layoutIdImage}
-                    >
+                    <motion.div layout={imageLayout} layoutId={imageLayoutId}>
                       <Image
                         h={40}
                         src={serviceConfig[service.serviceIdType].imageUrl}

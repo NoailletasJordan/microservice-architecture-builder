@@ -12,7 +12,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useCallback, useEffect, useState } from 'react'
 import { useReactFlow } from 'reactflow'
 
-const elementSize = 50
+const menuItemSize = 50
 
 const serviceConfigArr = Object.entries(serviceConfig)
 
@@ -28,23 +28,23 @@ export default (function ToolbarMenu({
   coordinate: [number, number]
 }) {
   // Calculate the radius based on number of elements and element size
-  const elementsNumber = serviceConfigArr.length
-  const radius = Math.max(50, elementSize * 1.5)
-  const containerSize = radius * 2
-  const angleStep = 360 / elementsNumber
+  const menuItemsCount = serviceConfigArr.length
+  const menuRadius = Math.max(50, menuItemSize * 1.5)
+  const menuContainerSize = menuRadius * 2
+  const angleStep = 360 / menuItemsCount
 
-  const [idFragment, setIdFragment] = useState<string>(String(Math.random()))
-  const triggerNewFragment = useCallback(() => {
-    setIdFragment(String(Math.random()))
+  const [uniqueIdFragment, setUniqueIdFragment] = useState<string>(String(Math.random()))
+  const generateNewIdFragment = useCallback(() => {
+    setUniqueIdFragment(String(Math.random()))
   }, [])
 
   useEffect(() => {
     if (!showToolbarMenu) {
-      triggerNewFragment()
+      generateNewIdFragment()
     }
-  }, [showToolbarMenu, triggerNewFragment])
+  }, [showToolbarMenu, generateNewIdFragment])
 
-  const flowInstance = useReactFlow()
+  const reactFlowInstance = useReactFlow()
 
   return (
     <div
@@ -56,7 +56,7 @@ export default (function ToolbarMenu({
         transform: 'translate(-50%, -50%)',
       }}
     >
-      <Box h={`${containerSize}px`} w={`${containerSize}px`} pos="relative">
+      <Box h={`${menuContainerSize}px`} w={`${menuContainerSize}px`} pos="relative">
         <AnimatePresence
           mode="popLayout"
           onExitComplete={() => {
@@ -65,19 +65,17 @@ export default (function ToolbarMenu({
         >
           {showToolbarMenu &&
             serviceConfigArr.map(([serviceIdType], index) => {
-              const angle = ((index * angleStep - 90) * Math.PI) / 180
-              const x =
-                radius * Math.cos(angle) + containerSize / 2 - elementSize / 2
-              const y =
-                radius * Math.sin(angle) + containerSize / 2 - elementSize / 2
+              const angle = ((index * angleStep - 90) * Math.PI) / 180 // Convert degrees to radians
+              const x = menuRadius * Math.cos(angle) + menuContainerSize / 2 - menuItemSize / 2
+              const y = menuRadius * Math.sin(angle) + menuContainerSize / 2 - menuItemSize / 2
 
-              const layoutId = `${serviceIdType}-${idFragment}`
+              const layoutId = `${serviceIdType}-${uniqueIdFragment}`
               return (
                 <motion.div
-                  key={`wrapper-${layoutId}`}
+                  key={`menu-item-wrapper-${layoutId}`}
                   initial={{
-                    x: containerSize / 2 - elementSize / 2,
-                    y: containerSize / 2 - elementSize / 2,
+                    x: menuContainerSize / 2 - menuItemSize / 2,
+                    y: menuContainerSize / 2 - menuItemSize / 2,
                     opacity: 0,
                     scale: 0.5,
                   }}
@@ -103,14 +101,15 @@ export default (function ToolbarMenu({
                   }}
                   style={{
                     position: 'absolute',
-                    width: `${elementSize}px`,
+                    width: `${menuItemSize}px`,
                     aspectRatio: '1',
                     transformOrigin: '50% 50%',
                   }}
                 >
-                  <PreButton
+                  <MenuItem
+                    serviceIdType={serviceIdType as ServiceIdType}
                     onClick={() => {
-                      const position = flowInstance.screenToFlowPosition({
+                      const position = reactFlowInstance.screenToFlowPosition({
                         x: coordinate[0] - CARD_WIDTH / 2,
                         y: coordinate[1] - CARD_HEIGHT_DEFAULT / 2,
                       })
@@ -119,14 +118,13 @@ export default (function ToolbarMenu({
                         position,
                         serviceIdType: serviceIdType as ServiceIdType,
                       })
-                      flowInstance.setNodes((oldNodes) => [
+                      reactFlowInstance.setNodes((oldNodes) => [
                         ...oldNodes,
                         newNode,
                       ])
                       onStartSelectionAnimation()
                     }}
                     layoutId={layoutId}
-                    serviceIdType={serviceIdType as ServiceIdType}
                   />
                 </motion.div>
               )
@@ -137,7 +135,7 @@ export default (function ToolbarMenu({
   )
 })
 
-const PreButton = function PreButton({
+const MenuItem = function MenuItem({
   serviceIdType,
   onClick,
   layoutId,
@@ -165,7 +163,7 @@ const PreButton = function PreButton({
       }}
     >
       <motion.div
-        layoutId={`${layoutId}-image`}
+        layoutId={`${layoutId}-icon`}
         style={{
           display: 'flex',
           justifyContent: 'center',

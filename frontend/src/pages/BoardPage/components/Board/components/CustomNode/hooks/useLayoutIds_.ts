@@ -4,7 +4,7 @@ import { useUpdateNodeInternals } from 'reactflow'
 
 export function useLayoutIds_({ nodeId }: { nodeId: string }) {
   const [layoutId, setLayoutId] = useState<string | undefined>(nodeId)
-  const layoutIdImage = layoutId ? `${layoutId}-image` : undefined
+  const layoutIdImage = layoutId ? `${layoutId}-icon` : undefined
   const updateNodeInternals = useUpdateNodeInternals()
 
   const nonReactiveState = useEffectEventP(() => ({ updateNodeInternals }))

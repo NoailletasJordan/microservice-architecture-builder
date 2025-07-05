@@ -44,8 +44,6 @@ export default (function ToolbarMenu({
     }
   }, [showToolbarMenu, triggerNewFragment])
 
-  const [selectedType, setSelectedType] = useState<ServiceIdType | null>()
-
   const flowInstance = useReactFlow()
 
   return (
@@ -62,7 +60,6 @@ export default (function ToolbarMenu({
         <AnimatePresence
           mode="popLayout"
           onExitComplete={() => {
-            setSelectedType(null)
             onEndSelectionAnimation()
           }}
         >
@@ -96,19 +93,14 @@ export default (function ToolbarMenu({
                       delay: index * 0.05,
                     },
                   }}
-                  exit={
-                    // TODO : add a custom on animatepresence
-                    selectedType !== serviceIdType
-                      ? {
-                          opacity: 0,
-                          scale: 0.5,
-                          transition: {
-                            duration: 0.2,
-                            ease: 'easeOut',
-                          },
-                        }
-                      : undefined
-                  }
+                  exit={{
+                    opacity: 0,
+                    scale: 0.5,
+                    transition: {
+                      duration: 0.2,
+                      ease: 'easeOut',
+                    },
+                  }}
                   style={{
                     position: 'absolute',
                     width: `${elementSize}px`,
@@ -131,7 +123,6 @@ export default (function ToolbarMenu({
                         ...oldNodes,
                         newNode,
                       ])
-                      setSelectedType(selectedType)
                       onStartSelectionAnimation()
                     }}
                     layoutId={layoutId}

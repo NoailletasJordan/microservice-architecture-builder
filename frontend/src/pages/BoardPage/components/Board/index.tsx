@@ -43,6 +43,7 @@ import { useOnConnect } from './hooks/useOnConnect'
 import { useOnEdgesChange } from './hooks/useOnEdgesChange'
 import { useOnNodeDragEnd } from './hooks/useOnNodeDragEnd'
 import { useOnNodesChange } from './hooks/useOnNodesChange'
+import { useOpenToolbarMenu } from './hooks/useOpenToolbarMenu'
 import { useShowBoardSpinner } from './hooks/useShowBoardSpinner'
 import LoadUrlBoardModal from './services/LoadUrlBoardModal'
 
@@ -66,6 +67,7 @@ export default function Board() {
   const [showDeleteCurrentBoardModal, deleteCurrentBoardModalHandlers] =
     useDisclosure(false)
   const [showShareModal, shareModalHanders] = useDisclosure(false)
+  const [showToolbarMenu, toolbarMenuHandlers] = useOpenToolbarMenu()
 
   const { ref, height, width } = useElementSize()
   const { triggerClickCanva } = useContext(clickCanvaContext)
@@ -125,6 +127,10 @@ export default function Board() {
               noWheelClassName={NO_WhEEL_REACTFLOW_CLASS}
               noPanClassName={NO_PAN_REACTFLOW_CLASS}
               zoomOnDoubleClick={false}
+              onPaneContextMenu={(e) => {
+                e.preventDefault()
+                toolbarMenuHandlers.toggle()
+              }}
               proOptions={{
                 hideAttribution: true,
               }}
@@ -161,7 +167,16 @@ export default function Board() {
                 pointerEvents: 'none',
               }}
             >
-              <ToolbarMenu />
+              <ToolbarMenu
+                onStartSelectionAnimation={() => {
+                  toolbarMenuHandlers.close()
+                  toolbarMenuHandlers.lock()
+                }}
+                onEndSelectionAnimation={() => {
+                  toolbarMenuHandlers.unlock()
+                }}
+                showToolbarMenu={showToolbarMenu}
+              />
             </div>
             <Settings
               openClearCurrentBoardModal={clearCurrentBoardModalHandlers.open}

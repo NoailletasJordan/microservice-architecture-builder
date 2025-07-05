@@ -9,7 +9,7 @@ import {
 import { getNewNode } from '@/pages/BoardPage/configs/helpers'
 import { Box, Image } from '@mantine/core'
 import { AnimatePresence, motion } from 'motion/react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useReactFlow } from 'reactflow'
 
 const elementSize = 50
@@ -38,6 +38,12 @@ export default (function ToolbarMenu({
     setIdFragment(String(Math.random()))
   }, [])
 
+  useEffect(() => {
+    if (!showToolbarMenu) {
+      triggerNewFragment()
+    }
+  }, [showToolbarMenu, triggerNewFragment])
+
   const [selectedType, setSelectedType] = useState<ServiceIdType | null>()
 
   const flowInstance = useReactFlow()
@@ -57,7 +63,6 @@ export default (function ToolbarMenu({
           mode="popLayout"
           onExitComplete={() => {
             setSelectedType(null)
-            triggerNewFragment()
             onEndSelectionAnimation()
           }}
         >
@@ -72,7 +77,7 @@ export default (function ToolbarMenu({
               const layoutId = `${serviceIdType}-${idFragment}`
               return (
                 <motion.div
-                  key={serviceIdType}
+                  key={`wrapper-${layoutId}`}
                   initial={{
                     x: containerSize / 2 - elementSize / 2,
                     y: containerSize / 2 - elementSize / 2,
@@ -160,6 +165,8 @@ const PreButton = function PreButton({
         height: '100%',
         width: '100%',
         backgroundColor: CSSVAR['--surface'],
+        border: `1px solid ${CSSVAR['--border']}`,
+        borderRadius: 6,
         pointerEvents: 'auto',
       }}
       onClick={() => {

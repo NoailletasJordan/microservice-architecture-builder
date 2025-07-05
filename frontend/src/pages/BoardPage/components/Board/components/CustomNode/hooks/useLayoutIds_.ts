@@ -1,19 +1,24 @@
-import { IService } from '@/pages/BoardPage/configs/constants'
+import { useEffectEventP } from '@/contants'
 import { useEffect, useState } from 'react'
+import { useUpdateNodeInternals } from 'reactflow'
 
-export function useLayoutIds_({ service }: { service: IService }) {
-  const [layoutId, setLayoutId] = useState<string | undefined>(service.id)
+export function useLayoutIds_({ nodeId }: { nodeId: string }) {
+  const [layoutId, setLayoutId] = useState<string | undefined>(nodeId)
   const layoutIdImage = layoutId ? `${layoutId}-image` : undefined
+  const updateNodeInternals = useUpdateNodeInternals()
 
+  const nonReactiveState = useEffectEventP(() => ({ updateNodeInternals }))
   useEffect(() => {
     const timeout = setTimeout(() => {
+      const { updateNodeInternals } = nonReactiveState()
+      updateNodeInternals(nodeId)
       setLayoutId(undefined)
     }, 400)
 
     return () => {
       clearTimeout(timeout)
     }
-  }, [])
+  }, [nodeId, nonReactiveState])
 
   return {
     bodyLayoutId: layoutId,

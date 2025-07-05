@@ -40,7 +40,7 @@ export default function CustomNode(props: NodeProps<IService>) {
   const isOverlapingNode = useIsOverlappingNode({ nodeId: service.id })
 
   const ids = useLayoutIds_({
-    service,
+    nodeId: service.id,
   })
   const { bodyLayoutId, imageLayout, imageLayoutId } = ids
 

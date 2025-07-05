@@ -20,10 +20,12 @@ export default (function ToolbarMenu({
   showToolbarMenu,
   onEndSelectionAnimation,
   onStartSelectionAnimation,
+  coordinate,
 }: {
   showToolbarMenu: boolean
   onStartSelectionAnimation: () => void
   onEndSelectionAnimation: () => void
+  coordinate: [number, number]
 }) {
   // Calculate the radius based on number of elements and element size
   const elementsNumber = serviceConfigArr.length
@@ -43,11 +45,11 @@ export default (function ToolbarMenu({
   return (
     <div
       style={{
-        height: '100dvh',
-        width: '100vw',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        position: 'absolute',
+        pointerEvents: 'none',
+        left: coordinate[0],
+        top: coordinate[1],
+        transform: 'translate(-50%, -50%)',
       }}
     >
       <Box h={`${containerSize}px`} w={`${containerSize}px`} pos="relative">
@@ -112,8 +114,8 @@ export default (function ToolbarMenu({
                   <PreButton
                     onClick={() => {
                       const position = flowInstance.screenToFlowPosition({
-                        x: window.innerWidth / 2 - CARD_WIDTH / 2,
-                        y: window.innerHeight / 2 - CARD_HEIGHT_DEFAULT / 2,
+                        x: coordinate[0] - CARD_WIDTH / 2,
+                        y: coordinate[1] - CARD_HEIGHT_DEFAULT / 2,
                       })
                       const newNode = getNewNode({
                         id: layoutId,

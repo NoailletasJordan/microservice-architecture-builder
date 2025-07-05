@@ -1,27 +1,44 @@
 import { useDisclosure } from '@mantine/hooks'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 
 export function useOpenToolbarMenu(): [
-  boolean,
+  { isOpen: boolean; coordinate: [number, number] },
   {
-    open: () => void
+    open: (value: [number, number]) => void
     close: () => void
-    toggle: () => void
+    toggle: (value: [number, number]) => void
     lock: () => void
     unlock: () => void
   },
 ] {
   const [isOpen, { open: rawOpen, close }] = useDisclosure(false)
+  const [coordinate, setCoordinate] = useState<[number, number]>([0, 0])
   const [isLocked, { close: unlock, open: lock }] = useDisclosure(false)
 
-  const open = useCallback(() => {
-    if (isLocked) return
-    rawOpen()
-  }, [isLocked, rawOpen])
+  const open = useCallback(
+    (newCoordinate: [number, number]) => {
+      if (isLocked) return
+      setCoordinate(newCoordinate)
+      rawOpen()
+    },
+    [isLocked, rawOpen],
+  )
 
-  const toggle = useCallback(() => {
-    isOpen ? close() : open()
-  }, [open, close, isOpen])
+  const toggle = useCallback(
+    (newCoordinate: [number, number]) => {
+      isOpen ? close() : open(newCoordinate)
+    },
+    [open, close, isOpen],
+  )
 
-  return [isOpen, { open, close, toggle, lock, unlock }]
+  return [
+    { isOpen, coordinate },
+    {
+      open,
+      close,
+      toggle,
+      lock,
+      unlock,
+    },
+  ]
 }

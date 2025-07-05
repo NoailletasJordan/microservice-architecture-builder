@@ -67,7 +67,10 @@ export default function Board() {
   const [showDeleteCurrentBoardModal, deleteCurrentBoardModalHandlers] =
     useDisclosure(false)
   const [showShareModal, shareModalHanders] = useDisclosure(false)
-  const [showToolbarMenu, toolbarMenuHandlers] = useOpenToolbarMenu()
+  const [
+    { isOpen: showToolbarMenu, coordinate: toolbarMenuCoordinate },
+    toolbarMenuHandlers,
+  ] = useOpenToolbarMenu()
 
   const { ref, height, width } = useElementSize()
   const { triggerClickCanva } = useContext(clickCanvaContext)
@@ -129,7 +132,7 @@ export default function Board() {
               zoomOnDoubleClick={false}
               onPaneContextMenu={(e) => {
                 e.preventDefault()
-                toolbarMenuHandlers.toggle()
+                toolbarMenuHandlers.toggle([e.clientX, e.clientY])
               }}
               proOptions={{
                 hideAttribution: true,
@@ -158,26 +161,17 @@ export default function Board() {
                 showGuidanceTexts={showGuidanceTexts}
               />
             </ReactFlow>
-            <div
-              id="toolbar-menu"
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                pointerEvents: 'none',
+            <ToolbarMenu
+              onStartSelectionAnimation={() => {
+                toolbarMenuHandlers.close()
+                toolbarMenuHandlers.lock()
               }}
-            >
-              <ToolbarMenu
-                onStartSelectionAnimation={() => {
-                  toolbarMenuHandlers.close()
-                  toolbarMenuHandlers.lock()
-                }}
-                onEndSelectionAnimation={() => {
-                  toolbarMenuHandlers.unlock()
-                }}
-                showToolbarMenu={showToolbarMenu}
-              />
-            </div>
+              onEndSelectionAnimation={() => {
+                toolbarMenuHandlers.unlock()
+              }}
+              coordinate={toolbarMenuCoordinate}
+              showToolbarMenu={showToolbarMenu}
+            />
             <Settings
               openClearCurrentBoardModal={clearCurrentBoardModalHandlers.open}
               openDeleteCurrentBoardModal={deleteCurrentBoardModalHandlers.open}

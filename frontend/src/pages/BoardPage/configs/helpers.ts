@@ -8,10 +8,10 @@ import {
 import {
   ILocalStorage,
   IService,
+  serviceConfig,
   ServiceIdType,
   SubService,
   TCustomNode,
-  serviceConfig,
 } from './constants'
 
 export const getNewNode = ({
@@ -109,7 +109,7 @@ export const handleUpdateEdge = (
   )
 }
 
-export const getNodeOverlapped = (
+export const getNodeOverlapping = (
   draggedNode: TCustomNode,
   nodes: TCustomNode[],
 ) => {

@@ -1,13 +1,11 @@
 import { DragEndEvent } from '@dnd-kit/core'
 import { ReactFlowInstance } from 'reactflow'
-import { v4 } from 'uuid'
 import {
   CARD_WIDTH,
   DraggableData,
   DroppableType,
   IService,
   TCustomNode,
-  serviceConfig,
 } from './constants'
 import {
   getNewNode,
@@ -35,15 +33,6 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
       .current as DraggableData
 
     switch (draggableType) {
-      case 'dashboard-item': {
-        const draggedService = draggedContent
-        const newNode = getNewNode({
-          position,
-          serviceIdType: draggedService.serviceIdType,
-        })
-        flowInstance.setNodes((oldNodes) => [...oldNodes, newNode])
-        break
-      }
       case 'subService': {
         const draggedSubService = draggedContent
         const nodesFilteredSubservice = getNodesAfterDeleteSubservice({
@@ -68,26 +57,6 @@ export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {
     const targetNode: TCustomNode = flowInstance.getNode(targetId)!
 
     switch (draggableType) {
-      case 'dashboard-item': {
-        const newSubService = {
-          id: v4(),
-          parentId: targetId,
-          serviceIdType: draggedContent.serviceIdType,
-          note: '',
-          title: serviceConfig[draggedContent.serviceIdType].defaultLabel,
-        }
-        targetNode.data.subServices = [
-          ...targetNode.data.subServices,
-          newSubService,
-        ]
-
-        const newNodes = getNodesAfterUpdateNode({
-          currentNodes: flowInstance.getNodes(),
-          newNode: targetNode,
-        })
-        flowInstance.setNodes(newNodes)
-        break
-      }
       case 'subService': {
         const draggedSubService = draggedContent
         const droppedInOriginalNode = draggedSubService.parentId === targetId

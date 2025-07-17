@@ -37,11 +37,12 @@ import SecondaryActionsPaner from './components/SecondaryActionsPanel'
 import Settings from './components/Settings/index'
 import ShareModal from './components/ShareModal'
 import TertiaryActionsPanel from './components/TertiaryActionsPanel'
-import Toolbar from './components/Toolbar'
+import ToolbarMenu from './components/ToolbarMenu'
 import { useOnConnect } from './hooks/useOnConnect'
 import { useOnEdgesChange } from './hooks/useOnEdgesChange'
 import { useOnNodeDragEnd } from './hooks/useOnNodeDragEnd'
 import { useOnNodesChange } from './hooks/useOnNodesChange'
+import { useOpenToolbarMenu } from './hooks/useOpenToolbarMenu'
 import { useShowBoardSpinner } from './hooks/useShowBoardSpinner'
 import LoadUrlBoardModal from './services/LoadUrlBoardModal'
 
@@ -65,6 +66,10 @@ export default function Board() {
   const [showDeleteCurrentBoardModal, deleteCurrentBoardModalHandlers] =
     useDisclosure(false)
   const [showShareModal, shareModalHanders] = useDisclosure(false)
+  const [
+    { isOpen: showToolbarMenu, coordinate: toolbarMenuCoordinate },
+    toolbarMenuHandlers,
+  ] = useOpenToolbarMenu()
 
   const { ref, height, width } = useElementSize()
   const { triggerClickCanva } = useContext(clickCanvaContext)
@@ -107,7 +112,7 @@ export default function Board() {
                 [-2320, -1690],
                 [2320, 1690],
               ]}
-              minZoom={0.65}
+              minZoom={0.75}
               fitViewOptions={{ duration: 700, maxZoom: 1, minZoom: 0.65 }}
               maxZoom={1}
               onConnect={onConnect}
@@ -124,34 +129,55 @@ export default function Board() {
               noWheelClassName={NO_WhEEL_REACTFLOW_CLASS}
               noPanClassName={NO_PAN_REACTFLOW_CLASS}
               zoomOnDoubleClick={false}
-              snapGrid={[30, 30]}
-              snapToGrid={true}
+              onMoveStart={() => {
+                toolbarMenuHandlers.close()
+              }}
+              onPaneContextMenu={(e) => {
+                e.preventDefault()
+                toolbarMenuHandlers.toggle([e.clientX, e.clientY])
+              }}
               proOptions={{
                 hideAttribution: true,
               }}
-              onPaneClick={triggerClickCanva}
+              onClick={(e) => e.preventDefault()}
+              onPaneClick={() => {
+                toolbarMenuHandlers.close()
+                triggerClickCanva()
+              }}
             >
               {!showGuidanceTexts && !showOnboarding && (
                 <Background id={v4()} variant={BackgroundVariant.Dots} />
               )}
-              <Toolbar />
               {showGuidanceTexts && <GuidanceTextsMain />}
 
               {showBoardSpinner && <BoardLoading />}
 
-              <MiniMap
-                style={{ backgroundColor: CSSVAR['--surface-strong'] }}
-                nodeBorderRadius={10}
-                nodeStrokeWidth={5}
-                nodeStrokeColor={CSSVAR['--text']}
-                nodeColor={CSSVAR['--surface-strong']}
-                maskColor="#00000066"
-              />
+              {!showGuidanceTexts && !showOnboarding && (
+                <MiniMap
+                  style={{ backgroundColor: CSSVAR['--surface-strong'] }}
+                  nodeBorderRadius={10}
+                  nodeStrokeWidth={5}
+                  nodeStrokeColor={CSSVAR['--text']}
+                  nodeColor={CSSVAR['--surface-strong']}
+                  maskColor="#00000066"
+                />
+              )}
               <SecondaryActionsPaner
                 openOnboarding={() => updateShowOnboarding(true)}
                 showGuidanceTexts={showGuidanceTexts}
               />
             </ReactFlow>
+            <ToolbarMenu
+              onStartSelectionAnimation={() => {
+                toolbarMenuHandlers.close()
+                toolbarMenuHandlers.lock()
+              }}
+              onEndSelectionAnimation={() => {
+                toolbarMenuHandlers.unlock()
+              }}
+              coordinate={toolbarMenuCoordinate}
+              showToolbarMenu={showToolbarMenu}
+            />
             <Settings
               openClearCurrentBoardModal={clearCurrentBoardModalHandlers.open}
               openDeleteCurrentBoardModal={deleteCurrentBoardModalHandlers.open}

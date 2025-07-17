@@ -25,10 +25,6 @@ const config: Record<
     [droppableType in DroppableType]: Rules[]
   }>
 > = {
-  'dashboard-item': {
-    board: [],
-    node: [],
-  },
   subService: {
     board: [],
     node: ['preventSameService'],

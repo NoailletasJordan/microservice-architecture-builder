@@ -18,18 +18,12 @@ export type TCustomNode = Node<IService>
 export type DroppableType = 'delete' | 'board' | 'node' | 'toolbox'
 
 type SUBSERVICE_KEY = 'subService'
-type DASHBOARD_ITEM_KEY = 'dashboard-item'
-export type DraggableType = SUBSERVICE_KEY | DASHBOARD_ITEM_KEY
+export type DraggableType = SUBSERVICE_KEY
 
-export type DraggableData =
-  | {
-      draggableType: SUBSERVICE_KEY
-      draggedContent: SubService
-    }
-  | {
-      draggableType: DASHBOARD_ITEM_KEY
-      draggedContent: Pick<IService, 'serviceIdType'>
-    }
+export type DraggableData = {
+  draggableType: SUBSERVICE_KEY
+  draggedContent: SubService
+}
 
 export interface ILocalStorage {
   nodes: TCustomNode[]
@@ -80,6 +74,7 @@ export const serviceConfig: Record<ServiceIdType, ServiceConfigValue> = {
 export const shareHashTocken = '#json='
 export const STORAGE_DATA_INDEX_KEY = 'board-data-index'
 export const CARD_WIDTH = 210
+export const CARD_HEIGHT_DEFAULT = 72 // not enforced, calculated with no subservice
 export const NO_DRAG_REACTFLOW_CLASS = 'noDragReactflow'
 export const NO_WhEEL_REACTFLOW_CLASS = 'nowheel'
 export const NO_PAN_REACTFLOW_CLASS = 'nopan'

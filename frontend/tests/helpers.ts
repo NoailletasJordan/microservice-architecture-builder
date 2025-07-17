@@ -48,35 +48,33 @@ export const getNodeFrontendLocator = ({ page }: { page: Page }) =>
   page.getByLabel(/node-type-frontend/)
 export const getNodeDatabaseLocator = ({ page }: { page: Page }) =>
   page.getByLabel(/node-type-database/)
-export const getIconFrontendLocator = ({ page }: { page: Page }) =>
-  page.getByTestId('icon-draggable-frontend')
-export const getIconServerLocator = ({ page }: { page: Page }) =>
-  page.getByTestId('icon-draggable-server')
-export const getIconDatabaseLocator = ({ page }: { page: Page }) =>
-  page.getByTestId('icon-draggable-database')
+export const getToolbarMenuItemLocator = ({
+  page,
+  serviceType,
+}: {
+  page: Page
+  serviceType: string
+}) => page.getByTestId(`button-menu-item-${serviceType}`)
 export const getButtonUndoLocator = ({ page }: { page: Page }) =>
   page.getByRole('button', { name: 'Undo' })
 export const getButtonRedoLocator = ({ page }: { page: Page }) =>
   page.getByRole('button', { name: 'Redo' })
 export const getBoardLocator = ({ page }: { page: Page }) =>
   page.getByTestId('rf__wrapper')
+export const getSubserviceLocator = ({
+  page,
+  serviceType,
+}: {
+  serviceType: string
+  page: Page
+}) => page.getByTestId(`icon-draggable-${serviceType}`)
 
 export const initialTwoNodesSetup = async ({ page }: NodeSetupOptions) => {
-  // Create 'frontend' node
-  const frontendIcon = getIconFrontendLocator({ page })
-  await expect(frontendIcon).toBeVisible()
-  await grabElementTo(page, {
-    coordonate: [300, 300],
-    locator: frontendIcon,
-  })
+  await createNewNode({ page, serviceType: 'frontend', coordonate: [300, 300] })
 
-  // Create 'server' node
-  const serverIcon = getIconServerLocator({ page })
-  await expect(serverIcon).toBeVisible()
-  await grabElementTo(page, {
-    coordonate: [600, 300],
-    locator: serverIcon,
-  })
+  await page.waitForTimeout(1000)
+
+  await createNewNode({ page, serviceType: 'server', coordonate: [600, 300] })
 
   await page.waitForTimeout(1000)
 
@@ -128,4 +126,19 @@ export async function logInActions({ page }: { page: Page }) {
     page.goto(`${apiUrl}/auth/google/callback?code=${code}`)
 
   return { reLogSameUser }
+}
+
+export async function createNewNode({
+  page,
+  coordonate,
+  serviceType,
+}: {
+  page: Page
+  coordonate: [number, number]
+  serviceType: string
+}) {
+  await page.mouse.move(...coordonate)
+  await page.mouse.down({ button: 'right' })
+  await page.mouse.up({ button: 'right' })
+  await getToolbarMenuItemLocator({ page, serviceType }).click()
 }

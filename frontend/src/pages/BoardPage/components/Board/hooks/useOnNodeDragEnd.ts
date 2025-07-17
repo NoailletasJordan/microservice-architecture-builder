@@ -1,18 +1,22 @@
-import { boardDataContext } from '@/contexts/BoardData/constants'
 import { SubService, TCustomNode } from '@/pages/BoardPage/configs/constants'
 import {
-  getNodeOverlapped,
+  getNodeOverlapping,
   getStateAfterDeleteNode,
 } from '@/pages/BoardPage/configs/helpers'
-import { useContext } from 'react'
-import { NodeDragHandler, useReactFlow } from 'reactflow'
+import {
+  NodeDragHandler,
+  useReactFlow,
+  useUpdateNodeInternals,
+} from 'reactflow'
 
 export function useOnNodeDragEnd() {
   const flowInstance = useReactFlow()
-  const { nodes } = useContext(boardDataContext)
+  const updateNodeInternals = useUpdateNodeInternals()
 
   const onNodeDragEnd: NodeDragHandler = (_event, node: TCustomNode) => {
-    const targetNode = getNodeOverlapped(node, nodes)
+    updateNodeInternals(node.id)
+
+    const targetNode = getNodeOverlapping(node, flowInstance.getNodes())
     if (!targetNode) return
 
     const currentEdges = flowInstance.getEdges()
@@ -37,5 +41,6 @@ export function useOnNodeDragEnd() {
     flowInstance.setNodes(newNodes)
     flowInstance.setEdges(newEdges)
   }
+
   return onNodeDragEnd
 }

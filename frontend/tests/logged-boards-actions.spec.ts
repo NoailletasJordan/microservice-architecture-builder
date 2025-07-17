@@ -109,7 +109,7 @@ test('should clear the board on logout', async ({ page }) => {
   await expect(getNodesLocator({ page })).toHaveCount(0)
 })
 
-test.skip('should maintain cursor position when typing', async ({
+test('should maintain cursor position when typing', async ({
   page,
   browserName,
 }) => {

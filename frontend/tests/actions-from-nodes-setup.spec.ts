@@ -3,10 +3,12 @@ import { primaryActionText as clearActionText } from '../src/pages/BoardPage/com
 import { itemLabel as clearItemLabel } from '../src/pages/BoardPage/components/Board/components/Settings/components/Dropdown/components/ClearBoard'
 import {
   checkInitialSetup,
-  getIconDatabaseLocator,
+  createNewNode,
+  getNodeDatabaseLocator,
   getNodeFrontendLocator,
   getNodeServerLocator,
   getNodesLocator,
+  getSubserviceLocator,
   initialTwoNodesSetup,
 } from './helpers'
 
@@ -110,13 +112,25 @@ const testWithNodesAndSubservice = testWithNodes.extend<{
 }>({
   createSubservice: [
     async ({ page }, use) => {
-      const databaseIconLocator = getIconDatabaseLocator({ page })
-      const serverNode = getNodeServerLocator({ page })
-      await databaseIconLocator.hover()
+      await createNewNode({
+        page,
+        coordonate: [900, 300],
+        serviceType: 'database',
+      })
+
+      const databaseNode = getNodeDatabaseLocator({ page })
+
+      await databaseNode.hover()
+
       await page.mouse.down()
+
+      const serverNode = getNodeServerLocator({ page })
       await serverNode.hover()
       await page.mouse.up()
-      await expect(databaseIconLocator).toHaveCount(2)
+      await expect(
+        getSubserviceLocator({ page, serviceType: 'database' }),
+      ).toHaveCount(1)
+
       use()
     },
     { auto: true },
@@ -127,24 +141,30 @@ testWithNodesAndSubservice(
   'should move subservice to another node',
   async ({ page }) => {
     const frontendNode = getNodeFrontendLocator({ page })
-    const databaseIconLocator = getIconDatabaseLocator({ page })
+    const databaseIconLocator = getSubserviceLocator({
+      page,
+      serviceType: 'database',
+    })
     await databaseIconLocator.nth(0).hover()
     await page.mouse.down()
     await frontendNode.hover()
     await page.mouse.up()
-    await expect(databaseIconLocator).toHaveCount(2)
+    await expect(databaseIconLocator).toHaveCount(1)
   },
 )
 
 testWithNodesAndSubservice(
   'should convert subservice into a service, by dragging it into the board',
   async ({ page }) => {
-    const databaseIconLocator = getIconDatabaseLocator({ page })
+    const databaseIconLocator = getSubserviceLocator({
+      page,
+      serviceType: 'database',
+    })
     await databaseIconLocator.nth(0).hover()
     await page.mouse.down()
     await page.mouse.move(200, 200)
     await page.mouse.up()
-    await expect(databaseIconLocator).toHaveCount(1)
+    await expect(databaseIconLocator).toHaveCount(0)
     const serverLocator = getNodeServerLocator({ page })
     await expect(serverLocator).toHaveCount(1)
   },
@@ -157,7 +177,10 @@ testWithNodesAndSubservice(
       browserName === 'webkit',
       "Couldn't make it work consistently",
     )
-    const databaseIconLocator = getIconDatabaseLocator({ page })
+    const databaseIconLocator = getSubserviceLocator({
+      page,
+      serviceType: 'database',
+    })
     await databaseIconLocator.nth(0).hover()
     await page.mouse.down()
     const deleteServiceIcon = page.getByTestId('delete-service')
@@ -166,6 +189,6 @@ testWithNodesAndSubservice(
     await page.waitForTimeout(100)
     await page.mouse.up()
 
-    await expect(databaseIconLocator).toHaveCount(1)
+    await expect(databaseIconLocator).toHaveCount(0)
   },
 )

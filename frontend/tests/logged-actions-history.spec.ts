@@ -5,16 +5,15 @@ import {
 } from '@playwright/test'
 import { isMacOs } from 'react-device-detect'
 import {
+  createNewNode,
   getBoardsSubMenuLocator,
   getButtonRedoLocator,
   getButtonUndoLocator,
-  getIconFrontendLocator,
   getLoadButtonLocator,
   getLogoutButtonLocator,
   getNewBoardButtonLocator,
   getNodesLocator,
   getSettingsButtonLocator,
-  grabElementTo,
   initialTwoNodesSetup,
   logInActions,
 } from './helpers'
@@ -56,11 +55,10 @@ const toDoTwice: [string, (arg: PlaywrightTestArgs) => Promise<void>][] = [
       const undoButton = getButtonUndoLocator({ page })
       const redoButton = getButtonRedoLocator({ page })
 
-      const frontendIcon = getIconFrontendLocator({ page })
-      await frontendIcon.waitFor({ state: 'visible' })
-      await grabElementTo(page, {
+      await createNewNode({
+        page,
         coordonate: [300, 300],
-        locator: frontendIcon,
+        serviceType: 'frontend',
       })
 
       await page.waitForTimeout(debounceActionMS)
@@ -81,18 +79,18 @@ const toDoTwice: [string, (arg: PlaywrightTestArgs) => Promise<void>][] = [
     'should overwrite history forward, after going back and making a new action',
     async ({ page }) => {
       await page.goto('/')
-      const frontendIcon = getIconFrontendLocator({ page })
-      await frontendIcon.waitFor({ state: 'visible' })
-      await grabElementTo(page, {
+      await createNewNode({
+        page,
         coordonate: [300, 300],
-        locator: frontendIcon,
+        serviceType: 'frontend',
       })
 
       await page.waitForTimeout(debounceActionMS)
 
-      await grabElementTo(page, {
+      await createNewNode({
+        page,
         coordonate: [600, 300],
-        locator: frontendIcon,
+        serviceType: 'frontend',
       })
       await page.waitForTimeout(debounceActionMS)
 
@@ -105,9 +103,10 @@ const toDoTwice: [string, (arg: PlaywrightTestArgs) => Promise<void>][] = [
       await expect(redoButton).not.toBeDisabled()
       await expect(undoButton).not.toBeDisabled()
 
-      await grabElementTo(page, {
+      await createNewNode({
+        page,
         coordonate: [600, 600],
-        locator: frontendIcon,
+        serviceType: 'frontend',
       })
 
       await page.waitForTimeout(debounceActionMS)
@@ -124,11 +123,10 @@ toDoTwice.forEach(([testName, testFn]) => {
 testLogged(
   'logged: should disable history buttons when switching to other boards',
   async ({ page }) => {
-    const frontendIcon = getIconFrontendLocator({ page })
-    await frontendIcon.waitFor({ state: 'visible' })
-    await grabElementTo(page, {
+    await createNewNode({
+      page,
       coordonate: [300, 300],
-      locator: frontendIcon,
+      serviceType: 'frontend',
     })
 
     await page.waitForTimeout(debounceActionMS)
@@ -167,9 +165,10 @@ testLogged(
     })
 
     await testLogged.step('on new load previous board', async () => {
-      await grabElementTo(page, {
+      await createNewNode({
+        page,
         coordonate: [300, 300],
-        locator: frontendIcon,
+        serviceType: 'frontend',
       })
       await page.waitForTimeout(debounceActionMS)
       await getSettingsButtonLocator({ page }).click()
@@ -186,11 +185,10 @@ testLogged(
 )
 
 testLogged('logged: should erase history on logout', async ({ page }) => {
-  const frontendIcon = getIconFrontendLocator({ page })
-  await frontendIcon.waitFor({ state: 'visible' })
-  await grabElementTo(page, {
+  await createNewNode({
+    page,
     coordonate: [300, 300],
-    locator: frontendIcon,
+    serviceType: 'frontend',
   })
 
   await page.waitForTimeout(debounceActionMS)
@@ -208,11 +206,10 @@ testNonLogged(
     testNonLogged.skip(browserName === 'webkit', 'Failing on tests')
 
     await page.goto('/')
-    const frontendIcon = getIconFrontendLocator({ page })
-    await frontendIcon.waitFor({ state: 'visible' })
-    await grabElementTo(page, {
+    await createNewNode({
+      page,
       coordonate: [300, 300],
-      locator: frontendIcon,
+      serviceType: 'frontend',
     })
 
     await page.waitForTimeout(debounceActionMS)

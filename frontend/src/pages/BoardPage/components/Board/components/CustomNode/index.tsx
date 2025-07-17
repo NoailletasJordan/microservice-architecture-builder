@@ -43,13 +43,6 @@ export default function CustomNode(props: NodeProps<IService>) {
     posY: props.yPos,
   })
 
-  /** Temp */
-  if (props.dragging) {
-    // console.log('isOverlapingNode:', isOverlapingNode)
-    /** Temp */
-    console.log('props:', props)
-  }
-
   const ids = useLayoutIds_({
     nodeId: service.id,
   })

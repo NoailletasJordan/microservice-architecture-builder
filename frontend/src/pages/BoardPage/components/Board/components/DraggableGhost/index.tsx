@@ -2,7 +2,6 @@ import { DraggableData } from '@/pages/BoardPage/configs/constants'
 import { DragOverlay, useDndContext } from '@dnd-kit/core'
 import { Box } from '@mantine/core'
 import { SubServiceComponent } from '../CustomNode/components/SubServicesSection/components/SubServiceComponent'
-import { ServiceTool } from '../Toolbar/components/ServiceTool'
 
 export default function DraggableGhost() {
   const { active } = useDndContext()
@@ -14,14 +13,6 @@ export default function DraggableGhost() {
   switch (current.draggableType) {
     case 'subService':
       component = <SubServiceComponent subService={current.draggedContent} />
-      break
-    case 'dashboard-item':
-      component = (
-        <ServiceTool
-          serviceIdType={current.draggedContent.serviceIdType}
-          draggableIndicator
-        />
-      )
       break
   }
 

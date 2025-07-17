@@ -18,18 +18,12 @@ export type TCustomNode = Node<IService>
 export type DroppableType = 'delete' | 'board' | 'node' | 'toolbox'
 
 type SUBSERVICE_KEY = 'subService'
-type DASHBOARD_ITEM_KEY = 'dashboard-item'
-export type DraggableType = SUBSERVICE_KEY | DASHBOARD_ITEM_KEY
+export type DraggableType = SUBSERVICE_KEY
 
-export type DraggableData =
-  | {
-      draggableType: SUBSERVICE_KEY
-      draggedContent: SubService
-    }
-  | {
-      draggableType: DASHBOARD_ITEM_KEY
-      draggedContent: Pick<IService, 'serviceIdType'>
-    }
+export type DraggableData = {
+  draggableType: SUBSERVICE_KEY
+  draggedContent: SubService
+}
 
 export interface ILocalStorage {
   nodes: TCustomNode[]

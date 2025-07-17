@@ -113,7 +113,7 @@ export default function Board() {
                 [-2320, -1690],
                 [2320, 1690],
               ]}
-              minZoom={0.65}
+              minZoom={0.75}
               fitViewOptions={{ duration: 700, maxZoom: 1, minZoom: 0.65 }}
               maxZoom={1}
               onConnect={onConnect}
@@ -130,6 +130,9 @@ export default function Board() {
               noWheelClassName={NO_WhEEL_REACTFLOW_CLASS}
               noPanClassName={NO_PAN_REACTFLOW_CLASS}
               zoomOnDoubleClick={false}
+              onMoveStart={() => {
+                toolbarMenuHandlers.close()
+              }}
               onPaneContextMenu={(e) => {
                 e.preventDefault()
                 toolbarMenuHandlers.toggle([e.clientX, e.clientY])
@@ -138,7 +141,10 @@ export default function Board() {
                 hideAttribution: true,
               }}
               onClick={(e) => e.preventDefault()}
-              onPaneClick={triggerClickCanva}
+              onPaneClick={() => {
+                toolbarMenuHandlers.close()
+                triggerClickCanva()
+              }}
             >
               {!showGuidanceTexts && !showOnboarding && (
                 <Background id={v4()} variant={BackgroundVariant.Dots} />
@@ -148,14 +154,16 @@ export default function Board() {
 
               {showBoardSpinner && <BoardLoading />}
 
-              <MiniMap
-                style={{ backgroundColor: CSSVAR['--surface-strong'] }}
-                nodeBorderRadius={10}
-                nodeStrokeWidth={5}
-                nodeStrokeColor={CSSVAR['--text']}
-                nodeColor={CSSVAR['--surface-strong']}
-                maskColor="#00000066"
-              />
+              {!showGuidanceTexts && !showOnboarding && (
+                <MiniMap
+                  style={{ backgroundColor: CSSVAR['--surface-strong'] }}
+                  nodeBorderRadius={10}
+                  nodeStrokeWidth={5}
+                  nodeStrokeColor={CSSVAR['--text']}
+                  nodeColor={CSSVAR['--surface-strong']}
+                  maskColor="#00000066"
+                />
+              )}
               <SecondaryActionsPaner
                 openOnboarding={() => updateShowOnboarding(true)}
                 showGuidanceTexts={showGuidanceTexts}

@@ -1,18 +1,20 @@
-import { CSSVAR } from '@/contants'
 import {
   CARD_HEIGHT_DEFAULT,
   CARD_WIDTH,
   serviceConfig,
-  // serviceConfig,
   ServiceIdType,
 } from '@/pages/BoardPage/configs/constants'
 import { getNewNode } from '@/pages/BoardPage/configs/helpers'
-import { Box, Image } from '@mantine/core'
+import { Box } from '@mantine/core'
 import { AnimatePresence, motion, Variants } from 'motion/react'
 import { useCallback, useEffect, useState } from 'react'
 import { useReactFlow } from 'reactflow'
+import LabelItem from './components/LabelItem'
+import { MenuItem } from './components/MenuItem'
 
-const menuItemSize = 70
+const menuItemSize = 60
+const menuRadius = 100
+const menuContainerSize = 90
 
 const serviceConfigArr = Object.entries(serviceConfig)
 
@@ -27,10 +29,6 @@ export default (function ToolbarMenu({
   onEndSelectionAnimation: () => void
   coordinate: [number, number]
 }) {
-  // Calculate the radius based on number of elements and element size
-  const menuRadius = Math.max(50, menuItemSize * 1.5)
-  const menuContainerSize = menuRadius * 2
-
   const [uniqueIdFragment, setUniqueIdFragment] = useState<string>(
     String(Math.random()),
   )
@@ -45,7 +43,7 @@ export default (function ToolbarMenu({
   }, [showToolbarMenu, generateNewIdFragment])
 
   const reactFlowInstance = useReactFlow()
-  const [hoveredType, sethoveredType] = useState<ServiceIdType | null>(null)
+  const [hoveredType, setHoveredType] = useState<ServiceIdType | null>(null)
   return (
     <div
       style={{
@@ -74,12 +72,11 @@ export default (function ToolbarMenu({
 
               return (
                 <motion.div
-                  onMouseEnter={() => sethoveredType(tServiceIdType)}
-                  onMouseLeave={() => sethoveredType(null)}
+                  onMouseEnter={() => setHoveredType(tServiceIdType)}
+                  onMouseLeave={() => setHoveredType(null)}
                   key={`menu-item-wrapper-${layoutId}`}
                   variants={getVariants({
                     index,
-                    serviceIdType: tServiceIdType,
                   })}
                   initial="entrance"
                   animate={
@@ -118,21 +115,18 @@ export default (function ToolbarMenu({
             })}
         </AnimatePresence>
       </Box>
+      <LabelItem
+        isOpen={showToolbarMenu}
+        hoveredType={hoveredType}
+        serviceConfig={serviceConfig}
+      />
     </div>
   )
 })
 
-const getVariants = ({
-  index,
-  serviceIdType,
-}: {
-  serviceIdType: ServiceIdType
-  index: number
-}): Variants => {
+const getVariants = ({ index }: { index: number }): Variants => {
   // Calculate the radius based on number of elements and element size
   const menuItemsCount = serviceConfigArr.length
-  const menuRadius = Math.max(50, menuItemSize * 1.5)
-  const menuContainerSize = menuRadius * 2
   const angleStep = 360 / menuItemsCount
   const angle = ((index * angleStep - 90) * Math.PI) / 180 // Convert degrees to radians
   const x =
@@ -179,66 +173,4 @@ const getVariants = ({
       },
     },
   }
-}
-
-const MenuItem = function MenuItem({
-  serviceIdType,
-  onClick,
-  layoutId,
-}: {
-  serviceIdType: ServiceIdType
-  layoutId: string
-  onClick: () => void
-}) {
-  const [allowCursorEvent, setAllowCursorEvent] = useState(false)
-
-  // Timeout so it dont get trigger at spawn
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setAllowCursorEvent(true)
-    }, 200)
-
-    return () => {
-      clearTimeout(timeout)
-    }
-  }, [])
-
-  return (
-    <motion.div
-      layoutId={layoutId}
-      style={{
-        pointerEvents: allowCursorEvent ? 'auto' : 'none',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%',
-        width: '100%',
-        backgroundColor: CSSVAR['--surface'],
-        border: `1px solid ${CSSVAR['--border']}`,
-        borderRadius: 6,
-      }}
-      onClick={() => {
-        onClick()
-      }}
-    >
-      <motion.div
-        layoutId={`${layoutId}-icon`}
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100%',
-          width: '100%',
-          padding: 10,
-        }}
-      >
-        <Image
-          h={40}
-          w={40}
-          src={serviceConfig[serviceIdType as ServiceIdType].imageUrl}
-          alt="frontend"
-        />
-      </motion.div>
-    </motion.div>
-  )
 }

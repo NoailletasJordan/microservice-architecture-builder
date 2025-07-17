@@ -23,7 +23,7 @@ import OverlapOverlay from './components/OverlapOverlay'
 import ServiceActionsWrapper from './components/ServiceActionsWrapper'
 import SubServiceSection from './components/SubServicesSection'
 import { useHandleNoteChange_ } from './hooks/useHandleNoteChange_'
-import { useIsOverlappingNode } from './hooks/useIsOverLappingNode'
+import { useIsOverlappingNode } from './hooks/useIsOverlappingNode'
 import { useLayoutIds_ } from './hooks/useLayoutIds_'
 
 const droppableType = 'node'

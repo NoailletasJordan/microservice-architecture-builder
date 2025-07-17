@@ -13,7 +13,7 @@ export function useLayoutIds_({ nodeId }: { nodeId: string }) {
       const { updateNodeInternals } = nonReactiveState()
       updateNodeInternals(nodeId)
       setLayoutId(undefined)
-    }, 400)
+    }, 300)
 
     return () => {
       clearTimeout(timeout)

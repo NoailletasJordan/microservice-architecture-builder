@@ -3,12 +3,19 @@ import {
   getNodeOverlapping,
   getStateAfterDeleteNode,
 } from '@/pages/BoardPage/configs/helpers'
-import { NodeDragHandler, useReactFlow } from 'reactflow'
+import {
+  NodeDragHandler,
+  useReactFlow,
+  useUpdateNodeInternals,
+} from 'reactflow'
 
 export function useOnNodeDragEnd() {
   const flowInstance = useReactFlow()
+  const updateNodeInternals = useUpdateNodeInternals()
 
   const onNodeDragEnd: NodeDragHandler = (_event, node: TCustomNode) => {
+    updateNodeInternals(node.id)
+
     const targetNode = getNodeOverlapping(node, flowInstance.getNodes())
     if (!targetNode) return
 

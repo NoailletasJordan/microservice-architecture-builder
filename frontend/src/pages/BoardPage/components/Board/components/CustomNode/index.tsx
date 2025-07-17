@@ -37,7 +37,18 @@ export default function CustomNode(props: NodeProps<IService>) {
   const [isHovered, setIsHovered] = useState(false)
   const { ref, height, width } = useElementSize()
 
-  const isOverlapingNode = useIsOverlappingNode({ nodeId: service.id })
+  const isOverlapingNode = useIsOverlappingNode({
+    nodeId: service.id,
+    posX: props.xPos,
+    posY: props.yPos,
+  })
+
+  /** Temp */
+  if (props.dragging) {
+    // console.log('isOverlapingNode:', isOverlapingNode)
+    /** Temp */
+    console.log('props:', props)
+  }
 
   const ids = useLayoutIds_({
     nodeId: service.id,

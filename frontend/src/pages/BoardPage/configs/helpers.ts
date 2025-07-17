@@ -116,6 +116,12 @@ export const getNodeOverlapping = (
   const centerX = draggedNode.position.x + Number(draggedNode.width) * 0.5
   const centerY = draggedNode.position.y + Number(draggedNode.height) * 0.5
 
+  /** Temp */
+  console.log(
+    'targetr',
+    nodes.filter((compNode) => compNode.id !== draggedNode.id),
+  )
+
   const targetNode = nodes
     .filter((compNode) => compNode.id !== draggedNode.id)
     .find(

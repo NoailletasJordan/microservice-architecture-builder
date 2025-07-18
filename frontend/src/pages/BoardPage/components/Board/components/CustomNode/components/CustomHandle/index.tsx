@@ -7,7 +7,7 @@ type Props = Pick<HandleProps, 'position' | 'id'>
 export default function CustomHandle({ position, id }: Props) {
   const transform = `translateY(-50%) ${
     position === Position.Left ? 'rotateY(0deg)' : 'rotate(180deg) '
-  } translateX(-4px)`
+  } translateX(-8px)`
 
   return (
     <Handle

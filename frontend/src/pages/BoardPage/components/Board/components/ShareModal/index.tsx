@@ -19,15 +19,16 @@ import {
 } from '@mantine/core'
 import { useClipboard, useMediaQuery } from '@mantine/hooks'
 import { IconAlertTriangle, IconCopy } from '@tabler/icons-react'
+import { ReactFlowInstance, useReactFlow } from '@xyflow/react'
 import { useEffect, useState } from 'react'
-import { ReactFlowInstance, useReactFlow } from 'reactflow'
+import { TCustomEdge } from '../connexionContants'
 
 interface Props {
   opened: boolean
   close: () => void
   nodes: TCustomNode[]
 }
-const getLink = (flowInstance: ReactFlowInstance) => {
+const getLink = (flowInstance: ReactFlowInstance<TCustomNode, TCustomEdge>) => {
   const baseUrl = `${window.location.origin}`
   const stringifiedData = JSON.stringify({
     nodes: flowInstance.getNodes(),
@@ -42,7 +43,7 @@ export default function SharableModal({ close, opened, nodes }: Props) {
   const clipboard = useClipboard({ timeout: 3000 })
 
   const [link, setLink] = useState('')
-  const flowInstance = useReactFlow()
+  const flowInstance = useReactFlow<TCustomNode, TCustomEdge>()
 
   useEffect(() => {
     const fullUrl = getLink(flowInstance)

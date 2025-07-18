@@ -115,8 +115,13 @@ test('should maintain cursor position when typing', async ({
 }) => {
   test.skip(browserName === 'webkit', 'Failing on CI')
   const boardTitleInput = page.getByTestId('board-title')
+
+  await boardTitleInput.waitFor({ state: 'visible' })
+
+  await page.waitForTimeout(400)
   await boardTitleInput.fill('')
   await boardTitleInput.focus()
+  await page.waitForTimeout(100)
   for (const letter of 'test') {
     await boardTitleInput.press(letter)
   }
@@ -126,7 +131,7 @@ test('should maintain cursor position when typing', async ({
   await page.waitForTimeout(100)
   await boardTitleInput.press('o')
 
-  expect(boardTitleInput).toHaveValue('tesoot')
+  await expect(boardTitleInput).toHaveValue('tesoot')
 })
 
 base('should push unlogged board to login page', async ({ page }) => {

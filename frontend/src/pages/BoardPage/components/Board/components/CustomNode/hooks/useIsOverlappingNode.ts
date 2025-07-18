@@ -1,7 +1,9 @@
 import { useEffectEventP } from '@/contants'
+import { TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { getNodeOverlapping } from '@/pages/BoardPage/configs/helpers'
+import { useReactFlow } from '@xyflow/react'
 import { useEffect, useState } from 'react'
-import { useReactFlow } from 'reactflow'
+import { TCustomEdge } from '../../connexionContants'
 
 interface Props {
   nodeId: string
@@ -10,7 +12,7 @@ interface Props {
 }
 
 export function useIsOverlappingNode({ nodeId, posX, posY }: Props) {
-  const flowInstance = useReactFlow()
+  const flowInstance = useReactFlow<TCustomNode, TCustomEdge>()
 
   const [isOverlappingNode, setIsOverlappingNode] = useState(false)
   const handleOverlapping = () => {

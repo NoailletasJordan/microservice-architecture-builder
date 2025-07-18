@@ -4,8 +4,8 @@ import { showNotificationSuccess } from '@/helpers-react'
 import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { UseQueryResult } from '@tanstack/react-query'
+import { ReactFlowInstance, useReactFlow } from '@xyflow/react'
 import { useContext, useEffect, useRef } from 'react'
-import { ReactFlowInstance, useReactFlow } from 'reactflow'
 import { TBoardModel } from '../constants'
 import { useMutateUserBoard } from './useMutateUserBoard'
 
@@ -27,7 +27,7 @@ export function useHandleBoardsOnLoginLogout({
     setCurrentUserBoardId,
   })
 
-  const flowInstance = useReactFlow()
+  const flowInstance = useReactFlow<TCustomNode, TCustomEdge>()
   const nonReactiveState = useEffectEventP(() => ({
     createNewBoard: mutator.create,
     boardsQuery,
@@ -80,7 +80,7 @@ async function handleLoadRemoteUserBoards({
   setCurrentUserBoardId: React.Dispatch<
     React.SetStateAction<string | undefined>
   >
-  flowInstance: ReactFlowInstance
+  flowInstance: ReactFlowInstance<TCustomNode, TCustomEdge>
   createNewBoard: ({
     title,
     nodes,

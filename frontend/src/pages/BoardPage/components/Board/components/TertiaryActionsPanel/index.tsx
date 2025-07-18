@@ -1,20 +1,21 @@
 import TooltipWrapper from '@/components/TooltipWrapper'
-import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
+import { ICON_STYLE, TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { ActionIcon, Box, Group, Kbd } from '@mantine/core'
 import {
   IconArrowBackUp,
   IconArrowForwardUp,
   IconFocusCentered,
 } from '@tabler/icons-react'
+import { Panel, useReactFlow } from '@xyflow/react'
 import { useCallback } from 'react'
 import { isMacOs } from 'react-device-detect'
-import { Panel, useReactFlow } from 'reactflow'
+import { TCustomEdge } from '../connexionContants'
 import { useHistoryControls } from './hooks/useHistoryControls'
 
 export default function TertiaryActionsPanel() {
   const { undo, redo } = useHistoryControls()
 
-  const { fitView } = useReactFlow()
+  const { fitView } = useReactFlow<TCustomNode, TCustomEdge>()
   const onClick = useCallback(
     () => fitView({ duration: 700, maxZoom: 1, minZoom: 0.65 }),
     [fitView],

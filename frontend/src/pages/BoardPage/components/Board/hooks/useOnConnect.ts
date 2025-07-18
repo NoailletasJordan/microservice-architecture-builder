@@ -1,4 +1,4 @@
-import { Connection, addEdge } from 'reactflow'
+import { Connection, addEdge } from '@xyflow/react'
 import { v4 as uuidv4 } from 'uuid'
 import { TCustomEdge } from '../components/connexionContants'
 import { useSetEdges } from './useSetEdges'

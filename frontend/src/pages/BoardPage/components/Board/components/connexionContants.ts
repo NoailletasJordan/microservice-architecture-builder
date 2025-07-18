@@ -7,7 +7,7 @@ import IconCustomRpc from '@/components/IconsCustom/IconCustomRpc'
 import IconCustomSSE from '@/components/IconsCustom/IconCustomSSE'
 import IconCustomStream from '@/components/IconsCustom/IconCustomStream'
 import IconCustomWebSocket from '@/components/IconsCustom/IconCustomWebSocket'
-import { Edge } from 'reactflow'
+import { Edge } from '@xyflow/react'
 export type IConnexionType =
   | 'http'
   | 'ws'
@@ -27,9 +27,9 @@ type TConnectionGroup =
   | 'Messaging Systems'
   | 'Event Streaming'
 
-export type TCustomEdge = Edge<IConnexion>
+export type TCustomEdge = Edge<IConnexion, 'custom'>
 
-export interface IConnexion {
+export type IConnexion = {
   id: string
   connexionType?: IConnexionType
   direction: (typeof connexionDirections)[number]

@@ -1,14 +1,15 @@
 import Line from '@/components/Line'
 import { clickCanvaContext } from '@/contexts/ClickCanvaCapture/constants'
 import ConnexionLabelItems from '@/pages/BoardPage/components/Board/components/CustomEdge/components/ConnexionLabelItems'
+import { TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { useDisclosure } from '@mantine/hooks'
+import { EdgeProps, getSmoothStepPath, useReactFlow } from '@xyflow/react'
 import { useContext, useState } from 'react'
-import { EdgeProps, getSmoothStepPath, useReactFlow } from 'reactflow'
-import { IConnexion } from '../connexionContants'
+import { TCustomEdge } from '../connexionContants'
 
 const STROKE_WIDTH_FOCUSED = 3
 
-export default function CustomEdge(props: EdgeProps<IConnexion>) {
+export default function CustomEdge(props: EdgeProps<TCustomEdge>) {
   const {
     id,
     sourceX,
@@ -24,7 +25,7 @@ export default function CustomEdge(props: EdgeProps<IConnexion>) {
     useDisclosure(false)
   const { triggerClickCanva } = useContext(clickCanvaContext)
 
-  const { setEdges } = useReactFlow()
+  const { setEdges } = useReactFlow<TCustomNode, TCustomEdge>()
   const { connexionType, direction } = data!
 
   const [bezierPathReverse] = getSmoothStepPath({

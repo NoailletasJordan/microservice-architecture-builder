@@ -15,6 +15,7 @@ import {
 } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ReactFlowProvider } from '@xyflow/react'
 import { PostHogProvider } from 'posthog-js/react'
 import { useEffect } from 'react'
 import {
@@ -23,7 +24,6 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
 } from 'react-router-dom'
-import { ReactFlowProvider } from 'reactflow'
 import {
   CSSVAR,
   customColors,

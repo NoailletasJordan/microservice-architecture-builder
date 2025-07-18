@@ -1,13 +1,13 @@
 import { CSSVAR } from '@/contants'
 import { NO_DRAG_REACTFLOW_CLASS } from '@/pages/BoardPage/configs/constants'
-import { Handle, HandleProps, Position } from 'reactflow'
+import { Handle, HandleProps, Position } from '@xyflow/react'
 
 type Props = Pick<HandleProps, 'position' | 'id'>
 
 export default function CustomHandle({ position, id }: Props) {
   const transform = `translateY(-50%) ${
     position === Position.Left ? 'rotateY(0deg)' : 'rotate(180deg) '
-  } translateX(-4px)`
+  } translateX(-8px)`
 
   return (
     <Handle

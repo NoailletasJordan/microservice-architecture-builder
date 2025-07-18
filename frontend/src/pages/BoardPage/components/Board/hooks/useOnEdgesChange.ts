@@ -1,8 +1,15 @@
-import { OnEdgesChange, applyEdgeChanges } from 'reactflow'
+import { OnEdgesChange, applyEdgeChanges } from '@xyflow/react'
+import { useCallback } from 'react'
+import { TCustomEdge } from '../components/connexionContants'
 import { useSetEdges } from './useSetEdges'
 
-export function useOnEdgesChange(): OnEdgesChange {
+export function useOnEdgesChange(): OnEdgesChange<TCustomEdge> {
   const setEdges = useSetEdges()
 
-  return (changes) => setEdges((nds) => applyEdgeChanges(changes, nds))
+  const onEdgesChange: OnEdgesChange<TCustomEdge> = useCallback(
+    (changes: any) => setEdges((nds) => applyEdgeChanges(changes, nds)),
+    [setEdges],
+  )
+
+  return onEdgesChange
 }

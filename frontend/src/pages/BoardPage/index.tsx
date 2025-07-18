@@ -1,14 +1,15 @@
 import OnboardingContextProvider from '@/contexts/Onboarding/Provider'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { AppShell } from '@mantine/core'
-import { useReactFlow } from 'reactflow'
+import { useReactFlow } from '@xyflow/react'
 import ClickCanvaProvider from '../../contexts/ClickCanvaCapture/ClickCanvaProvider'
 import Board from './components/Board'
-import { DroppableType } from './configs/constants'
+import { TCustomEdge } from './components/Board/components/connexionContants'
+import { DroppableType, TCustomNode } from './configs/constants'
 import { onDragEndConfig } from './configs/drag-handlers'
 
 export default function BoardPage() {
-  const flowInstance = useReactFlow()
+  const flowInstance = useReactFlow<TCustomNode, TCustomEdge>()
 
   return (
     <AppShell>

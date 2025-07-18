@@ -1,7 +1,9 @@
 import CustomModal from '@/components/CustomModal'
 import { CSSVAR } from '@/contants'
+import { TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { Button, Group, Stack, Text } from '@mantine/core'
-import { useReactFlow } from 'reactflow'
+import { useReactFlow } from '@xyflow/react'
+import { TCustomEdge } from '../connexionContants'
 
 interface Props {
   opened: boolean
@@ -11,7 +13,7 @@ interface Props {
 export const primaryActionText = 'Yes, clear the board'
 
 export default function ClearCurrentBoard({ opened, close }: Props) {
-  const flowInstance = useReactFlow()
+  const flowInstance = useReactFlow<TCustomNode, TCustomEdge>()
   const handleReset = () => {
     flowInstance.setNodes([])
     flowInstance.setEdges([])

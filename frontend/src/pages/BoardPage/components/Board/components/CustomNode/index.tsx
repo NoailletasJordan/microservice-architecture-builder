@@ -1,5 +1,5 @@
 import { Card, Grid, Image, Space } from '@mantine/core'
-import { NodeProps, Position, useReactFlow } from 'reactflow'
+import { NodeProps, Position, useReactFlow } from '@xyflow/react'
 
 import DroppableIndicator from '@/components/DroppableIndicator'
 import { getEditorParams } from '@/components/RichEditor'
@@ -7,8 +7,8 @@ import { CSSVAR } from '@/contants'
 import { boardDataContext } from '@/contexts/BoardData/constants'
 import {
   CARD_WIDTH,
-  IService,
   serviceConfig,
+  TCustomNode,
 } from '@/pages/BoardPage/configs/constants'
 import { Box } from '@mantine/core'
 import { useElementSize } from '@mantine/hooks'
@@ -16,6 +16,7 @@ import { useEditor } from '@tiptap/react'
 import { motion } from 'motion/react'
 import { useContext, useState } from 'react'
 import DroppableArea from '../../../../../../components/DroppableArea/index'
+import { TCustomEdge } from '../connexionContants'
 import CustomHandle from './components/CustomHandle'
 import EditableTitle from './components/EditableTitle'
 import NoteSection from './components/NoteSection/index'
@@ -28,19 +29,19 @@ import { useLayoutIds_ } from './hooks/useLayoutIds_'
 
 const droppableType = 'node'
 
-export default function CustomNode(props: NodeProps<IService>) {
+export default function CustomNode(props: NodeProps<TCustomNode>) {
   // Ineficient, but NodeProps misses rerenders on some nested changes (subservices)
   const { nodes: _forceRerender } = useContext(boardDataContext)
 
-  const flowInstance = useReactFlow()
+  const flowInstance = useReactFlow<TCustomNode, TCustomEdge>()
   const service = props.data
   const [isHovered, setIsHovered] = useState(false)
   const { ref, height, width } = useElementSize()
 
   const isOverlapingNode = useIsOverlappingNode({
     nodeId: service.id,
-    posX: props.xPos,
-    posY: props.yPos,
+    posX: props.positionAbsoluteX,
+    posY: props.positionAbsoluteY,
   })
 
   const ids = useLayoutIds_({

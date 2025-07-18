@@ -3,7 +3,7 @@ import TooltipWrapper from '@/components/TooltipWrapper'
 import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import { ActionIcon, Space } from '@mantine/core'
 import { IconInfoSquareRounded } from '@tabler/icons-react'
-import { Panel } from 'reactflow'
+import { Panel } from '@xyflow/react'
 
 interface Props {
   showGuidanceTexts: boolean

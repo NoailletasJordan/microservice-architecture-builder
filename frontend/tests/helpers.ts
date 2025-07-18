@@ -1,18 +1,22 @@
 import { Locator, Page, expect } from '@playwright/test'
 import { testIdLogged } from './../src/pages/BoardPage/components/Board/components/Settings/components/BoardTitle/index'
 
-interface DragParameters {
-  coordonate: [number, number]
-  locator: Locator
-}
-
 export const grabElementTo = async (
   page: Page,
-  { coordonate, locator }: DragParameters,
+  {
+    moveTarget,
+    destinationTarget,
+  }: { moveTarget: Locator; destinationTarget: Locator },
 ) => {
-  await locator.hover()
+  await moveTarget.hover()
   await page.mouse.down()
-  await page.mouse.move(...coordonate)
+
+  const destinationTargetBox = await destinationTarget.boundingBox()
+  await page.mouse.move(
+    destinationTargetBox!.x + destinationTargetBox!.width / 2,
+    destinationTargetBox!.y + destinationTargetBox!.height / 2,
+    { steps: 5 },
+  )
   await page.mouse.up()
 }
 

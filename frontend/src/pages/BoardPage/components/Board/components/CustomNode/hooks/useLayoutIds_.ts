@@ -1,6 +1,6 @@
 import { useEffectEventP } from '@/contants'
+import { useUpdateNodeInternals } from '@xyflow/react'
 import { useEffect, useState } from 'react'
-import { useUpdateNodeInternals } from 'reactflow'
 
 export function useLayoutIds_({ nodeId }: { nodeId: string }) {
   const [layoutId, setLayoutId] = useState<string | undefined>(nodeId)

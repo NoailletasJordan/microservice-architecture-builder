@@ -1,10 +1,10 @@
 import { DragEndEvent } from '@dnd-kit/core'
-import { ReactFlowInstance } from 'reactflow'
+import { ReactFlowInstance } from '@xyflow/react'
+import { TCustomEdge } from '../components/Board/components/connexionContants'
 import {
   CARD_WIDTH,
   DraggableData,
   DroppableType,
-  IService,
   TCustomNode,
 } from './constants'
 import {
@@ -15,7 +15,7 @@ import {
 
 type DragEventHandler = (
   e: DragEndEvent,
-  flowInstance: ReactFlowInstance<IService>,
+  flowInstance: ReactFlowInstance<TCustomNode, TCustomEdge>,
 ) => void
 
 export const onDragEndConfig: Record<DroppableType, DragEventHandler> = {

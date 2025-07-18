@@ -1,5 +1,5 @@
 import Line from '@/components/Line'
-import { ConnectionLineComponentProps, getStraightPath } from 'reactflow'
+import { ConnectionLineComponentProps, getStraightPath } from '@xyflow/react'
 
 export default function ConnexionLine(props: ConnectionLineComponentProps) {
   const { fromX, fromY, toX, toY } = props

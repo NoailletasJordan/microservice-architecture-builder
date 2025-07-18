@@ -4,9 +4,9 @@ import { NO_DRAG_REACTFLOW_CLASS } from '@/pages/BoardPage/configs/constants'
 import { getStateAfterDeleteNode } from '@/pages/BoardPage/configs/helpers'
 import { ActionIcon, Group } from '@mantine/core'
 import { IconNote, IconTrash } from '@tabler/icons-react'
+import { NodeToolbar, ReactFlowInstance } from '@xyflow/react'
 import { motion, Variants } from 'motion/react'
 import { ReactNode } from 'react'
-import { NodeToolbar, ReactFlowInstance } from 'reactflow'
 
 interface Props {
   parentId: string

@@ -1,10 +1,8 @@
-import { ReactFlowInstance, XYPosition } from 'reactflow'
+import { ReactFlowInstance, XYPosition } from '@xyflow/react'
 import { v4 as uuidv4 } from 'uuid'
+import { IConnexion } from '../components/Board/components/connexionContants'
 
-import {
-  IConnexion,
-  TCustomEdge,
-} from '../components/Board/components/connexionContants'
+import { TCustomEdge } from '../components/Board/components/connexionContants'
 import {
   ILocalStorage,
   IService,
@@ -96,14 +94,15 @@ export const getNodesAfterUpdateNode = ({
 export const handleUpdateEdge = (
   connexionId: IConnexion['id'],
   partialEdge: Partial<IConnexion>,
-  flowInstance: ReactFlowInstance,
+  flowInstance: ReactFlowInstance<TCustomNode, TCustomEdge>,
 ) => {
   flowInstance.setEdges((edges) =>
     edges.map((compEdge) => {
       if (compEdge.id !== connexionId) return compEdge
 
       const edgeCopy = structuredClone(compEdge)
-      edgeCopy.data = { ...edgeCopy.data, ...partialEdge }
+
+      edgeCopy.data = { ...edgeCopy.data, ...partialEdge } as IConnexion
       return edgeCopy
     }),
   )
@@ -113,17 +112,19 @@ export const getNodeOverlapping = (
   draggedNode: TCustomNode,
   nodes: TCustomNode[],
 ) => {
-  const centerX = draggedNode.position.x + Number(draggedNode.width) * 0.5
-  const centerY = draggedNode.position.y + Number(draggedNode.height) * 0.5
+  const centerX =
+    draggedNode.position.x + Number(draggedNode.measured?.width) * 0.5
+  const centerY =
+    draggedNode.position.y + Number(draggedNode.measured?.height) * 0.5
 
   const targetNode = nodes
     .filter((compNode) => compNode.id !== draggedNode.id)
     .find(
       (n) =>
         centerX > n.position.x &&
-        centerX < n.position.x + Number(n.width) &&
+        centerX < n.position.x + Number(n.measured?.width) &&
         centerY > n.position.y &&
-        centerY < n.position.y + Number(n.height),
+        centerY < n.position.y + Number(n.measured?.height),
     )
 
   return targetNode

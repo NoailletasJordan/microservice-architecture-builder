@@ -6,16 +6,17 @@ import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvid
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
 import { Box } from '@mantine/core'
 import { useDisclosure, useElementSize } from '@mantine/hooks'
-import { useContext } from 'react'
-import ReactFlow, {
+import {
   Background,
   BackgroundVariant,
   ConnectionMode,
   EdgeTypes,
   MiniMap,
   NodeTypes,
-} from 'reactflow'
-import 'reactflow/dist/style.css'
+  ReactFlow,
+} from '@xyflow/react'
+import '@xyflow/react/dist/style.css'
+import { useContext } from 'react'
 import { v4 } from 'uuid'
 import DroppableArea from '../../../../components/DroppableArea/index'
 import { clickCanvaContext } from '../../../../contexts/ClickCanvaCapture/constants'

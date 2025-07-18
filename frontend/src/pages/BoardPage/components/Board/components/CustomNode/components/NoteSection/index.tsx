@@ -6,8 +6,8 @@ import {
 } from '@/pages/BoardPage/configs/constants'
 import { Box } from '@mantine/core'
 import { Editor } from '@tiptap/react'
+import { NodeToolbar, Position, useOnViewportChange } from '@xyflow/react'
 import { useState } from 'react'
-import { NodeToolbar, Position, useOnViewportChange } from 'reactflow'
 
 interface Props {
   editor: Editor | null

@@ -1,6 +1,6 @@
 import { Group } from '@mantine/core'
 import { useMediaQuery } from '@mantine/hooks'
-import { Panel } from 'reactflow'
+import { Panel } from '@xyflow/react'
 import SharableButton from './components/SharableButton'
 
 interface Props {

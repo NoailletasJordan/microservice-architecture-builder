@@ -1,7 +1,7 @@
-import { Node } from 'reactflow'
+import { Node } from '@xyflow/react'
 import { TCustomEdge } from '../components/Board/components/connexionContants'
 
-export interface IService {
+export type IService = {
   id: string
   serviceIdType: ServiceIdType
   title: string
@@ -13,7 +13,7 @@ export type SubService = Omit<IService, 'subServices'> & {
   parentId: IService['id']
 }
 
-export type TCustomNode = Node<IService>
+export type TCustomNode = Node<IService, 'service'>
 
 export type DroppableType = 'delete' | 'board' | 'node' | 'toolbox'
 

@@ -3,12 +3,14 @@ import {
   CARD_WIDTH,
   serviceConfig,
   ServiceIdType,
+  TCustomNode,
 } from '@/pages/BoardPage/configs/constants'
 import { getNewNode } from '@/pages/BoardPage/configs/helpers'
 import { Box } from '@mantine/core'
+import { useReactFlow } from '@xyflow/react'
 import { AnimatePresence, motion, Variants } from 'motion/react'
 import { useCallback, useEffect, useState } from 'react'
-import { useReactFlow } from 'reactflow'
+import { TCustomEdge } from '../connexionContants'
 import LabelItem from './components/LabelItem'
 import { MenuItem } from './components/MenuItem'
 
@@ -42,7 +44,7 @@ export default (function ToolbarMenu({
     }
   }, [showToolbarMenu, generateNewIdFragment])
 
-  const reactFlowInstance = useReactFlow()
+  const reactFlowInstance = useReactFlow<TCustomNode, TCustomEdge>()
   const [hoveredType, setHoveredType] = useState<ServiceIdType | null>(null)
   return (
     <div

@@ -5,9 +5,14 @@ import { CSSVAR } from '@/contants'
 import {
   IConnexion,
   IConnexionType,
+  TCustomEdge,
   connexionConfig,
 } from '@/pages/BoardPage/components/Board/components/connexionContants'
-import { CARD_WIDTH, ICON_STYLE } from '@/pages/BoardPage/configs/constants'
+import {
+  CARD_WIDTH,
+  ICON_STYLE,
+  TCustomNode,
+} from '@/pages/BoardPage/configs/constants'
 import { handleUpdateEdge } from '@/pages/BoardPage/configs/helpers'
 import {
   ActionIcon,
@@ -23,7 +28,7 @@ import {
 } from '@mantine/core'
 import { IconTrash } from '@tabler/icons-react'
 import { Editor } from '@tiptap/react'
-import { useReactFlow } from 'reactflow'
+import { useReactFlow } from '@xyflow/react'
 
 interface Props {
   handleDeleteEdge: () => void
@@ -68,7 +73,7 @@ export default function ConnexionCollapsableMenu({
   collapseAll,
   editor,
 }: Props) {
-  const flowInstance = useReactFlow()
+  const flowInstance = useReactFlow<TCustomNode, TCustomEdge>()
   return (
     <Collapse in={!collapseAll}>
       <Paper

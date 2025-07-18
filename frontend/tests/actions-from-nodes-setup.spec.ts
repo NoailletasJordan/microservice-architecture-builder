@@ -9,6 +9,7 @@ import {
   getNodeServerLocator,
   getNodesLocator,
   getSubserviceLocator,
+  grabElementTo,
   initialTwoNodesSetup,
 } from './helpers'
 
@@ -118,15 +119,14 @@ const testWithNodesAndSubservice = testWithNodes.extend<{
         serviceType: 'database',
       })
 
+      await page.waitForTimeout(700)
       const databaseNode = getNodeDatabaseLocator({ page })
-
-      await databaseNode.hover()
-
-      await page.mouse.down()
-
       const serverNode = getNodeServerLocator({ page })
-      await serverNode.hover()
-      await page.mouse.up()
+
+      await grabElementTo(page, {
+        moveTarget: databaseNode,
+        destinationTarget: serverNode,
+      })
       await expect(
         getSubserviceLocator({ page, serviceType: 'database' }),
       ).toHaveCount(1)
@@ -162,7 +162,7 @@ testWithNodesAndSubservice(
     })
     await databaseIconLocator.nth(0).hover()
     await page.mouse.down()
-    await page.mouse.move(200, 200)
+    await page.mouse.move(200, 200, { steps: 5 })
     await page.mouse.up()
     await expect(databaseIconLocator).toHaveCount(0)
     const serverLocator = getNodeServerLocator({ page })
@@ -181,13 +181,12 @@ testWithNodesAndSubservice(
       page,
       serviceType: 'database',
     })
-    await databaseIconLocator.nth(0).hover()
-    await page.mouse.down()
     const deleteServiceIcon = page.getByTestId('delete-service')
-    await deleteServiceIcon.waitFor({ state: 'visible' })
-    await deleteServiceIcon.hover()
-    await page.waitForTimeout(100)
-    await page.mouse.up()
+
+    await grabElementTo(page, {
+      moveTarget: databaseIconLocator,
+      destinationTarget: deleteServiceIcon,
+    })
 
     await expect(databaseIconLocator).toHaveCount(0)
   },

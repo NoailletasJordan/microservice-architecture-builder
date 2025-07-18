@@ -1,8 +1,10 @@
+import { TCustomEdge } from '@/pages/BoardPage/components/Board/components/connexionContants'
+import { TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { getNodesAfterUpdateNode } from '@/pages/BoardPage/configs/helpers'
-import { useReactFlow } from 'reactflow'
+import { useReactFlow } from '@xyflow/react'
 
 export function useHandleNoteChange_({ serviceId }: { serviceId: string }) {
-  const flowInstance = useReactFlow()
+  const flowInstance = useReactFlow<TCustomNode, TCustomEdge>()
   const handleNoteChange = (newNote: string) => {
     const currentNodes = flowInstance.getNodes()
     const nodeToEdit = flowInstance.getNode(serviceId)!

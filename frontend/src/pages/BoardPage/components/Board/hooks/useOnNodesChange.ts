@@ -1,8 +1,15 @@
-import { OnNodesChange, applyNodeChanges } from 'reactflow'
+import { TCustomNode } from '@/pages/BoardPage/configs/constants'
+import { OnNodesChange, applyNodeChanges } from '@xyflow/react'
+import { useCallback } from 'react'
 import { useSetNodes } from './useSetNodes'
 
-export function useOnNodesChange(): OnNodesChange {
+export function useOnNodesChange(): OnNodesChange<TCustomNode> {
   const setNodes = useSetNodes()
 
-  return (changes) => setNodes((nds) => applyNodeChanges(changes, nds))
+  const onNodesChange: OnNodesChange<TCustomNode> = useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    [setNodes],
+  )
+
+  return onNodesChange
 }

@@ -1,6 +1,10 @@
 import { showNotificationError, showNotificationSuccess } from '@/helpers-react'
-import { shareHashTocken } from '@/pages/BoardPage/configs/constants'
-import { getNodesBounds, useReactFlow } from 'reactflow'
+import {
+  shareHashTocken,
+  TCustomNode,
+} from '@/pages/BoardPage/configs/constants'
+import { getNodesBounds, useReactFlow } from '@xyflow/react'
+import { TCustomEdge } from '../../../components/connexionContants'
 
 export function useOverwriteBoardData({
   hash,
@@ -9,7 +13,7 @@ export function useOverwriteBoardData({
   hash: string
   handleCloseModal: () => void
 }) {
-  const flowInstance = useReactFlow()
+  const flowInstance = useReactFlow<TCustomNode, TCustomEdge>()
 
   const overwriteBoardData = () => {
     try {

@@ -1,4 +1,4 @@
-import { ReactFlowInstance, XYPosition } from '@xyflow/react'
+import { Position, ReactFlowInstance, XYPosition } from '@xyflow/react'
 import { v4 as uuidv4 } from 'uuid'
 import { IConnexion } from '../components/Board/components/connexionContants'
 
@@ -128,4 +128,20 @@ export const getNodeOverlapping = (
     )
 
   return targetNode
+}
+
+export function getTargetHandlePosition([sourceNode, targetNode]: [
+  TCustomNode,
+  TCustomNode,
+]): [Position, Position] {
+  if (!sourceNode || !targetNode) return [Position.Left, Position.Left]
+  let sourceHandle: Position, targetHandle: Position
+  if (sourceNode.position?.x < targetNode.position?.x) {
+    sourceHandle = Position.Right
+    targetHandle = Position.Left
+  } else {
+    sourceHandle = Position.Left
+    targetHandle = Position.Right
+  }
+  return [sourceHandle, targetHandle] as const
 }

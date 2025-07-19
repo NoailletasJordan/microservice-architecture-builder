@@ -1,5 +1,6 @@
 import { useOnConnect } from '@/pages/BoardPage/components/Board/hooks/useOnConnect'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
+import { getTargetHandlePosition } from '@/pages/BoardPage/configs/helpers'
 import { useEdges } from '@xyflow/react'
 import { useCallback } from 'react'
 import { TCustomEdge } from '../../../../connexionContants'
@@ -15,19 +16,13 @@ export function useCreateNewConnexion_({ node1, node2 }: Props) {
 
   const createEdges = useCallback(() => {
     if (!node1 || !node2) return
-    let sourceHandle, targetHandle
-    if (node1.position?.x < node2.position?.x) {
-      sourceHandle = 'r'
-      targetHandle = 'l'
-    } else {
-      sourceHandle = 'l'
-      targetHandle = 'r'
-    }
+    const [sourceHandlePosition, targetHandlePosition] =
+      getTargetHandlePosition([node1, node2])
 
     onConnect({
-      sourceHandle,
+      sourceHandle: sourceHandlePosition.slice(0, 1),
       source: node1.id,
-      targetHandle,
+      targetHandle: targetHandlePosition.slice(0, 1),
       target: node2.id,
     })
   }, [node1, node2, onConnect])

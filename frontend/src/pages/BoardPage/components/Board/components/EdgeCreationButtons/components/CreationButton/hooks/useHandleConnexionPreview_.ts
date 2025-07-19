@@ -1,9 +1,17 @@
 import { useEffectEventP } from '@/contants'
 import { connexionPreviewContext } from '@/contexts/ConnexionPreview/context'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
+import { getTargetHandlePosition } from '@/pages/BoardPage/configs/helpers'
 import { useHover } from '@mantine/hooks'
-import { useInternalNode, useStore, useStoreApi } from '@xyflow/react'
-import { useContext, useEffect } from 'react'
+import {
+  ConnectionState,
+  InternalNode,
+  Node,
+  useInternalNode,
+  useStore,
+  useStoreApi,
+} from '@xyflow/react'
+import { useCallback, useContext, useEffect } from 'react'
 
 interface Props {
   duet: [string, string]
@@ -13,14 +21,14 @@ export function useHandleConnexionPreview_({ duet }: Props) {
   const { hovered, ref } = useHover()
   const { addDuet, removeDuet } = useContext(connexionPreviewContext)
 
-  const [sourceId, targetId] = duet
-  const node1 = useInternalNode<TCustomNode>(sourceId)
-  const node2 = useInternalNode<TCustomNode>(targetId)
-
   const cancelConnexion = useStore((store) => store.cancelConnection)
 
   const store = useStoreApi()
-  const s = useStore((s) => s)
+  const updateConnexionInternalStore = useCallback(
+    (connection: ConnectionState<InternalNode<Node>>) =>
+      store.setState({ connection }),
+    [store],
+  )
   const getConnectionParams = useGetConnextionParams({ duet })
   const nonReactiveState = useEffectEventP(() => ({
     addDuet,
@@ -28,12 +36,12 @@ export function useHandleConnexionPreview_({ duet }: Props) {
     duet,
     cancelConnexion,
     getConnectionParams,
-    store,
+    updateConnexionInternalStore,
   }))
 
   useEffect(() => {
     const {
-      store,
+      updateConnexionInternalStore,
       duet,
       getConnectionParams,
       addDuet,
@@ -43,9 +51,7 @@ export function useHandleConnexionPreview_({ duet }: Props) {
     if (hovered) {
       addDuet(duet)
       const connexionParams = getConnectionParams()
-      /** Temp */
-      console.log('connexionParams:', connexionParams)
-      store.setState({ connection: connexionParams })
+      updateConnexionInternalStore(connexionParams)
     } else {
       removeDuet(duet)
       cancelConnexion()
@@ -60,9 +66,14 @@ const useGetConnextionParams = ({ duet }: { duet: [string, string] }) => {
   const node1 = useInternalNode<TCustomNode>(sourceId)!
   const node2 = useInternalNode<TCustomNode>(targetId)!
 
-  const getConnexionParams = () => {
+  const getConnexionParams = useCallback((): ConnectionState<
+    InternalNode<Node>
+  > => {
+    const [sourceHandlePosition, targetHandlePosition] =
+      getTargetHandlePosition([node1, node2])
+
     const handleRightSource = node1.internals.handleBounds!.source!.find(
-      (handle) => handle.position === 'right',
+      (handle) => handle.position === sourceHandlePosition,
     )!
 
     const fromX =
@@ -72,7 +83,7 @@ const useGetConnextionParams = ({ duet }: { duet: [string, string] }) => {
       node1.position.y + handleRightSource.y + handleRightSource.height / 2
 
     const handleLeftTarget = node2.internals.handleBounds!.source!.find(
-      (handle) => handle.position === 'left',
+      (handle) => handle.position === targetHandlePosition,
     )!
     const toX =
       node2.position.x + handleLeftTarget.x + handleLeftTarget.width / 2
@@ -88,195 +99,16 @@ const useGetConnextionParams = ({ duet }: { duet: [string, string] }) => {
         y: fromY,
       },
       fromHandle: handleRightSource,
-      fromPosition: 'right',
+      fromPosition: sourceHandlePosition,
       fromNode: node1,
       to: {
         x: toX,
         y: toY,
       },
       toHandle: handleLeftTarget,
-      toPosition: 'left',
+      toPosition: targetHandlePosition,
       toNode: node2,
     }
-  }
+  }, [node1, node2])
   return getConnexionParams
-}
-
-const temp = {
-  inProgress: true,
-  isValid: true,
-  from: {
-    x: 628.6920166015625,
-    y: 143.3329315185547,
-  },
-  fromHandle: {
-    id: 'r',
-    type: 'source',
-    nodeId: 'database-0.8518345547330963',
-    position: 'right',
-    x: 210.6920166015625,
-    y: 23.332931518554688,
-    width: 8,
-    height: 30,
-  },
-  fromPosition: 'right',
-  fromNode: {
-    id: 'database-0.8518345547330963',
-    type: 'service',
-    position: {
-      x: 414,
-      y: 105,
-    },
-    data: {
-      id: 'database-0.8518345547330963',
-      serviceIdType: 'database',
-      title: 'Database',
-      subServices: [],
-      note: '',
-    },
-    measured: {
-      width: 210,
-      height: 72,
-    },
-    internals: {
-      positionAbsolute: {
-        x: 414,
-        y: 105,
-      },
-      handleBounds: {
-        source: [
-          {
-            id: 'l',
-            type: 'source',
-            nodeId: 'database-0.8518345547330963',
-            position: 'left',
-            x: -0.56121826171875,
-            y: 23.332931518554688,
-            width: 8,
-            height: 30,
-          },
-          {
-            id: 'r',
-            type: 'source',
-            nodeId: 'database-0.8518345547330963',
-            position: 'right',
-            x: 210.6920166015625,
-            y: 23.332931518554688,
-            width: 8,
-            height: 30,
-          },
-        ],
-        target: null,
-      },
-      z: 0,
-      userNode: {
-        id: 'database-0.8518345547330963',
-        type: 'service',
-        position: {
-          x: 414,
-          y: 105,
-        },
-        data: {
-          id: 'database-0.8518345547330963',
-          serviceIdType: 'database',
-          title: 'Database',
-          subServices: [],
-          note: '',
-        },
-        measured: {
-          width: 210,
-          height: 72,
-        },
-      },
-    },
-  },
-  to: {
-    x: 948,
-    y: 215,
-  },
-  toHandle: {
-    id: 'l',
-    type: 'source',
-    nodeId: 'server-0.360621274536042',
-    position: 'left',
-    x: 948,
-    y: 215,
-    width: 8,
-    height: 30,
-  },
-  toPosition: 'left',
-  toNode: {
-    id: 'server-0.360621274536042',
-    type: 'service',
-    position: {
-      x: 952,
-      y: 179,
-    },
-    data: {
-      id: 'server-0.360621274536042',
-      serviceIdType: 'server',
-      title: 'Server',
-      subServices: [],
-      note: '',
-    },
-    measured: {
-      width: 210,
-      height: 72,
-    },
-    selected: false,
-    dragging: false,
-    internals: {
-      positionAbsolute: {
-        x: 952,
-        y: 179,
-      },
-      handleBounds: {
-        source: [
-          {
-            id: 'l',
-            type: 'source',
-            nodeId: 'server-0.360621274536042',
-            position: 'left',
-            x: -8,
-            y: 21,
-            width: 8,
-            height: 30,
-          },
-          {
-            id: 'r',
-            type: 'source',
-            nodeId: 'server-0.360621274536042',
-            position: 'right',
-            x: 210,
-            y: 21,
-            width: 8,
-            height: 30,
-          },
-        ],
-        target: null,
-      },
-      z: 0,
-      userNode: {
-        id: 'server-0.360621274536042',
-        type: 'service',
-        position: {
-          x: 952,
-          y: 179,
-        },
-        data: {
-          id: 'server-0.360621274536042',
-          serviceIdType: 'server',
-          title: 'Server',
-          subServices: [],
-          note: '',
-        },
-        measured: {
-          width: 210,
-          height: 72,
-        },
-        selected: false,
-        dragging: false,
-      },
-    },
-  },
 }

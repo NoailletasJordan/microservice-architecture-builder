@@ -5,19 +5,15 @@ import {
   useStore,
 } from '@xyflow/react'
 
-export default function ConnexionLine(props: ConnectionLineComponentProps) {
-  const { fromX, fromY } = props
-
+export default function ConnexionLine(_props: ConnectionLineComponentProps) {
   // Hijack connexion system
   const connexion = useStore((store) => store.connection)
-  /** Temp */
-  console.log('props:', props.toX, connexion.to?.x)
 
   const [path] = getStraightPath({
-    sourceX: fromX,
-    sourceY: fromY,
-    targetX: connexion.to?.x,
-    targetY: connexion.to?.y,
+    sourceX: connexion.from?.x as number,
+    sourceY: connexion.from?.y as number,
+    targetX: connexion.to?.x as number,
+    targetY: connexion.to?.y as number,
   })
 
   return <Line d={path} strokeDasharray="3,8" />

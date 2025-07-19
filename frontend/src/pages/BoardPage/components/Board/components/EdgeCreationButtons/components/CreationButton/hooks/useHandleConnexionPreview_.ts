@@ -58,6 +58,13 @@ export function useHandleConnexionPreview_({ duet }: Props) {
     }
   }, [hovered, nonReactiveState])
 
+  useEffect(() => {
+    const { cancelConnexion } = nonReactiveState()
+    return () => {
+      cancelConnexion()
+    }
+  }, [nonReactiveState])
+
   return { ref }
 }
 

@@ -32,6 +32,7 @@ import CustomEdge from './components/CustomEdge'
 import CustomNode from './components/CustomNode/'
 import DeleteCurrentBoardModal from './components/DeleteCurrentBoardModal'
 import DraggableGhost from './components/DraggableGhost/index'
+import EdgeCreationButtons from './components/EdgeCreationButtons'
 import DemoModal from './components/OnboardingModal'
 import PrimaryActionsPanel from './components/PrimaryActionsPanel'
 import SecondaryActionsPaner from './components/SecondaryActionsPanel'
@@ -167,6 +168,7 @@ export default function Board() {
                 openOnboarding={() => updateShowOnboarding(true)}
                 showGuidanceTexts={showGuidanceTexts}
               />
+              <EdgeCreationButtons />
             </ReactFlow>
             <ToolbarMenu
               onStartSelectionAnimation={() => {

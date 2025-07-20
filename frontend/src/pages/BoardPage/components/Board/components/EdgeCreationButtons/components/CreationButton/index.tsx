@@ -5,6 +5,7 @@ import { IconPlus } from '@tabler/icons-react'
 import { useInternalNode } from '@xyflow/react'
 import { useCreateNewConnexion_ } from './hooks/useCreateNewConnexion_'
 import { useHandleConnexionPreview_ } from './hooks/useHandleConnexionPreview_'
+import { useIsMouseLeftDown } from './hooks/useIsMouseLeftDown'
 import { usePosition_ } from './hooks/usePosition_'
 
 type NodeId = string
@@ -24,11 +25,14 @@ export default function EdgeCreationButton({ duet }: Props) {
 
   const { hovered, ref: hitboxRef } = useHover()
 
+  // to not break ui when hovering creation button
+  const isMouseDown = useIsMouseLeftDown()
+
   return (
     <div
       ref={hitboxRef}
       style={{
-        display: 'flex',
+        display: isMouseDown ? 'none' : 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: -1,
@@ -40,7 +44,6 @@ export default function EdgeCreationButton({ duet }: Props) {
         top: position.y,
         left: position.x,
         transform: `translate(-50%, -50%)`,
-        // border: '1px solid red',
         opacity: hovered ? 1 : 0,
       }}
     >
@@ -51,7 +54,6 @@ export default function EdgeCreationButton({ duet }: Props) {
         radius="xl"
         onClick={createNewEdge}
         ref={ref}
-        style={{}}
       >
         Create connexion
       </Button>

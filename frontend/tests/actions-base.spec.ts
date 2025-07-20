@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { createNewNode } from './helpers'
 
 test('should display and navigate through onboarding modal', async ({
   page,
@@ -27,4 +28,21 @@ test('should warn user trying to share an empty board', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Share' }).click()
   await expect(page.getByText('Empty Board')).toBeVisible()
+})
+
+test('should create a Link using the button', async ({ page }) => {
+  await page.goto('/')
+  await createNewNode({ page, coordonate: [300, 300], serviceType: 'frontend' })
+  await page.waitForTimeout(400)
+  await createNewNode({ page, coordonate: [600, 300], serviceType: 'server' })
+  await page.mouse.move(450, 300)
+  const buttonCreateConnexion = page.getByRole('button', {
+    name: 'Create connexion',
+  })
+  await expect(buttonCreateConnexion).toBeVisible()
+
+  await buttonCreateConnexion.click()
+
+  const edge = page.getByLabel('edge').first()
+  await expect(edge).toHaveCount(1)
 })

@@ -1,5 +1,7 @@
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
+import { Button } from '@mantine/core'
 import { useHover } from '@mantine/hooks'
+import { IconPlus } from '@tabler/icons-react'
 import { useInternalNode } from '@xyflow/react'
 import { useCreateNewConnexion_ } from './hooks/useCreateNewConnexion_'
 import { useHandleConnexionPreview_ } from './hooks/useHandleConnexionPreview_'
@@ -33,19 +35,26 @@ export default function EdgeCreationButton({ duet }: Props) {
         cursor: 'pointer',
         pointerEvents: 'auto',
         position: 'absolute',
-        width: 70,
+        minWidth: 70,
         height: 70,
         top: position.y,
         left: position.x,
         transform: `translate(-50%, -50%)`,
         // border: '1px solid red',
+        opacity: hovered ? 1 : 0,
       }}
     >
-      {hovered && (
-        <button onClick={createNewEdge} ref={ref} style={{}}>
-          Hey
-        </button>
-      )}
+      <Button
+        color="blue"
+        variant="light"
+        leftSection={<IconPlus />}
+        radius="xl"
+        onClick={createNewEdge}
+        ref={ref}
+        style={{}}
+      >
+        Create connexion
+      </Button>
     </div>
   )
 }

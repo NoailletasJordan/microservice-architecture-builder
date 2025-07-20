@@ -35,7 +35,14 @@ function ConnexionLineFromDragging(props: ConnectionLineComponentProps) {
     path,
   })
 
-  return <path {...commonPathProps} />
+  return (
+    <motion.path
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.05, duration: 0 }}
+      {...commonPathProps}
+    />
+  )
 }
 
 function ConnexionLineFromButton() {
@@ -100,11 +107,6 @@ const getCommonPathProps = ({
     fill: 'none',
     stroke: theme.colors.blue[6],
     d: path,
-    transition: {
-      delay: 0.05,
-      duration: 0.35,
-      ease: 'easeOut',
-    },
     strokeWidth: 2,
     opacity: 0.7,
   } as const)

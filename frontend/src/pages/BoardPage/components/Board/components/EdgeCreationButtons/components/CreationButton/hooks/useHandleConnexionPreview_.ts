@@ -59,8 +59,9 @@ export function useHandleConnexionPreview_({ duet }: Props) {
   }, [hovered, nonReactiveState])
 
   useEffect(() => {
-    const { cancelConnexion } = nonReactiveState()
+    const { cancelConnexion, removeDuet, duet } = nonReactiveState()
     return () => {
+      removeDuet(duet)
       cancelConnexion()
     }
   }, [nonReactiveState])

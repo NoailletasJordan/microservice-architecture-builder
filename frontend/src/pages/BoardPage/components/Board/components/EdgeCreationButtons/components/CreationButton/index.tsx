@@ -3,6 +3,7 @@ import { Button } from '@mantine/core'
 import { useHover } from '@mantine/hooks'
 import { IconPlus } from '@tabler/icons-react'
 import { useInternalNode } from '@xyflow/react'
+import { motion } from 'motion/react'
 import { useCreateNewConnexion_ } from './hooks/useCreateNewConnexion_'
 import { useHandleConnexionPreview_ } from './hooks/useHandleConnexionPreview_'
 import { useIsMouseLeftDown } from './hooks/useIsMouseLeftDown'
@@ -44,19 +45,24 @@ export default function EdgeCreationButton({ duet }: Props) {
         top: position.y,
         left: position.x,
         transform: `translate(-50%, -50%)`,
-        opacity: hovered ? 1 : 0,
       }}
     >
-      <Button
-        color="blue"
-        variant="light"
-        leftSection={<IconPlus />}
-        radius="xl"
-        onClick={createNewEdge}
-        ref={ref}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: hovered ? 1 : 0, scale: hovered ? 1 : 0.9 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
       >
-        Create connexion
-      </Button>
+        <Button
+          color="blue"
+          variant="light"
+          leftSection={<IconPlus />}
+          radius="xl"
+          onClick={createNewEdge}
+          ref={ref}
+        >
+          Create connexion
+        </Button>
+      </motion.div>
     </div>
   )
 }

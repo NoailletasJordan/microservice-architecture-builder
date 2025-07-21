@@ -1,10 +1,6 @@
 import { themeDarkColorVariables } from '@/contants'
 import { showNotificationSuccess } from '@/helpers-react'
-import {
-  ICON_STYLE,
-  shareHashTocken,
-  TCustomNode,
-} from '@/pages/BoardPage/configs/constants'
+import { ICON_STYLE } from '@/pages/BoardPage/configs/constants'
 import {
   Button,
   Grid,
@@ -18,9 +14,7 @@ import {
 } from '@mantine/core'
 import { useClipboard } from '@mantine/hooks'
 import { IconCopy, IconLink } from '@tabler/icons-react'
-import { ReactFlowInstance, useReactFlow } from '@xyflow/react'
-import { useEffect, useState } from 'react'
-import { TCustomEdge } from '../../../connexionContants'
+import { useLink_ } from './hooks/useLink_'
 
 interface Props {
   opened: boolean
@@ -31,15 +25,7 @@ export default function ShareableLink({ opened, close }: Props) {
   const theme = useMantineTheme()
   const clipboard = useClipboard({ timeout: 3000 })
 
-  const [link, setLink] = useState('')
-  const flowInstance = useReactFlow<TCustomNode, TCustomEdge>()
-
-  useEffect(() => {
-    const fullUrl = getLink(flowInstance)
-    setLink(fullUrl)
-
-    return () => {}
-  }, [opened, flowInstance])
+  const link = useLink_({ opened })
 
   const handleClose = () => {
     clipboard.reset()
@@ -104,13 +90,4 @@ export default function ShareableLink({ opened, close }: Props) {
       </Text>
     </>
   )
-}
-
-const getLink = (flowInstance: ReactFlowInstance<TCustomNode, TCustomEdge>) => {
-  const baseUrl = `${window.location.origin}`
-  const stringifiedData = JSON.stringify({
-    nodes: flowInstance.getNodes(),
-    edges: flowInstance.getEdges(),
-  })
-  return `${baseUrl}/${shareHashTocken}${encodeURIComponent(stringifiedData)}`
 }

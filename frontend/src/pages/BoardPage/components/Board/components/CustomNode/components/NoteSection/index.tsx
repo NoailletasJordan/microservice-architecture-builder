@@ -3,30 +3,43 @@ import {
   NO_DRAG_REACTFLOW_CLASS,
   NO_PAN_REACTFLOW_CLASS,
   NO_WhEEL_REACTFLOW_CLASS,
+  TCustomNode,
 } from '@/pages/BoardPage/configs/constants'
 import { Box } from '@mantine/core'
 import { Editor } from '@tiptap/react'
-import { NodeToolbar, Position, useOnViewportChange } from '@xyflow/react'
-import { useState } from 'react'
+import { ViewportPortal } from '@xyflow/react'
 
 interface Props {
   editor: Editor | null
+  node?: TCustomNode
 }
 
-export default function NoteSection({ editor }: Props) {
+export default function NoteSection({ editor, node }: Props) {
   const shouldOpen = editor && (editor.isFocused || !editor.isEmpty)
-  const [zoom, setZoom] = useState(1)
-  useOnViewportChange({
-    onChange: (viewport) => {
-      setZoom(viewport.zoom)
-    },
-  })
+
+  const paddingYPx = 8
+  const nodeHeight = Number(node?.measured?.height)
+  const nodeWidth = Number(node?.measured?.width)
+
+  const nodePositionX = node?.position?.x
+  const nodePositionY = node?.position?.y
+
+  const nodeX = Number(nodePositionX) + nodeWidth / 2
+  const nodeY = Number(nodePositionY) + nodeHeight + paddingYPx
 
   return (
-    <NodeToolbar isVisible position={Position.Bottom}>
+    <ViewportPortal>
       <Box
         className={`${NO_DRAG_REACTFLOW_CLASS} ${NO_WhEEL_REACTFLOW_CLASS} ${NO_PAN_REACTFLOW_CLASS}`}
-        style={{ transformOrigin: 'top', scale: zoom }}
+        style={{
+          pointerEvents: 'auto',
+          cursor: 'default',
+          transformOrigin: 'top',
+          position: 'absolute',
+          transform: 'translateX(-50%)',
+          top: nodeY,
+          left: nodeX,
+        }}
       >
         <Box
           style={{
@@ -37,6 +50,6 @@ export default function NoteSection({ editor }: Props) {
           <RichEditor editor={editor} />
         </Box>
       </Box>
-    </NodeToolbar>
+    </ViewportPortal>
   )
 }

@@ -33,6 +33,7 @@
     "@tiptap/starter-kit": "2.3.2",
     "@xyflow/react": "^12.8.2",
     "dotenv": "^16.5.0",
+    "html-to-image": "1.11.11",
     "install": "0.13.0",
     "motion": "^12.23.0",
     "npm": "10.7.0",

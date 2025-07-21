@@ -134,7 +134,7 @@ export default function CustomNode(props: NodeProps<TCustomNode>) {
                   </>
                 )}
               </Card.Section>
-              <NoteSection editor={editor} />
+              <NoteSection node={node} editor={editor} />
             </Card>
             <CustomHandle position={Position.Left} id="l" />
             <CustomHandle position={Position.Right} id="r" />

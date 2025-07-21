@@ -77,8 +77,9 @@ export default function RichEditor({ editor, forceToolsOpen }: Props) {
           </RichTextEditor.ControlsGroup>
         </RichTextEditor.Toolbar>
       </Collapse>
-
-      <RichTextEditor.Content />
+      <div style={{ cursor: 'text' }}>
+        <RichTextEditor.Content />
+      </div>
     </RichTextEditor>
   )
 }

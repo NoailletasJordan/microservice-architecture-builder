@@ -46,3 +46,16 @@ test('should create a Link using the button', async ({ page }) => {
   const edge = page.getByLabel('edge').first()
   await expect(edge).toHaveCount(1)
 })
+
+test('should download image as png', async ({ page }) => {
+  await page.goto('/')
+  await createNewNode({ page, coordonate: [600, 300], serviceType: 'server' })
+
+  await page.getByRole('button', { name: 'Share' }).click()
+  const downloadPromise = page.waitForEvent('download')
+
+  await page.getByRole('button', { name: 'PNG' }).click()
+  await downloadPromise
+
+  await expect(page.getByText('Sharing method')).not.toBeVisible()
+})

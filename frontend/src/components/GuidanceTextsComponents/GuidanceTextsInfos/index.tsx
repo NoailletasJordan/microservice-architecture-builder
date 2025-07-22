@@ -1,7 +1,7 @@
 import { Box, Grid } from '@mantine/core'
 import GuidanceText from '../GuidanceText'
 
-export default function GuidanceTextsOnboarding() {
+export default function GuidanceTextsInfos() {
   return (
     <Box
       miw={200}

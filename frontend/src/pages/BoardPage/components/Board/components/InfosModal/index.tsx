@@ -63,7 +63,7 @@ export default function OnboardingModal({ opened, close }: Props) {
 
   return (
     <CustomModal
-      aria-label="onboarding-modal"
+      aria-label="infos-modal"
       size="xl"
       onClose={close}
       opened={opened}

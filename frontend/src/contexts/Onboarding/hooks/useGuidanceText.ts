@@ -5,10 +5,10 @@ import { useLocation } from 'react-router-dom'
 
 export function useGuidanceText({
   nodes,
-  showOnboarding,
+  showInfosModal,
 }: {
   nodes: TCustomNode[]
-  showOnboarding: boolean
+  showInfosModal: boolean
 }) {
   const [showGuidanceTexts, setShowGuidanceTexts] = useState<boolean>(false)
   const location = useLocation()
@@ -21,9 +21,9 @@ export function useGuidanceText({
 
   useLayoutEffect(() => {
     setShowGuidanceTexts(() => {
-      return !showOnboarding && !hasAtLeastOneService && !hasHash && isFetched
+      return !showInfosModal && !hasAtLeastOneService && !hasHash && isFetched
     })
-  }, [showOnboarding, hasAtLeastOneService, hasHash, isFetched])
+  }, [showInfosModal, hasAtLeastOneService, hasHash, isFetched])
 
   return { showGuidanceTexts }
 }

@@ -8,17 +8,17 @@ interface Props {
 }
 
 export default function OnboardingContextProvider({ children }: Props) {
-  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showInfosModal, setShowInfosModal] = useState(false)
   const { nodes } = useContext(boardDataContext)
-  const { showGuidanceTexts } = useGuidanceText({ nodes, showOnboarding })
+  const { showGuidanceTexts } = useGuidanceText({ nodes, showInfosModal })
 
   return (
     <onBoardingContext.Provider
       value={{
         showGuidanceTexts,
-        showOnboarding,
-        updateShowOnboarding: (bool: boolean) => {
-          setShowOnboarding(bool)
+        showInfosModal,
+        updateShowInfosModal: (bool: boolean) => {
+          setShowInfosModal(bool)
         },
       }}
     >

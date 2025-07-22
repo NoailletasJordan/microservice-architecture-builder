@@ -1,3 +1,4 @@
+import { CSSVAR, customColors } from '@/contants'
 import { Box, Center, Space, Text, useMantineTheme } from '@mantine/core'
 import GuidanceText from '../GuidanceText'
 
@@ -11,7 +12,35 @@ export default function Main() {
       left="50%"
       style={{ transform: 'translate(-50%,-50%)' }}
     >
-      <Box ml="-1rem">
+      <Box ml="-1rem" bg="#222">
+        <Box
+          style={{
+            margin: 'auto',
+            border: `1px solid ${CSSVAR['--border']}`,
+            maxWidth: '400px',
+          }}
+        >
+          <Box
+            style={{
+              margin: 'auto',
+              width: '80px',
+              aspectRatio: '1/1',
+              border: `1px solid ${customColors.primary[5]}`,
+              maxWidth: '400px',
+            }}
+          ></Box>
+        </Box>
+
+        <Box
+          style={{
+            margin: 'auto',
+            border: `1px solid ${CSSVAR['--border']}`,
+            maxWidth: '400px',
+          }}
+        >
+          Start by right clicking into the board
+        </Box>
+
         <Text
           size="30px"
           fw={700}

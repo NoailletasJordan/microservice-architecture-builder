@@ -89,7 +89,7 @@ testWithNodes('should write a note on NODE', async ({ page }) => {
   const someNode = getNodesLocator({ page }).first()
   await someNode.hover()
   await page.waitForTimeout(700)
-  await page.getByLabel('Add a note').first().click()
+  await page.getByLabel('Attach a note').first().click()
   const noteInput = page.locator('[data-placeholder]').last()
   await expect(noteInput).toBeVisible()
   const noteValue = 'This is a custom note !'

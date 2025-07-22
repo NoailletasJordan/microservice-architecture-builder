@@ -21,8 +21,8 @@ export default function NoteSection({ editor, node }: Props) {
   const nodeHeight = Number(node?.measured?.height)
   const nodeWidth = Number(node?.measured?.width)
 
-  const nodePositionX = Number(node?.position?.x)
-  const nodePositionY = Number(node?.position?.y)
+  const nodePositionX = node?.position?.x
+  const nodePositionY = node?.position?.y
 
   const nodeX = Number(nodePositionX) + nodeWidth / 2
   const nodeY = Number(nodePositionY) + nodeHeight + paddingYPx

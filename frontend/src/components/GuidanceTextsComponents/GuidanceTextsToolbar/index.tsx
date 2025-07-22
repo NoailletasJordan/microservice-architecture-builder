@@ -2,7 +2,7 @@ import { CSSVAR } from '@/contants'
 import { Box, Text } from '@mantine/core'
 import GuidanceText from '../GuidanceText'
 
-export default function OnBoardingToolbar() {
+export default function GuidanceToolbar() {
   return (
     <Box pos="absolute" mt="lg" style={{ transform: 'translateX(30px)' }}>
       <Box

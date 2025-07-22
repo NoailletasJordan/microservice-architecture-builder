@@ -60,9 +60,9 @@ export default function ServiceActionsWrapper({
             bg={CSSVAR['--surface']}
             color={CSSVAR['--text']}
           >
-            <TooltipWrapper label="Add a note">
+            <TooltipWrapper label="Attach a note">
               <ActionIcon
-                aria-label="Add a note"
+                aria-label="Attach a note"
                 onClick={handleActionClick}
                 variant="outline"
                 style={{ border: 'none' }}

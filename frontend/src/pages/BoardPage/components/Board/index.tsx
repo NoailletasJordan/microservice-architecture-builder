@@ -33,7 +33,9 @@ import CustomNode from './components/CustomNode/'
 import DeleteCurrentBoardModal from './components/DeleteCurrentBoardModal'
 import DraggableGhost from './components/DraggableGhost/index'
 import EdgeCreationButtons from './components/EdgeCreationButtons'
-import DemoModal from './components/OnboardingModal'
+import InfoModal from './components/InfosModal'
+import OnBoardingPanel from './components/OnBoardingPanel'
+import OnBoardingIntegrated from './components/OnBoaringIntegrated'
 import PrimaryActionsPanel from './components/PrimaryActionsPanel'
 import SecondaryActionsPaner from './components/SecondaryActionsPanel'
 import Settings from './components/Settings/index'
@@ -60,7 +62,9 @@ const preventScrollbarOnPan = { overflow: 'hidden' }
 const droppableType = 'board'
 
 export default function Board() {
-  const { showGuidanceTexts, showOnboarding, updateShowOnboarding } =
+  // temp
+  const [isTempOpen, isTempOpenHandlers] = useDisclosure(true)
+  const { showGuidanceTexts, showInfosModal, updateShowInfosModal } =
     useContext(onBoardingContext)
   const { nodes, edges } = useContext(boardDataContext)
   const [showResetBoardModal, clearCurrentBoardModalHandlers] =
@@ -147,14 +151,14 @@ export default function Board() {
                 triggerClickCanva()
               }}
             >
-              {!showGuidanceTexts && !showOnboarding && (
+              {!showGuidanceTexts && !showInfosModal && (
                 <Background id={v4()} variant={BackgroundVariant.Dots} />
               )}
               {showGuidanceTexts && <GuidanceTextsMain />}
 
               {showBoardSpinner && <BoardLoading />}
 
-              {!showGuidanceTexts && !showOnboarding && (
+              {!showGuidanceTexts && !showInfosModal && !isTempOpen && (
                 <MiniMap
                   style={{ backgroundColor: CSSVAR['--surface-strong'] }}
                   nodeBorderRadius={10}
@@ -165,10 +169,16 @@ export default function Board() {
                 />
               )}
               <SecondaryActionsPaner
-                openOnboarding={() => updateShowOnboarding(true)}
+                openShowInfosModal={() => updateShowInfosModal(true)}
                 showGuidanceTexts={showGuidanceTexts}
               />
               <EdgeCreationButtons />
+
+              <OnBoardingPanel
+                isTempOpen={isTempOpen}
+                toggleTempOpen={isTempOpenHandlers.toggle}
+              />
+              <OnBoardingIntegrated />
             </ReactFlow>
             <ToolbarMenu
               onStartSelectionAnimation={() => {
@@ -206,9 +216,9 @@ export default function Board() {
         close={shareModalHanders.close}
       />
       <LoadUrlBoardModal />
-      <DemoModal
-        close={() => updateShowOnboarding(false)}
-        opened={showOnboarding}
+      <InfoModal
+        close={() => updateShowInfosModal(false)}
+        opened={showInfosModal}
       />
     </>
   )

@@ -1,13 +1,11 @@
 import { expect, test } from '@playwright/test'
 import { createNewNode } from './helpers'
 
-test('should display and navigate through onboarding modal', async ({
-  page,
-}) => {
+test('should display and navigate through info modal', async ({ page }) => {
   await page.goto('/')
   const demoButton = page.getByLabel(/watch demo/i)
   await demoButton.click()
-  const modal = page.getByLabel(/onboarding-modal/i)
+  const modal = page.getByLabel(/infos-modal/i)
   expect(await modal.count()).toBeTruthy()
 
   const nextButton = modal.getByLabel(/primary-action/i)

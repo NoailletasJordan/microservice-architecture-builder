@@ -20,8 +20,6 @@ export function useLink_({ opened }: { opened: boolean }) {
       stringifiedData,
     )}`
     setLink(fullUrl)
-
-    return () => {}
   }, [opened, flowInstance])
 
   return link

@@ -80,6 +80,8 @@ export const themeDarkColorVariables = {
   '--text-primary': colorPrimary,
 }
 
+export const COLOR_ONBOARDING = '#762B8A'
+
 export const CSSVAR = Object.keys(themeDarkColorVariables).reduce(
   (acc, cur) => ({ ...acc, [cur]: `var(${cur})` }),
   {},

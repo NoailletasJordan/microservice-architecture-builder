@@ -1,5 +1,7 @@
+import OnboardingMouseAreaIndicator from '@/components/OnboardingMouseAreaIndicator'
 import { TCustomNode } from '@/pages/BoardPage/configs/constants'
 import { useConnection, ViewportPortal } from '@xyflow/react'
+import { motion } from 'motion/react'
 
 interface Props {
   firstNode: TCustomNode
@@ -45,26 +47,10 @@ function AreaIndicator({
         style={{
           position: 'absolute',
           left: posX,
-          top: posY,
+          top: posY + 20,
           transition: 'border-color 0.2s ease-in-out',
-          width: 230,
+          width: 190,
           height: 75,
-          borderRadius: 4,
-          transform: 'translate(-50%, -50%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          border: isHovering ? '1px solid #ccc0' : '1px solid #ccc9',
-        }}
-      ></div>
-
-      <div
-        style={{
-          position: 'absolute',
-          left: posX,
-          top: posY + 80,
-
-          width: 230,
           borderRadius: 4,
           transform: 'translate(-50%, -50%)',
           display: 'flex',
@@ -72,7 +58,16 @@ function AreaIndicator({
           justifyContent: 'center',
         }}
       >
-        <p>{isHovering ? '' : 'Mouse hover this area'}</p>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5, duration: 0.5 }}
+        >
+          <OnboardingMouseAreaIndicator
+            hideSquare={isHovering}
+            text={isHovering ? 'Left click' : 'Mouse hover this area'}
+          />
+        </motion.div>
       </div>
     </ViewportPortal>
   )

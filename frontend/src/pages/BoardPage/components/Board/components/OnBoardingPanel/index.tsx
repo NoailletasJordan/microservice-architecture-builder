@@ -1,3 +1,4 @@
+import { CSSVAR } from '@/contants'
 import {
   ActionIcon,
   Button,
@@ -46,14 +47,14 @@ export default function OnBoardingPanel({ isTempOpen, toggleTempOpen }: Props) {
     console.log('isNextIndex:', isNextIndex)
     return {
       shown: {
-        transition: { duration: 0.35, delay: 0.25, ease: 'easeOut' },
+        transition: { duration: 0.35, ease: 'easeOut' },
         opacity: 1,
         x: 0,
       },
       hidden: {
         transition: { duration: 0.35, ease: 'easeOut' },
         opacity: 0,
-        x: isNextIndex ? 30 : -30,
+        x: isNextIndex ? 10 : -10,
       },
     }
   }
@@ -64,67 +65,78 @@ export default function OnBoardingPanel({ isTempOpen, toggleTempOpen }: Props) {
         toggle
       </Button>
       <Space h={30} />
-      {isTempOpen && (
-        <Card withBorder>
-          <Group justify="space-between">
-            <motion.div layoutId="info-icon">
-              <ThemeIcon
-                size="sm"
-                color="white"
-                variant="light"
-                onClick={prevIndex}
-              >
-                <IconInfoSquareRounded />
-              </ThemeIcon>
-            </motion.div>
-            <div>
-              <Group gap={0}>
-                <ActionIcon
-                  disabled={selectedIndex === 0}
+      <AnimatePresence>
+        {isTempOpen && (
+          <motion.div
+            style={{
+              border: '1px solid ' + CSSVAR['--border'],
+              background: CSSVAR['--surface'],
+              borderRadius: 8,
+              padding: 16,
+            }}
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <Group justify="space-between">
+              <motion.div layout="position" layoutId="info-icon">
+                <ThemeIcon
+                  size="sm"
                   color="white"
+                  variant="light"
                   onClick={prevIndex}
-                  variant="transparent"
-                  opacity={selectedIndex === 0 ? 0.5 : 1}
-                  size="xs"
                 >
-                  <IconChevronLeft />
-                </ActionIcon>
-                <ActionIcon
-                  disabled={selectedIndex === content.length - 1}
-                  color="white"
-                  onClick={nextIndex}
-                  variant="transparent"
-                  opacity={selectedIndex === content.length - 1 ? 0.5 : 1}
-                  size="xs"
-                >
-                  <IconChevronRight />
-                </ActionIcon>
-                <Card p={4} radius="md" bg="gray.1">
-                  <Text>
-                    {selectedIndex + 1}/{content.length}
-                  </Text>
-                </Card>
-              </Group>
-            </div>
-          </Group>
-          <Space h="md" />
-          <AnimatePresence mode="popLayout" custom={isNextIndexRef.current}>
-            <motion.div
-              variants={getVariants(isNextIndexRef.current)}
-              initial="hidden"
-              animate="shown"
-              exit="hidden"
-              key={selectedIndex}
-            >
-              <ContentComponent />
-            </motion.div>
-          </AnimatePresence>
+                  <IconInfoSquareRounded />
+                </ThemeIcon>
+              </motion.div>
+              <div>
+                <Group gap={0}>
+                  <ActionIcon
+                    disabled={selectedIndex === 0}
+                    color="white"
+                    onClick={prevIndex}
+                    variant="transparent"
+                    opacity={selectedIndex === 0 ? 0.5 : 1}
+                    size="xs"
+                  >
+                    <IconChevronLeft />
+                  </ActionIcon>
+                  <ActionIcon
+                    disabled={selectedIndex === content.length - 1}
+                    color="white"
+                    onClick={nextIndex}
+                    variant="transparent"
+                    opacity={selectedIndex === content.length - 1 ? 0.5 : 1}
+                    size="xs"
+                  >
+                    <IconChevronRight />
+                  </ActionIcon>
+                  <Card p={4} radius="md" bg="gray.1">
+                    <Text>
+                      {selectedIndex + 1}/{content.length}
+                    </Text>
+                  </Card>
+                </Group>
+              </div>
+            </Group>
+            <Space h="md" />
+            <AnimatePresence mode="wait" custom={isNextIndexRef.current}>
+              <motion.div
+                variants={getVariants(isNextIndexRef.current)}
+                initial="hidden"
+                animate="shown"
+                exit="hidden"
+                key={selectedIndex}
+              >
+                <ContentComponent />
+              </motion.div>
+            </AnimatePresence>
 
-          {/* <Group justify="flex-end">
+            {/* <Group justify="flex-end">
           <Button>Got it !</Button>
         </Group> */}
-        </Card>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Panel>
   )
 }

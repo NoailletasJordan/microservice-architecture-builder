@@ -16,6 +16,7 @@ import {
   ReactFlow,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
+import { motion } from 'motion/react'
 import { useContext } from 'react'
 import { v4 } from 'uuid'
 import DroppableArea from '../../../../components/DroppableArea/index'
@@ -159,16 +160,23 @@ export default function Board() {
               {showBoardSpinner && <BoardLoading />}
 
               {!showGuidanceTexts && !showInfosModal && !isTempOpen && (
-                <MiniMap
-                  style={{ backgroundColor: CSSVAR['--surface-strong'] }}
-                  nodeBorderRadius={10}
-                  nodeStrokeWidth={5}
-                  nodeStrokeColor={CSSVAR['--text']}
-                  nodeColor={CSSVAR['--surface-strong']}
-                  maskColor="#00000066"
-                />
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.15, duration: 0.35, ease: 'easeOut' }}
+                >
+                  <MiniMap
+                    style={{ backgroundColor: CSSVAR['--surface-strong'] }}
+                    nodeBorderRadius={10}
+                    nodeStrokeWidth={5}
+                    nodeStrokeColor={CSSVAR['--text']}
+                    nodeColor={CSSVAR['--surface-strong']}
+                    maskColor="#00000066"
+                  />
+                </motion.div>
               )}
               <SecondaryActionsPaner
+                isTempOpen={isTempOpen}
                 openShowInfosModal={() => updateShowInfosModal(true)}
                 showGuidanceTexts={showGuidanceTexts}
               />

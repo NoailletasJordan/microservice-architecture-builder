@@ -23,9 +23,11 @@ export default function SecondaryActionsPaner({
       <Space h="xs" />
       {!isTempOpen && (
         <motion.div
-          transition={{ layout: { duration: 0.6, ease: 'easeInOut' } }}
+          transition={{
+            layout: { type: 'spring', stiffness: 45, damping: 11, mass: 1 },
+          }}
           layoutId="info-icon"
-          layout="preserve-aspect"
+          layout="position"
           style={{ marginRight: 215 }}
         >
           <TooltipWrapper label="Watch demo">

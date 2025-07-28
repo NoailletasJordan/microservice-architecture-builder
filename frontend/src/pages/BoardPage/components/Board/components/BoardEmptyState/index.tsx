@@ -1,10 +1,12 @@
 import OnboardingMouseAreaIndicator from '@/components/OnboardingMouseAreaIndicator'
+import { onBoardingContext } from '@/contexts/Onboarding/constants'
 import { Box, Center, Space, Text, useMantineTheme } from '@mantine/core'
-import GuidanceText from '../GuidanceText'
-
-export default function Main() {
+import { useContext } from 'react'
+export default function BoardEmptyState() {
   const theme = useMantineTheme()
+  const { showGuidanceTexts } = useContext(onBoardingContext)
 
+  if (!showGuidanceTexts) return null
   return (
     <Box
       pos="absolute"
@@ -12,22 +14,18 @@ export default function Main() {
       left="50%"
       style={{ transform: 'translate(-50%,-50%)' }}
     >
-      <Box ml="-1rem">
-        <Box
+      <Center>
+        <Center
           style={{
-            margin: 'auto',
-            width: '400px',
+            width: 400,
             aspectRatio: '2/1',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
           }}
         >
-          <OnboardingMouseAreaIndicator text="Start by right clicking into the board" />
-        </Box>
-
-        <Space h={50} />
-
+          <OnboardingMouseAreaIndicator text="Right click into the board to start" />
+        </Center>
+      </Center>
+      <Space h="xl" />
+      <Box ml="-1rem">
         <Text
           size="30px"
           fw={700}
@@ -45,9 +43,9 @@ export default function Main() {
         </Text>
         <Space h="lg" />
         <Center>
-          <GuidanceText>
+          <Text ff="Merienda, cursive" lts="1px" size="lg">
             Visualize and share software architectures in seconds !
-          </GuidanceText>
+          </Text>
         </Center>
       </Box>
     </Box>

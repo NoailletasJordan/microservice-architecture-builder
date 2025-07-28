@@ -1,0 +1,2 @@
+- When modifying a file, run TypeScript to check that no errors were introduced
+- When creating a customhook, do it in a file with the name of the hook, and if this hook is used only on the current file, add a "_" at the end of the name

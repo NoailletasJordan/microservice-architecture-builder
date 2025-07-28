@@ -1,12 +1,10 @@
 import { CSSVAR } from '@/contants'
 import { clickCanvaContext } from '@/contexts/ClickCanvaCapture/constants'
-import { onBoardingContext } from '@/contexts/Onboarding/constants'
 import { ActionIcon, Box, Card, Group, Menu } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { IconMenu2 } from '@tabler/icons-react'
 import { Panel } from '@xyflow/react'
 import { useContext, useEffect } from 'react'
-import OnGuidanceTextsSettings from '../../../../../../components/GuidanceTextsComponents/GuidanceTextsSettings/index'
 import BoardTitle from './components/BoardTitle'
 import Dropdown from './components/Dropdown'
 
@@ -42,8 +40,6 @@ export default function Settings({
 }
 
 function Target({ toggleOpenModal }: { toggleOpenModal: () => void }) {
-  const { showGuidanceTexts } = useContext(onBoardingContext)
-
   return (
     <Menu.Target>
       <Box pos="relative">
@@ -63,7 +59,6 @@ function Target({ toggleOpenModal }: { toggleOpenModal: () => void }) {
             <BoardTitle />
           </Group>
         </Card>
-        {showGuidanceTexts && <OnGuidanceTextsSettings />}
       </Box>
     </Menu.Target>
   )

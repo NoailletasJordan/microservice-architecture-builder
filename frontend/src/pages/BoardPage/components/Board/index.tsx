@@ -1,6 +1,4 @@
 import DroppableIndicator from '@/components/DroppableIndicator'
-import GuidanceTextsMain from '@/components/GuidanceTextsComponents/GuidanceTextsMain'
-import { CSSVAR } from '@/contants'
 import { boardDataContext } from '@/contexts/BoardData/constants'
 import DroppableHintProvider from '@/contexts/DroppableHints/DroppableHintProvider'
 import { onBoardingContext } from '@/contexts/Onboarding/constants'
@@ -11,12 +9,10 @@ import {
   BackgroundVariant,
   ConnectionMode,
   EdgeTypes,
-  MiniMap,
   NodeTypes,
   ReactFlow,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
-import { motion } from 'motion/react'
 import { useContext } from 'react'
 import { v4 } from 'uuid'
 import DroppableArea from '../../../../components/DroppableArea/index'
@@ -26,6 +22,7 @@ import {
   NO_PAN_REACTFLOW_CLASS,
   NO_WhEEL_REACTFLOW_CLASS,
 } from '../../configs/constants'
+import BoardEmptyState from './components/BoardEmptyState'
 import { BoardLoading } from './components/BoardLoading/index'
 import ClearCurrentBoard from './components/ClearCurrentBoardModal'
 import ConnexionPreview from './components/ConnexionPreview'
@@ -35,8 +32,8 @@ import DeleteCurrentBoardModal from './components/DeleteCurrentBoardModal'
 import DraggableGhost from './components/DraggableGhost/index'
 import EdgeCreationButtons from './components/EdgeCreationButtons'
 import InfoModal from './components/InfosModal'
+import OnBoardingIntegrated from './components/OnBoardingIntegrated'
 import OnBoardingPanel from './components/OnBoardingPanel'
-import OnBoardingIntegrated from './components/OnBoaringIntegrated'
 import PrimaryActionsPanel from './components/PrimaryActionsPanel'
 import SecondaryActionsPaner from './components/SecondaryActionsPanel'
 import Settings from './components/Settings/index'
@@ -63,8 +60,6 @@ const preventScrollbarOnPan = { overflow: 'hidden' }
 const droppableType = 'board'
 
 export default function Board() {
-  // temp
-  const [isTempOpen, isTempOpenHandlers] = useDisclosure(true)
   const { showGuidanceTexts, showInfosModal, updateShowInfosModal } =
     useContext(onBoardingContext)
   const { nodes, edges } = useContext(boardDataContext)
@@ -155,37 +150,13 @@ export default function Board() {
               {!showGuidanceTexts && !showInfosModal && (
                 <Background id={v4()} variant={BackgroundVariant.Dots} />
               )}
-              {showGuidanceTexts && <GuidanceTextsMain />}
-
+              <BoardEmptyState />
               {showBoardSpinner && <BoardLoading />}
 
-              {!showGuidanceTexts && !showInfosModal && !isTempOpen && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.15, duration: 0.35, ease: 'easeOut' }}
-                >
-                  <MiniMap
-                    style={{ backgroundColor: CSSVAR['--surface-strong'] }}
-                    nodeBorderRadius={10}
-                    nodeStrokeWidth={5}
-                    nodeStrokeColor={CSSVAR['--text']}
-                    nodeColor={CSSVAR['--surface-strong']}
-                    maskColor="#00000066"
-                  />
-                </motion.div>
-              )}
-              <SecondaryActionsPaner
-                isTempOpen={isTempOpen}
-                openShowInfosModal={() => updateShowInfosModal(true)}
-                showGuidanceTexts={showGuidanceTexts}
-              />
+              <SecondaryActionsPaner />
               <EdgeCreationButtons />
 
-              <OnBoardingPanel
-                isTempOpen={isTempOpen}
-                toggleTempOpen={isTempOpenHandlers.toggle}
-              />
+              <OnBoardingPanel />
               <OnBoardingIntegrated />
             </ReactFlow>
             <ToolbarMenu

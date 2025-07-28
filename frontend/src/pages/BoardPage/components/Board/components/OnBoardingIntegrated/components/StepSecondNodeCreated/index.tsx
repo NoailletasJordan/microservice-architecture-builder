@@ -12,8 +12,6 @@ export default function StepSecondNodeCreated({
   secondNode,
 }: Props) {
   const connexion = useConnection()
-  /** Temp */
-  console.log('connex:', connexion)
   const posX =
     (firstNode.position?.x +
       (firstNode.measured?.width || 0) / 2 +

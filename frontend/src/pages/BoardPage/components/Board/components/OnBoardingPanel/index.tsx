@@ -1,162 +1,105 @@
 import { CSSVAR } from '@/contants'
-import {
-  ActionIcon,
-  Button,
-  Card,
-  Group,
-  Space,
-  Text,
-  ThemeIcon,
-} from '@mantine/core'
+import { ActionIcon, Card, Group, Space, Text, ThemeIcon } from '@mantine/core'
 import {
   IconChevronLeft,
   IconChevronRight,
   IconInfoSquareRounded,
 } from '@tabler/icons-react'
 import { Panel } from '@xyflow/react'
-import { AnimatePresence, motion, Variants } from 'motion/react'
-import { useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 
-interface Props {
-  isTempOpen: boolean
-  toggleTempOpen: () => void
-}
+import { onBoardingContext } from '@/contexts/Onboarding/constants'
+import { useContext } from 'react'
+import ConfettiCanvas from './components/ConfettiCanvas'
+import WelcomeStep from './components/Step0'
+import IntroductionStep from './components/Step1'
+import Step2 from './components/Step2'
+import Step3 from './components/Step3'
+import { useAnimationVariants_ } from './hooks/useAnimationVariants_'
+import { useStepNavigation_ } from './hooks/useStepNavigation_'
 
-export default function OnBoardingPanel({ isTempOpen, toggleTempOpen }: Props) {
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  const oldIndexRef = useRef(selectedIndex)
-  const isNextIndexRef = useRef(true)
+export default function OnBoardingPanel() {
+  const {
+    currentStepIndex,
+    isMovingForward,
+    isPreviousDisabled,
+    isNextDisabled,
+    goToNextStep,
+    goToPreviousStep,
+  } = useStepNavigation_({ totalSteps: steps.length })
+  const { onboardingIsActive } = useContext(onBoardingContext)
+  const animationVariants = useAnimationVariants_()
 
-  if (selectedIndex !== oldIndexRef.current) {
-    isNextIndexRef.current = selectedIndex > oldIndexRef.current
-    oldIndexRef.current = selectedIndex
-  }
-
-  function nextIndex() {
-    setSelectedIndex((prev) => Math.min(prev + 1, content.length - 1))
-  }
-
-  function prevIndex() {
-    setSelectedIndex((prev) => Math.max(prev - 1, 0))
-  }
-
-  const ContentComponent = content[selectedIndex]
-
-  const getVariants = (isNextIndex: boolean): Variants => {
-    /** Temp */
-    console.log('isNextIndex:', isNextIndex)
-    return {
-      shown: {
-        transition: { duration: 0.35, ease: 'easeOut' },
-        opacity: 1,
-        x: 0,
-      },
-      hidden: {
-        transition: { duration: 0.35, ease: 'easeOut' },
-        opacity: 0,
-        x: isNextIndex ? 10 : -10,
-      },
-    }
-  }
+  const CurrentStepComponent = steps[currentStepIndex]
 
   return (
-    <Panel position="bottom-right">
-      <Button variant="default" onClick={toggleTempOpen}>
-        toggle
-      </Button>
-      <Space h={30} />
-      <AnimatePresence>
-        {isTempOpen && (
+    <AnimatePresence>
+      {onboardingIsActive && (
+        <Panel position="bottom-right">
+          <ConfettiCanvas />
           <motion.div
-            style={{
-              border: '1px solid ' + CSSVAR['--border'],
-              background: CSSVAR['--surface'],
-              borderRadius: 8,
-              padding: 16,
-            }}
+            style={panelStyle}
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <Group justify="space-between">
               <motion.div layout="position" layoutId="info-icon">
-                <ThemeIcon
-                  size="sm"
-                  color="white"
-                  variant="light"
-                  onClick={prevIndex}
-                >
+                <ThemeIcon size="sm" color="white" variant="light">
                   <IconInfoSquareRounded />
                 </ThemeIcon>
               </motion.div>
-              <div>
-                <Group gap={0}>
-                  <ActionIcon
-                    disabled={selectedIndex === 0}
-                    color="white"
-                    onClick={prevIndex}
-                    variant="transparent"
-                    opacity={selectedIndex === 0 ? 0.5 : 1}
-                    size="xs"
-                  >
-                    <IconChevronLeft />
-                  </ActionIcon>
-                  <ActionIcon
-                    disabled={selectedIndex === content.length - 1}
-                    color="white"
-                    onClick={nextIndex}
-                    variant="transparent"
-                    opacity={selectedIndex === content.length - 1 ? 0.5 : 1}
-                    size="xs"
-                  >
-                    <IconChevronRight />
-                  </ActionIcon>
-                  <Card p={4} radius="md" bg="gray.1">
-                    <Text>
-                      {selectedIndex + 1}/{content.length}
-                    </Text>
-                  </Card>
-                </Group>
-              </div>
+              <Group gap={0}>
+                <ActionIcon
+                  disabled={isPreviousDisabled}
+                  color="white"
+                  onClick={goToPreviousStep}
+                  variant="transparent"
+                  opacity={isPreviousDisabled ? 0.5 : 1}
+                  size="xs"
+                >
+                  <IconChevronLeft />
+                </ActionIcon>
+                <ActionIcon
+                  disabled={isNextDisabled}
+                  color="white"
+                  onClick={goToNextStep}
+                  variant="transparent"
+                  opacity={isNextDisabled ? 0.5 : 1}
+                  size="xs"
+                >
+                  <IconChevronRight />
+                </ActionIcon>
+                <Card p={4} radius="md" bg="gray.1">
+                  <Text>
+                    {currentStepIndex + 1}/{steps.length}
+                  </Text>
+                </Card>
+              </Group>
             </Group>
             <Space h="md" />
-            <AnimatePresence mode="wait" custom={isNextIndexRef.current}>
+            <AnimatePresence mode="wait" custom={isMovingForward}>
               <motion.div
-                variants={getVariants(isNextIndexRef.current)}
+                variants={animationVariants(isMovingForward)}
                 initial="hidden"
-                animate="shown"
+                animate="visible"
                 exit="hidden"
-                key={selectedIndex}
+                key={currentStepIndex}
               >
-                <ContentComponent />
+                <CurrentStepComponent />
               </motion.div>
             </AnimatePresence>
-
-            {/* <Group justify="flex-end">
-          <Button>Got it !</Button>
-        </Group> */}
           </motion.div>
-        )}
-      </AnimatePresence>
-    </Panel>
+        </Panel>
+      )}
+    </AnimatePresence>
   )
 }
 
-function Step0() {
-  return (
-    <>
-      <div>Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
-      <div>Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
-    </>
-  )
+const panelStyle = {
+  border: `1px solid ${CSSVAR['--border']}`,
+  background: CSSVAR['--surface'],
+  borderRadius: 8,
+  padding: 16,
 }
 
-function Step1() {
-  return (
-    <>
-      <div>Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
-      <div>Lorem ipsum dolor sit amet consectetur adipisicing elit.</div>
-    </>
-  )
-}
-
-const content = [Step0, Step1]
+const steps = [WelcomeStep, IntroductionStep, Step2, Step3]
